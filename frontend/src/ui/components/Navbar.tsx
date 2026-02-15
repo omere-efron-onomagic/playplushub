@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import { useState } from 'react';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/user.slice';
 
 const navLinks = [
   { to: '/', label: 'Machine', icon: null },
@@ -10,9 +11,11 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const user = useAppSelector((state) => state.user);
+  const avatarInitial = user.name.trim().charAt(0).toUpperCase() || 'U';
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gv-gold/20 bg-gv-bg/95 backdrop-blur-sm">
@@ -58,18 +61,38 @@ export function Navbar() {
           </div>
 
           <div className="hidden sm:flex sm:items-center sm:gap-3">
-            <Link
-              to="/login"
-              className="rounded-full bg-gv-surface px-5 py-1.5 text-sm font-medium text-gv-text transition-colors hover:bg-gv-card"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              className="rounded-full border border-gv-gold bg-gv-gold px-5 py-1.5 text-sm font-bold text-gv-bg transition-colors hover:bg-gv-gold-light"
-            >
-              Sign Up
-            </Link>
+            {user.isGuest ? (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-full bg-gv-surface px-5 py-1.5 text-sm font-medium text-gv-text transition-colors hover:bg-gv-card"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="rounded-full border border-gv-gold bg-gv-gold px-5 py-1.5 text-sm font-bold text-gv-bg transition-colors hover:bg-gv-gold-light"
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-gv-gold/60 bg-gv-gold/10 font-heading text-xs font-bold text-gv-gold"
+                  title={user.name}
+                >
+                  {avatarInitial}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => dispatch(logout())}
+                  className="rounded-full bg-gv-surface px-5 py-1.5 text-sm font-medium text-gv-text transition-colors hover:bg-gv-card"
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button (shown when nav links hidden) */}
@@ -107,20 +130,35 @@ export function Navbar() {
               );
             })}
             <div className="mt-2 flex gap-2 border-t border-gv-border pt-3">
-              <Link
-                to="/login"
-                onClick={() => setMobileOpen(false)}
-                className="min-h-[44px] flex-1 rounded-xl bg-gv-surface px-4 py-3 text-center text-sm font-medium text-gv-text"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                onClick={() => setMobileOpen(false)}
-                className="min-h-[44px] flex-1 rounded-xl border border-gv-gold bg-gv-gold px-4 py-3 text-center text-sm font-bold text-gv-bg"
-              >
-                Sign Up
-              </Link>
+              {user.isGuest ? (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="min-h-[44px] flex-1 rounded-xl bg-gv-surface px-4 py-3 text-center text-sm font-medium text-gv-text"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileOpen(false)}
+                    className="min-h-[44px] flex-1 rounded-xl border border-gv-gold bg-gv-gold px-4 py-3 text-center text-sm font-bold text-gv-bg"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch(logout());
+                    setMobileOpen(false);
+                  }}
+                  className="min-h-[44px] w-full rounded-xl bg-gv-surface px-4 py-3 text-center text-sm font-medium text-gv-text"
+                >
+                  Sign Out
+                </button>
+              )}
             </div>
           </div>
         </div>
