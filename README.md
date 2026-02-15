@@ -31,6 +31,8 @@ The brand is currently "PlayPlusHub" and may change later.
 
 See `docs/FEATURE_STATUS.md` for the full matrix.
 
+**Logging**: Backend uses Winston for JSON structured logs. Default level is `debug`; set `LOG_LEVEL` to control verbosity. Passwords and tokens are redacted in logs.
+
 ## Docs Index
 
 - `docs/PRODUCT_OVERVIEW.md` - purpose, audience, user scenarios, product principles
@@ -40,6 +42,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/API_SPEC.md` - current API behavior + target API extensions
 - `docs/ROADMAP_MVP.md` - prioritized roadmap and milestones
 - `docs/USER_ECONOMNY.MD` - legacy filename retained; points to updated economy doc
+- `docs/DEVELOPER_ONBOARDING.md` - shared Cursor workflow, rules, skills, worktrees, and team best practices
 
 ## Local Setup
 
@@ -58,6 +61,7 @@ Backend (`backend/.env`):
 - `FRONTEND_URL` (comma-separated allowed origins)
 - `MONGODB_URI` (optional in current MVP; server can run JSON-backed auth flows)
 - `AUTH_SECRET` (recommended for non-default token signing)
+- `LOG_LEVEL` (optional; default `debug` for verbose logs; use `info`, `warn`, or `error` to reduce output)
 
 Frontend (`frontend/.env.development`):
 

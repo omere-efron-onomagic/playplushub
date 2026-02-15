@@ -5,6 +5,8 @@ import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { walletRouter } from './routes/wallet.routes.js';
+import { requestLogger } from './middleware/request-logger.middleware.js';
+import { logger } from './logger/logger.js';
 import cors from 'cors';
 import helmet from 'helmet';
 
@@ -55,6 +57,8 @@ app.use(express.json());
 // extended: true means that the parser will support nested objects and arrays
 app.use(express.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+
 // create a new route that returns a JSON object with a key of ok and a value of true
 app.get('/health', (_req, res) => {
   res.json({ ok: true });
@@ -70,8 +74,14 @@ app.use('/wallet', walletRouter);
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 // error handler (must be last)
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err);
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  logger.error('unhandled_error', {
+    message: err.message,
+    stack: err.stack,
+    requestId: req.requestId,
+    method: req.method,
+    path: req.path,
+  });
   res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -85,18 +95,18 @@ async function main() {
     try {
       await connectToMongoDB(uri);
     } catch (error) {
-      console.error('MongoDB connection failed, continuing with JSON-backed auth only:', error);
+      logger.error('MongoDB connection failed, continuing with JSON-backed auth only', { error });
     }
   } else {
-    console.warn('MONGODB_URI is not set, running without MongoDB connection');
+    logger.warn('MONGODB_URI is not set, running without MongoDB connection');
   }
 
   await startServer(app, port);
-  console.log(`✅ Server is running on port ${port}! 🚀`);
+  logger.info('Server started', { port });
 }
 
 // catch any errors and exit the process
-main().catch((error) => {
-  console.error(`❌ Failed to start: ${error}`);
+main().catch((error: unknown) => {
+  logger.error('Failed to start', { error });
   process.exit(1);
 });

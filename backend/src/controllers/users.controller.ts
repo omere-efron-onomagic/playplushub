@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { UserModel } from '../models/User.model.js';
 import type { ObjectIdParams } from '../types/common.types.js';
 import type { CreateUserBody } from '../types/user.types.js';
+import { logger } from '../logger/logger.js';
 
 export async function listUsers(_req: Request, res: Response) {
   try {
@@ -32,12 +33,12 @@ export async function createUser(req: Request, res: Response) {
     const { email, name } = req.body as CreateUserBody;
     const created = await UserModel.create({ email, name, posts: [] });
     return res.status(201).json(created);
-  } catch (err: any) {
+  } catch (err: unknown) {
     // duplicate email
-    if (err?.code === 11000) {
+    if (err && typeof err === 'object' && 'code' in err && err.code === 11000) {
       return res.status(409).json({ message: 'email already exists' });
     }
-    console.log(err);
+    logger.error('createUser failed', { err });
     return res.status(500).json({ message: 'server error' });
   }
 }

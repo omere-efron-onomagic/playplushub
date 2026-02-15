@@ -71,6 +71,7 @@ unification.
 4. Backend validates token for protected routes.
 5. Wallet/auth updates are persisted in JSON-backed user store.
 6. Guest progression updates are persisted in JSON-backed guest store.
+7. Structured logging (Winston, JSON) captures request lifecycle, startup, and errors; sensitive fields are redacted.
 
 ### Guest Hydration Flow
 

@@ -14,6 +14,7 @@ import {
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { createSessionToken, createGuestToken, verifyGuestToken } from '../utils/token.js';
 import type { GuestRecord, PublicGuest } from '../types/user.types.js';
+import { logger } from '../logger/logger.js';
 
 function toPublicUser(user: StoredUser) {
   return {
@@ -46,6 +47,7 @@ export async function register(req: Request, res: Response) {
     if (error instanceof Error && error.message === 'email_exists') {
       return res.status(409).json({ message: 'email already exists' });
     }
+    logger.error('register failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -64,7 +66,8 @@ export async function login(req: Request, res: Response) {
       token,
       user: toPublicUser(user),
     });
-  } catch {
+  } catch (error) {
+    logger.error('login failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -84,7 +87,8 @@ export async function me(req: Request, res: Response) {
     return res.status(200).json({
       user: toPublicUser(user),
     });
-  } catch {
+  } catch (error) {
+    logger.error('me failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -100,7 +104,8 @@ export async function createGuest(_req: Request, res: Response) {
       guestToken,
       guest: toPublicGuest(guest),
     });
-  } catch {
+  } catch (error) {
+    logger.error('createGuest failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -122,7 +127,8 @@ export async function getGuest(req: Request, res: Response) {
     }
 
     return res.status(200).json({ guest: toPublicGuest(guest) });
-  } catch {
+  } catch (error) {
+    logger.error('getGuest failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -142,7 +148,8 @@ export async function updateGuestProgression(req: Request, res: Response) {
     }
 
     return res.status(200).json({ guest: toPublicGuest(guest) });
-  } catch {
+  } catch (error) {
+    logger.error('updateGuestProgression failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -167,7 +174,8 @@ export async function migrateGuest(req: Request, res: Response) {
       migrationStatus: result.status,
       coinsTransferred: result.coinsTransferred,
     });
-  } catch {
+  } catch (error) {
+    logger.error('migrateGuest failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
