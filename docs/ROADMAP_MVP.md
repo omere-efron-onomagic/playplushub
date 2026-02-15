@@ -14,17 +14,17 @@ This roadmap prioritizes shipping a stable MVP loop before expanding game count.
 
 Goal: make guest and signed flows reliable.
 
-- Persist guest progression across sessions
-- Implement soft sign-up prompts after each win
-- Enforce sign-up requirement after 5 prompts
-- Add guest-to-account progression migration behavior
-- Ensure onboarding scenario paths are explicit in frontend UX
+- [x] Persist guest progression across sessions (backend-issued guest token + server store)
+- [ ] Implement soft sign-up prompts after each win
+- [ ] Enforce sign-up requirement after 5 prompts
+- [x] Add guest-to-account progression migration behavior (idempotent, account_wins)
+- [ ] Ensure onboarding scenario paths are explicit in frontend UX
 
 Exit criteria:
 
-- Guest resumes progress after app restart
-- Signed users keep migrated progression
-- Conversion prompt cadence behaves by product rule
+- [x] Guest resumes progress after app restart
+- [x] Signed users keep migrated progression
+- [ ] Conversion prompt cadence behaves by product rule
 
 ## Phase 2: Economy Enforcement and Anti-Cheat Foundation
 

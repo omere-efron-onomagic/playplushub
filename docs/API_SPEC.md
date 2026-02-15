@@ -101,6 +101,115 @@ Possible errors:
 - `404` user not found
 - `500` server error
 
+## Guest Lifecycle
+
+### `POST /auth/guest`
+
+Create a new guest identity. No authentication required.
+
+Response (201):
+
+```json
+{
+  "guestToken": "...",
+  "guest": {
+    "id": "uuid",
+    "coins": 0
+  }
+}
+```
+
+Possible errors:
+
+- `500` server error
+
+### `GET /auth/guest`
+
+Retrieve guest progression. Requires `X-Guest-Token` header.
+
+Response (200):
+
+```json
+{
+  "guest": {
+    "id": "uuid",
+    "coins": 40
+  }
+}
+```
+
+Possible errors:
+
+- `401` missing/invalid guest token
+- `404` guest not found
+- `410` guest has been migrated to an account
+- `500` server error
+
+### `PATCH /auth/guest`
+
+Update guest progression (add coins). Requires `X-Guest-Token` header.
+
+Request body:
+
+```json
+{
+  "addCoins": 20
+}
+```
+
+Response (200):
+
+```json
+{
+  "guest": {
+    "id": "uuid",
+    "coins": 60
+  }
+}
+```
+
+Possible errors:
+
+- `400` invalid addCoins value
+- `401` missing/invalid guest token
+- `404` guest not found or already migrated
+- `500` server error
+
+### `POST /auth/guest/migrate`
+
+Migrate guest progression to an authenticated account. Requires
+`Authorization: Bearer <token>` header.
+
+Request body:
+
+```json
+{
+  "guestToken": "..."
+}
+```
+
+Response (200):
+
+```json
+{
+  "migrationStatus": "applied",
+  "coinsTransferred": 40
+}
+```
+
+`migrationStatus` values:
+
+- `applied` - coins transferred successfully
+- `noop` - guest was already migrated (idempotent retry)
+- `not_found` - guest record does not exist
+- `invalid_token` - guest token failed verification
+
+Possible errors:
+
+- `400` missing/invalid guestToken in body
+- `401` missing/invalid auth token
+- `500` server error
+
 ## Wallet
 
 ### `POST /wallet/reward`
@@ -150,7 +259,6 @@ primary game economy API surface.
 2. Server-side spend validation before game start
 3. Anti-duplicate reward claim logic
 4. Event-based progression APIs (XP, missions, streaks)
-5. Guest-to-account migration endpoint
 
 ## Suggested Future API Domains
 

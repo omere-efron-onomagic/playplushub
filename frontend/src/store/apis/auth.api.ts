@@ -8,6 +8,11 @@ export type AuthUser = {
   coins: number;
 };
 
+export type PublicGuest = {
+  id: string;
+  coins: number;
+};
+
 type AuthResponse = {
   token: string;
   user: AuthUser;
@@ -22,6 +27,28 @@ type RegisterPayload = {
 type LoginPayload = {
   email: string;
   password: string;
+};
+
+type CreateGuestResponse = {
+  guestToken: string;
+  guest: PublicGuest;
+};
+
+type GuestResponse = {
+  guest: PublicGuest;
+};
+
+type GuestUpdatePayload = {
+  addCoins: number;
+};
+
+export type MigrationResponse = {
+  migrationStatus: 'applied' | 'noop' | 'not_found' | 'invalid_token';
+  coinsTransferred: number;
+};
+
+type MigratePayload = {
+  guestToken: string;
 };
 
 export const authApi = createApi({
@@ -45,7 +72,42 @@ export const authApi = createApi({
     me: builder.query<{ user: AuthUser }, void>({
       query: () => '/auth/me',
     }),
+
+    // Guest lifecycle
+    createGuest: builder.mutation<CreateGuestResponse, void>({
+      query: () => ({
+        url: '/auth/guest',
+        method: 'POST',
+      }),
+    }),
+    getGuest: builder.query<GuestResponse, void>({
+      query: () => '/auth/guest',
+    }),
+    updateGuestProgression: builder.mutation<GuestResponse, GuestUpdatePayload>({
+      query: (body) => ({
+        url: '/auth/guest',
+        method: 'PATCH',
+        body,
+      }),
+    }),
+
+    // Migration
+    migrateGuest: builder.mutation<MigrationResponse, MigratePayload>({
+      query: (body) => ({
+        url: '/auth/guest/migrate',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useMeQuery } = authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useMeQuery,
+  useCreateGuestMutation,
+  useGetGuestQuery,
+  useUpdateGuestProgressionMutation,
+  useMigrateGuestMutation,
+} = authApi;

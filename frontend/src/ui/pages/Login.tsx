@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useLoginMutation } from '@/store/apis/auth.api';
-import { setAuthenticatedUser } from '@/store/slices/user.slice';
-import { useAppDispatch } from '@/store/hooks';
+import { useLoginMutation, useMigrateGuestMutation } from '@/store/apis/auth.api';
+import { setAuthenticatedUser, setCoins, clearGuestToken } from '@/store/slices/user.slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 export function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const guestToken = useAppSelector((s) => s.user.guestToken);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [login, { isLoading }] = useLoginMutation();
+  const [migrateGuest] = useMigrateGuestMutation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,6 +29,20 @@ export function Login() {
           token: response.token,
         }),
       );
+
+      // Trigger guest-to-account migration if a guest token exists
+      if (guestToken) {
+        try {
+          const migration = await migrateGuest({ guestToken }).unwrap();
+          if (migration.migrationStatus === 'applied' && migration.coinsTransferred > 0) {
+            dispatch(setCoins(response.user.coins + migration.coinsTransferred));
+          }
+        } catch {
+          // Migration failure is non-blocking; user is already authenticated
+        }
+        dispatch(clearGuestToken());
+      }
+
       navigate('/');
     } catch {
       setErrorMessage('Invalid email or password');

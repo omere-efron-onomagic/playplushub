@@ -52,16 +52,42 @@ unification.
 
 ### API Domain Groups
 
-- `auth`: register/login/session check
+- `auth`: register/login/session check, guest lifecycle, guest-to-account migration
 - `wallet`: reward updates
 - `users` and `posts`: available in code, treated as legacy/non-core for product
+
+### Guest Persistence
+
+- Guest records are stored in `backend/src/data/guests.json` (separate from users)
+- Each guest has a signed token (90-day expiry) issued by the backend
+- Client stores the guest token in localStorage and sends it via `X-Guest-Token` header
+- Guest coins are server-authoritative; client does not store progression locally
 
 ## Runtime Flow (Current)
 
 1. Frontend calls backend via `VITE_API_URL`.
 2. Auth token (if available) is attached as Bearer header.
-3. Backend validates token for protected routes.
-4. Wallet/auth updates are persisted in JSON-backed user store.
+3. Guest token (if available) is attached as `X-Guest-Token` header.
+4. Backend validates token for protected routes.
+5. Wallet/auth updates are persisted in JSON-backed user store.
+6. Guest progression updates are persisted in JSON-backed guest store.
+
+### Guest Hydration Flow
+
+1. On app load, if no auth user exists, frontend checks for a persisted guest token.
+2. If guest token exists, frontend calls `GET /auth/guest` to restore progression.
+3. If no guest token exists, frontend calls `POST /auth/guest` to create a new guest.
+4. Redux state is synced with the server response.
+
+### Guest-to-Account Migration Flow
+
+1. User completes login or registration.
+2. If a guest token is present, frontend calls `POST /auth/guest/migrate` immediately
+   after authentication.
+3. Backend transfers guest coins to the account (additive) and marks the guest record
+   as migrated.
+4. Frontend clears the guest token from localStorage and updates coin balance.
+5. Repeated migration attempts return `noop` (idempotent).
 
 ## Runtime Flow (Target)
 

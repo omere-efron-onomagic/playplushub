@@ -4,5 +4,6 @@ export type User = {
   email: string | null;
   coins: number;
   token: string | null;
+  guestToken: string | null;
   isGuest: boolean;
 };

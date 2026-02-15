@@ -1,8 +1,9 @@
 import { linkFourLevels } from '@/data/linkFourLevels';
 import { games } from '@/data/games';
 import { useRewardCoinsMutation } from '@/store/apis/wallet.api';
+import { useUpdateGuestProgressionMutation } from '@/store/apis/auth.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addGuestCoins, resetGuestCoins, setCoins } from '@/store/slices/user.slice';
+import { setCoins } from '@/store/slices/user.slice';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 
@@ -19,6 +20,7 @@ export function LinkFourGame() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const [rewardCoinsMutation] = useRewardCoinsMutation();
+  const [updateGuestProgression] = useUpdateGuestProgressionMutation();
   const { gameId } = useParams<{ gameId: string }>();
   const selectedGame = games.find((game) => game.id === gameId) ?? games[0];
   const rewardCoins = selectedGame?.rewardCoins ?? 20;
@@ -54,34 +56,29 @@ export function LinkFourGame() {
   }, [currentLevel]);
 
   useEffect(() => {
-    return () => {
-      if (user.isGuest) {
-        dispatch(resetGuestCoins());
-      }
-    };
-  }, [dispatch, user.isGuest]);
-
-  useEffect(() => {
     if (!gameComplete || rewardHandled) {
       return;
     }
 
     setRewardHandled(true);
 
-    if (user.isGuest) {
-      dispatch(addGuestCoins(rewardCoins));
-      setEarnedCoins(rewardCoins);
-      return;
-    }
-
     const applyReward = async () => {
       try {
-        const response = await rewardCoinsMutation({
-          gameId: selectedGame.id,
-          rewardCoins,
-        }).unwrap();
-        dispatch(setCoins(response.coins));
-        setEarnedCoins(response.earnedCoins);
+        if (user.isGuest && user.guestToken) {
+          const response = await updateGuestProgression({ addCoins: rewardCoins }).unwrap();
+          dispatch(setCoins(response.guest.coins));
+          setEarnedCoins(rewardCoins);
+        } else if (!user.isGuest) {
+          const response = await rewardCoinsMutation({
+            gameId: selectedGame.id,
+            rewardCoins,
+          }).unwrap();
+          dispatch(setCoins(response.coins));
+          setEarnedCoins(response.earnedCoins);
+        } else {
+          // Guest without server token - local fallback
+          setEarnedCoins(rewardCoins);
+        }
       } catch {
         setEarnedCoins(0);
       }
@@ -93,9 +90,11 @@ export function LinkFourGame() {
     gameComplete,
     rewardCoins,
     rewardCoinsMutation,
+    updateGuestProgression,
     rewardHandled,
     selectedGame.id,
     user.isGuest,
+    user.guestToken,
   ]);
 
   const handleLetterClick = useCallback(

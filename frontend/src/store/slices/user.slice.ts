@@ -12,47 +12,63 @@ type PersistedUser = {
 };
 
 const AUTH_STORAGE_KEY = 'playplushub.auth-user';
+const GUEST_STORAGE_KEY = 'playplushub.guest-token';
 
 function createGuestState(): UserState {
   return {
-    id: crypto.randomUUID(),
+    id: '',
     name: 'Guest',
     email: null,
     coins: 0,
     token: null,
+    guestToken: null,
     isGuest: true,
   };
 }
 
 function loadPersistedUser(): UserState {
+  // Try auth user first
   const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-  if (!raw) {
-    return createGuestState();
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<PersistedUser>;
-    if (
-      typeof parsed.id !== 'string' ||
-      typeof parsed.name !== 'string' ||
-      typeof parsed.email !== 'string' ||
-      typeof parsed.coins !== 'number' ||
-      typeof parsed.token !== 'string'
-    ) {
-      return createGuestState();
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as Partial<PersistedUser>;
+      if (
+        typeof parsed.id === 'string' &&
+        typeof parsed.name === 'string' &&
+        typeof parsed.email === 'string' &&
+        typeof parsed.coins === 'number' &&
+        typeof parsed.token === 'string'
+      ) {
+        return {
+          id: parsed.id,
+          name: parsed.name,
+          email: parsed.email,
+          coins: parsed.coins,
+          token: parsed.token,
+          guestToken: null,
+          isGuest: false,
+        };
+      }
+    } catch {
+      // fall through to guest
     }
-
-    return {
-      id: parsed.id,
-      name: parsed.name,
-      email: parsed.email,
-      coins: parsed.coins,
-      token: parsed.token,
-      isGuest: false,
-    };
-  } catch {
-    return createGuestState();
   }
+
+  // Try persisted guest token
+  const guestToken = localStorage.getItem(GUEST_STORAGE_KEY);
+  if (guestToken) {
+    return {
+      id: '',
+      name: 'Guest',
+      email: null,
+      coins: 0,
+      token: null,
+      guestToken,
+      isGuest: true,
+    };
+  }
+
+  return createGuestState();
 }
 
 function persistAuthenticatedUser(state: UserState): void {
@@ -88,24 +104,38 @@ export const userSlice = createSlice({
       state.email = action.payload.email;
       state.coins = action.payload.coins;
       state.token = action.payload.token;
+      state.guestToken = null;
       state.isGuest = false;
       persistAuthenticatedUser(state);
+      localStorage.removeItem(GUEST_STORAGE_KEY);
     },
     setCoins: (state, action: PayloadAction<number>) => {
       state.coins = action.payload;
-      persistAuthenticatedUser(state);
-    },
-    addGuestCoins: (state, action: PayloadAction<number>) => {
       if (!state.isGuest) {
-        return;
+        persistAuthenticatedUser(state);
       }
-      state.coins += action.payload;
     },
-    resetGuestCoins: (state) => {
-      if (!state.isGuest) {
-        return;
-      }
-      state.coins = 0;
+    /** Set guest identity after backend creates the guest record. */
+    setGuestIdentity: (
+      state,
+      action: PayloadAction<{ guestToken: string; id: string; coins: number }>,
+    ) => {
+      state.id = action.payload.id;
+      state.coins = action.payload.coins;
+      state.guestToken = action.payload.guestToken;
+      state.isGuest = true;
+      localStorage.setItem(GUEST_STORAGE_KEY, action.payload.guestToken);
+    },
+    /** Sync guest progression from server hydration. */
+    setGuestProgression: (state, action: PayloadAction<{ id: string; coins: number }>) => {
+      if (!state.isGuest) return;
+      state.id = action.payload.id;
+      state.coins = action.payload.coins;
+    },
+    /** Clear guest token after migration completes. */
+    clearGuestToken: (state) => {
+      state.guestToken = null;
+      localStorage.removeItem(GUEST_STORAGE_KEY);
     },
     logout: (state) => {
       const guest = createGuestState();
@@ -114,13 +144,20 @@ export const userSlice = createSlice({
       state.email = guest.email;
       state.coins = guest.coins;
       state.token = guest.token;
+      state.guestToken = guest.guestToken;
       state.isGuest = guest.isGuest;
       localStorage.removeItem(AUTH_STORAGE_KEY);
     },
   },
 });
 
-export const { setAuthenticatedUser, setCoins, addGuestCoins, resetGuestCoins, logout } =
-  userSlice.actions;
+export const {
+  setAuthenticatedUser,
+  setCoins,
+  setGuestIdentity,
+  setGuestProgression,
+  clearGuestToken,
+  logout,
+} = userSlice.actions;
 
 export default userSlice.reducer;

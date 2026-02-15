@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useRegisterMutation } from '@/store/apis/auth.api';
-import { setAuthenticatedUser } from '@/store/slices/user.slice';
-import { useAppDispatch } from '@/store/hooks';
+import { useRegisterMutation, useMigrateGuestMutation } from '@/store/apis/auth.api';
+import { setAuthenticatedUser, setCoins, clearGuestToken } from '@/store/slices/user.slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 export function SignUp() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const guestToken = useAppSelector((s) => s.user.guestToken);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [register, { isLoading }] = useRegisterMutation();
+  const [migrateGuest] = useMigrateGuestMutation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,6 +30,20 @@ export function SignUp() {
           token: response.token,
         }),
       );
+
+      // Trigger guest-to-account migration if a guest token exists
+      if (guestToken) {
+        try {
+          const migration = await migrateGuest({ guestToken }).unwrap();
+          if (migration.migrationStatus === 'applied' && migration.coinsTransferred > 0) {
+            dispatch(setCoins(response.user.coins + migration.coinsTransferred));
+          }
+        } catch {
+          // Migration failure is non-blocking; user is already authenticated
+        }
+        dispatch(clearGuestToken());
+      }
+
       navigate('/');
     } catch {
       setErrorMessage('Could not create account');

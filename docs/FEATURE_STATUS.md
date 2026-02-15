@@ -35,8 +35,9 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | Register/login/me API | Implemented | Basic auth endpoints and token flow exist |
-| Guest mode | Partial | Local state works; full guest progression migration not complete |
-| Guest persistence across sessions | Partial | Auth user persistence exists; full guest progression persistence is incomplete |
+| Guest mode | Implemented | Backend-issued guest token with server-persisted progression |
+| Guest persistence across sessions | Implemented | Guest token stored client-side; progression persisted server-side in JSON store |
+| Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
 | Wallet reward endpoint | Partial | Works, but anti-cheat validation is missing |
 | Backend persistence approach (JSON) | Implemented | Current MVP source of truth for auth/wallet users |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |
