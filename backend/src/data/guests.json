@@ -1,0 +1,16 @@
+[
+  {
+    "id": "d92da919-a56a-4917-ab87-f2f95c2b432b",
+    "coins": 0,
+    "createdAt": "2026-02-15T21:02:53.188Z",
+    "updatedAt": "2026-02-15T21:02:53.188Z",
+    "migratedTo": null
+  },
+  {
+    "id": "f4a92cd7-67ae-4241-804e-71ebd380de07",
+    "coins": 20,
+    "createdAt": "2026-02-15T21:02:57.415Z",
+    "updatedAt": "2026-02-15T21:07:13.835Z",
+    "migratedTo": null
+  }
+]
