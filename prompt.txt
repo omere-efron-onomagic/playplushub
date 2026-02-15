@@ -1,0 +1,9 @@
+please scan the folder called "pic"
+and implement the pictures there to 
+my frontend
+
+each folder is each page at the project
+
+in the mainpage surround everything with
+a vending machine, make the UI there
+better than in the picture 
