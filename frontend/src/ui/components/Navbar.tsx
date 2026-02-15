@@ -37,6 +37,7 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
+                  data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                   className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all sm:flex sm:items-center sm:gap-1.5 sm:px-4 sm:text-sm ${
                     isActive
                       ? 'border border-gv-gold/60 bg-gv-gold/10 text-gv-gold'

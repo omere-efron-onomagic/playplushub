@@ -46,6 +46,14 @@ export function LinkFourGame() {
   const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
 
   const level = linkFourLevels[currentLevel];
+  const needsSessionRedirect = !user.isGuest && !sessionToken;
+
+  // Auth user without session: redirect in useEffect (navigate during render is unreliable)
+  useEffect(() => {
+    if (needsSessionRedirect) {
+      navigate(`/game/${gameId ?? '1'}`, { replace: true });
+    }
+  }, [needsSessionRedirect, navigate, gameId]);
 
   // Gate: guest with signupRequired cannot play
   if (user.isGuest && user.signupRequired) {
@@ -53,8 +61,7 @@ export function LinkFourGame() {
   }
 
   // Auth user must have started session from GamePage (spend-before-play)
-  if (!user.isGuest && !sessionToken) {
-    navigate(`/game/${gameId ?? '1'}`, { replace: true });
+  if (needsSessionRedirect) {
     return null;
   }
 
@@ -190,7 +197,7 @@ export function LinkFourGame() {
       <div className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-center px-4 py-6">
         <div className="text-center">
           <div className="mb-3 text-5xl sm:mb-4 sm:text-6xl">{'\uD83C\uDFC6'}</div>
-          <h1 className="font-heading text-2xl font-bold tracking-wider text-gv-gold sm:text-4xl">
+          <h1 className="font-heading text-2xl font-bold tracking-wider text-gv-gold sm:text-4xl" data-testid="link-four-win">
             YOU WIN!
           </h1>
           <p className="mt-2 text-base text-gv-text-muted sm:mt-3 sm:text-lg">
@@ -313,6 +320,7 @@ export function LinkFourGame() {
               key={i}
               disabled={isUsed}
               onClick={() => handleLetterClick(letter, i)}
+              data-testid={`letter-bank-${letter}-${i}`}
               className={`flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-lg font-heading text-lg font-bold transition-all touch-manipulation sm:h-11 sm:w-11 sm:min-h-0 sm:min-w-0 ${
                 isUsed
                   ? 'border border-gv-border/30 bg-gv-bg text-transparent'

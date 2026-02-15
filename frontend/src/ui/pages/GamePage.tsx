@@ -128,6 +128,7 @@ export function GamePage() {
                   type="button"
                   disabled={!canAfford || isStarting}
                   onClick={handlePlayClick}
+                  data-testid="game-play-now"
                   className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation sm:min-h-0"
                 >
                   {isStarting ? 'Starting...' : 'PLAY NOW'}

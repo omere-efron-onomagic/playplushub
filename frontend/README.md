@@ -71,3 +71,25 @@ export default defineConfig([
   }
 ]);
 ```
+
+## E2E Testing (Playwright)
+
+E2E tests use Playwright and assume **frontend and backend dev servers are already running**.
+
+### Prerequisites
+
+1. Start backend: `cd backend && npm run dev`
+2. Start frontend: `cd frontend && npm run dev`
+3. Install Playwright browsers (first time only): `npx playwright install`
+
+### Commands
+
+- `npm run test:e2e` — run all E2E specs
+- `npm run test:e2e:ui` — Playwright UI mode (interactive)
+- `npm run test:e2e:headed` — headed run (browser visible)
+- `npm run test:e2e:report` — open HTML report after a run
+
+### Troubleshooting
+
+- **Tests fail with connection refused**: Ensure frontend runs on `http://localhost:5173` and backend API is available.
+- **Flaky selectors**: Specs use `data-testid` where available. Check `playwright.config.ts` for `baseURL` and `testDir`.
