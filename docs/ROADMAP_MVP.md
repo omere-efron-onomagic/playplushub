@@ -30,11 +30,12 @@ Exit criteria:
 
 Goal: ensure coin and reward rules are server-authoritative.
 
-- Enforce no-negative balances on backend
-- Enforce spend before game start
-- Move reward computation to backend authority
-- Add duplicate reward claim protection
-- Add transaction-like logs for balance changes
+- [x] Enforce no-negative balances on backend
+- [x] Enforce spend before game start (auth and guest)
+- [x] Move reward computation to backend authority
+- [x] Add duplicate reward claim protection
+- [x] Add transaction-like logs for balance changes
+- [x] Guest session flow: guests use session/start and session/claim with spend-before-play
 
 Exit criteria:
 

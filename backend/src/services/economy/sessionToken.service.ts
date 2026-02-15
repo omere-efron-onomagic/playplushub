@@ -12,13 +12,18 @@ function signPayload(encodedPayload: string): string {
   return createHmac('sha256', getAuthSecret()).update(encodedPayload).digest('base64url');
 }
 
-export function createGameSessionToken(userId: string, gameId: string): { sessionId: string; token: string } {
+export function createGameSessionToken(
+  actorId: string,
+  gameId: string,
+  isGuest = false,
+): { sessionId: string; token: string } {
   const sessionId = randomUUID();
   const payload: GameSessionPayload = {
     sessionId,
-    userId,
+    userId: actorId,
     gameId,
     exp: Date.now() + SESSION_TTL_MS,
+    isGuest: isGuest ? true : undefined,
   };
   const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const signature = signPayload(encodedPayload);

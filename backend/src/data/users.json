@@ -1,11 +1,83 @@
 [
   {
-    "id": "a1507042-6a1e-4926-82ef-d42d4d1058bc",
-    "name": "noam",
-    "email": "noamelisha21@gmail.com",
-    "passwordHash": "637212e7b64320b35c12d58c133e0e0a:5f12db7af545192d5e17c80c936bd6919c26f47f9f6ef7d875167efb063f7a9f618f64273b8a8c5a98cb4bbeecc5f70c142754464394ad9339bf7266dc987fff",
-    "coins": 20,
-    "createdAt": "2026-02-15T17:17:07.616Z",
-    "updatedAt": "2026-02-15T17:19:20.939Z"
+    "id": "6ee7c6c2-faf5-4507-952b-98b0fc23c45c",
+    "name": "user-1771195236160",
+    "email": "e2e-1771195236160-wvb4gjod@example.com",
+    "passwordHash": "ea36cc5982af0d2ec70accfaba20ea0a:b2770cbeaf6b9091acb1276f2eb7d5ead7779ff51a8a82507b40736f2fbecc4e75a8e2fa3ce9461c5adcb1d5ce103879c8a7ddf6f4a8d1e56fbab8d8eef77786",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:40:36.319Z",
+    "updatedAt": "2026-02-15T22:40:36.328Z"
+  },
+  {
+    "id": "5097a4ed-67b5-4ec4-99cc-e7e96ff8593a",
+    "name": "user-1771195237765",
+    "email": "e2e-1771195237765-bix5aibe@example.com",
+    "passwordHash": "add88ee31db38393c80790ae8378384a:fc037e74e890ccdcff1a63b555a746ccad9a08b7639567d4b26ad7d8f7aa8c5c82885a78607d33f45f7fa40c01492c52e951cfda7aa1e2ea2fbb677d28aca7f2",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:40:37.895Z",
+    "updatedAt": "2026-02-15T22:40:37.903Z"
+  },
+  {
+    "id": "373da067-9c78-428c-87e2-627d731d2dfd",
+    "name": "user-1771195329931",
+    "email": "e2e-1771195329931-m72l5a8o@example.com",
+    "passwordHash": "b1966bb6c9a54474be52cc1e60a91329:80595dcdc0180396d824913944f648c06b162af2c22eedc2077285b2a7c4c59ca0b595df73e248227d707f90811266c5111f78a0eff83c2b11c27083c1797a44",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:10.134Z",
+    "updatedAt": "2026-02-15T22:42:10.141Z"
+  },
+  {
+    "id": "c971bb90-072e-4ab5-bc4b-87bd8021d9a6",
+    "name": "user-1771195331411",
+    "email": "e2e-1771195331411-hrhihmrm@example.com",
+    "passwordHash": "47c74024012361bb5fea08c4fa0750ba:14978e4ed68e1bafed0327455a6e36b667583aae1d5bc845dbd9196b4612f6fb0f54c53f8870459f60200a3767fb1875f16d0df64da871264d01bcdcfc196667",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:11.585Z",
+    "updatedAt": "2026-02-15T22:42:11.685Z"
+  },
+  {
+    "id": "7d5aad27-3def-46a5-8e6b-16ed50fcea77",
+    "name": "user-1771195332766",
+    "email": "e2e-1771195332766-v21mx82t@example.com",
+    "passwordHash": "c601d10e4a3cfebae218ea36a330f9bf:7feff78be65695a3281fff4036dd6342d97cd582dd533d7b9c1493b3957108ff129b401d2a3e3e594d94a46bcba6ba08c714e8abd9a6932bdf825fadd777a5e1",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:12.918Z",
+    "updatedAt": "2026-02-15T22:42:12.926Z"
+  },
+  {
+    "id": "ef7c52a8-bd3b-4f08-85aa-2c2dcbd7989f",
+    "name": "user-1771195334591",
+    "email": "e2e-1771195334591-rg1nyur6@example.com",
+    "passwordHash": "b6c7e8b9dde739464ca3168d7835e595:807e87bc6ec52353cf28ebdca6fa3d16908c9526acaf524b292cbd3dc791be3405d1c715b565b92f33f0bac6db79f9c1e30baa11a76bbd7b227329432e999f12",
+    "coins": 8,
+    "createdAt": "2026-02-15T22:42:14.759Z",
+    "updatedAt": "2026-02-15T22:42:14.902Z"
+  },
+  {
+    "id": "187fbcdf-1195-4a5a-8ec6-1453d0fe5692",
+    "name": "user-1771195336116",
+    "email": "e2e-1771195336116-71u248qu@example.com",
+    "passwordHash": "0c578afc5ec5c39d5f98dff737f7ddf5:00d92d7ea99ec72182d6929364c7c6bccb15aed75631bd024171499dea0606cb1a1c34fc19e6ccb719d5e3b63fa33254220be8f141b2c6a1bbd9de2b07d81c1d",
+    "coins": 28,
+    "createdAt": "2026-02-15T22:42:16.278Z",
+    "updatedAt": "2026-02-15T22:42:20.378Z"
+  },
+  {
+    "id": "e5718583-9d44-4596-9d34-8cb7dc9e6bee",
+    "name": "user-1771195341534",
+    "email": "e2e-1771195341534-tgyjlcle@example.com",
+    "passwordHash": "548a98c9a9554fc660aee12d07385a01:01967d6288b48b8ce18484ba415063193b0c7a2e6d715d7f4336e6cf28bfddc4035cd2ec2ed575f6539affd50fbdb032b3557b1754a6a53e343da41d9cba25a5",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:21.687Z",
+    "updatedAt": "2026-02-15T22:42:21.695Z"
+  },
+  {
+    "id": "80879213-da7a-4e36-a112-ca857b70f5d3",
+    "name": "user-1771195342965",
+    "email": "e2e-1771195342965-rrxcjuhm@example.com",
+    "passwordHash": "c80dd7aaa5e41a23cbbafce67dc7ac7d:8189509f2f278698a733dbc149d119d4ce2dc53868a040e257afe132e681ec9ade45a6044a6dbbb4ce54cfeae7266ff5a82d41c42f6ce01dc3311a3f6dfc6c74",
+    "coins": 1,
+    "createdAt": "2026-02-15T22:42:23.094Z",
+    "updatedAt": "2026-02-15T22:42:33.122Z"
   }
 ]

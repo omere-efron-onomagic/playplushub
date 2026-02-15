@@ -77,10 +77,10 @@ unification.
 2. Auth token (if available) is attached as Bearer header.
 3. Guest token (if available) is attached as `X-Guest-Token` header.
 4. Backend validates token for protected routes.
-5. Wallet auth flow (session-based): Client calls `POST /wallet/session/start` before play; server deducts coin cost, returns signed session token. After game completion, client calls `POST /wallet/session/claim` with token and outcome; server verifies one-time claim and computes reward from authoritative game catalog.
-6. Economy transactions (spend/reward) are logged append-only in `economy_transactions.json`.
+5. Wallet session flow (auth and guest): Client calls `POST /wallet/session/start` before play (with Bearer or X-Guest-Token); server deducts coin cost, returns signed session token. After game completion, client calls `POST /wallet/session/claim` with token and outcome; server verifies one-time claim and computes reward from authoritative game catalog.
+6. Economy transactions (spend/reward) are logged append-only in `economy_transactions.json`; guest transactions include `guestId`.
 7. Wallet/auth updates are persisted in JSON-backed user store.
-8. Guest progression updates are persisted in JSON-backed guest store (PATCH /auth/guest; no session flow yet).
+8. Guest progression (spend, reward, cadence) is persisted via wallet session flow in JSON-backed guest store.
 9. Structured logging (Winston, JSON) captures request lifecycle, economy events, startup, and errors; sensitive fields are redacted.
 
 ### Guest Hydration Flow
@@ -93,7 +93,7 @@ unification.
 
 ### Guest Prompt Cadence Flow
 
-1. Each successful guest reward (`PATCH /auth/guest`) increments `signupPromptCount` by 1.
+1. Each successful guest reward (`POST /wallet/session/claim` with earned coins) increments `signupPromptCount` by 1.
 2. When `signupPromptCount >= 5`, backend sets `signupRequired=true`.
 3. Frontend shows a soft sign-up prompt after each win (dismissible) when below threshold.
 4. When `signupRequired` is true, frontend gates play/replay (SignupRequiredGate) and blocks
@@ -132,4 +132,3 @@ Implemented (session-based economy):
 - No production-grade analytics pipeline
 - No complete ad-network integration
 - No full realtime gameplay synchronization
-- No guest session flow (guests play without spend, reward via PATCH /auth/guest)

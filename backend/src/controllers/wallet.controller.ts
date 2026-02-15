@@ -1,6 +1,11 @@
 import type { Request, Response } from 'express';
 import { addCoinsToUser, deductCoinsFromUser, findUserById } from '../services/userStore.service.js';
 import {
+  deductCoinsFromGuest,
+  findGuestById,
+  addCoinsToGuest,
+} from '../services/guestStore.service.js';
+import {
   getGameCatalogEntry,
   createGameSessionToken,
   verifyGameSessionToken,
@@ -30,7 +35,11 @@ export async function rewardCoins(req: Request, res: Response) {
 export async function startSession(req: Request, res: Response) {
   try {
     const authUserId = req.authUserId;
-    if (!authUserId) {
+    const guestId = req.guestId;
+    const actorId = authUserId ?? guestId;
+    const isGuest = !!guestId;
+
+    if (!actorId) {
       return res.status(401).json({ message: 'unauthorized' });
     }
 
@@ -42,14 +51,64 @@ export async function startSession(req: Request, res: Response) {
       return res.status(400).json({ message: 'invalid gameId' });
     }
 
-    const user = await findUserById(authUserId);
+    if (isGuest) {
+      const guest = await findGuestById(guestId);
+      if (!guest || guest.migratedTo) {
+        return res.status(404).json({ message: 'guest not found' });
+      }
+      if (guest.coins < entry.coinCost) {
+        logger.info('session start: insufficient funds (guest)', {
+          guestId,
+          gameId,
+          coinCost: entry.coinCost,
+          balance: guest.coins,
+          requestId: req.requestId,
+        });
+        return res.status(422).json({
+          message: 'insufficient funds',
+          code: 'INSUFFICIENT_FUNDS',
+          coinCost: entry.coinCost,
+          coins: guest.coins,
+        });
+      }
+      const updated = await deductCoinsFromGuest(guestId, entry.coinCost);
+      if (!updated) {
+        return res.status(404).json({ message: 'guest not found' });
+      }
+      const { sessionId, token } = createGameSessionToken(guestId, gameId, true);
+      await appendTransaction({
+        userId: guestId,
+        kind: 'spend',
+        amount: entry.coinCost,
+        balanceBefore: guest.coins,
+        balanceAfter: updated.coins,
+        reason: 'game_entry',
+        gameId,
+        sessionId,
+        guestId,
+      });
+      logger.info('session start success (guest)', {
+        guestId,
+        gameId,
+        sessionId,
+        requestId: req.requestId,
+      });
+      return res.status(200).json({
+        sessionId,
+        sessionToken: token,
+        coins: updated.coins,
+        coinCost: entry.coinCost,
+      });
+    }
+
+    const uid = authUserId!;
+    const user = await findUserById(uid);
     if (!user) {
       return res.status(404).json({ message: 'user not found' });
     }
-
     if (user.coins < entry.coinCost) {
       logger.info('session start: insufficient funds', {
-        userId: authUserId,
+        userId: uid,
         gameId,
         coinCost: entry.coinCost,
         balance: user.coins,
@@ -62,16 +121,13 @@ export async function startSession(req: Request, res: Response) {
         coins: user.coins,
       });
     }
-
-    const updated = await deductCoinsFromUser(authUserId, entry.coinCost);
+    const updated = await deductCoinsFromUser(uid, entry.coinCost);
     if (!updated) {
       return res.status(404).json({ message: 'user not found' });
     }
-
-    const { sessionId, token } = createGameSessionToken(authUserId, gameId);
-
+    const { sessionId, token } = createGameSessionToken(uid, gameId);
     await appendTransaction({
-      userId: authUserId,
+      userId: uid,
       kind: 'spend',
       amount: entry.coinCost,
       balanceBefore: user.coins,
@@ -80,14 +136,12 @@ export async function startSession(req: Request, res: Response) {
       gameId,
       sessionId,
     });
-
     logger.info('session start success', {
-      userId: authUserId,
+      userId: uid,
       gameId,
       sessionId,
       requestId: req.requestId,
     });
-
     return res.status(200).json({
       sessionId,
       sessionToken: token,
@@ -110,7 +164,11 @@ export async function startSession(req: Request, res: Response) {
 export async function claimSession(req: Request, res: Response) {
   try {
     const authUserId = req.authUserId;
-    if (!authUserId) {
+    const guestId = req.guestId;
+    const actorId = authUserId ?? guestId;
+    const isGuest = !!guestId;
+
+    if (!actorId) {
       return res.status(401).json({ message: 'unauthorized' });
     }
 
@@ -125,20 +183,32 @@ export async function claimSession(req: Request, res: Response) {
       return res.status(401).json({ message: 'invalid or expired session token' });
     }
 
-    if (payload.userId !== authUserId) {
-      logger.warn('claim: session user mismatch', {
-        sessionUserId: payload.userId,
-        authUserId,
-        requestId: req.requestId,
-      });
-      return res.status(403).json({ message: 'session does not belong to this user' });
+    if (payload.isGuest) {
+      if (!guestId || payload.userId !== guestId) {
+        logger.warn('claim: guest session token mismatch', {
+          sessionGuestId: payload.userId,
+          guestId,
+          requestId: req.requestId,
+        });
+        return res.status(403).json({ message: 'session does not belong to this guest' });
+      }
+    } else {
+      if (!authUserId || payload.userId !== authUserId) {
+        logger.warn('claim: session user mismatch', {
+          sessionUserId: payload.userId,
+          authUserId,
+          requestId: req.requestId,
+        });
+        return res.status(403).json({ message: 'session does not belong to this user' });
+      }
     }
 
     const claimed = await tryClaim(payload.sessionId);
     if (!claimed) {
       logger.warn('claim: duplicate claim attempted', {
         sessionId: payload.sessionId,
-        userId: authUserId,
+        actorId,
+        isGuest,
         requestId: req.requestId,
       });
       return res.status(409).json({ message: 'reward already claimed for this session', code: 'DUPLICATE_CLAIM' });
@@ -155,26 +225,72 @@ export async function claimSession(req: Request, res: Response) {
     }
 
     if (earnedCoins === 0) {
-      const user = await findUserById(authUserId);
+      if (isGuest) {
+        const gid = guestId!;
+        const guest = await findGuestById(gid);
+        return res.status(200).json({
+          earnedCoins: 0,
+          coins: guest?.coins ?? 0,
+          signupPromptCount: guest?.signupPromptCount,
+          signupRequired: guest?.signupRequired,
+        });
+      }
+      const uid = authUserId!;
+      const user = await findUserById(uid);
       return res.status(200).json({
         earnedCoins: 0,
         coins: user?.coins ?? 0,
       });
     }
 
-    const user = await findUserById(authUserId);
+    if (isGuest) {
+      const gid = guestId!;
+      const guest = await findGuestById(gid);
+      if (!guest || guest.migratedTo) {
+        return res.status(404).json({ message: 'guest not found' });
+      }
+      const before = guest.coins;
+      const updated = await addCoinsToGuest(gid, earnedCoins);
+      if (!updated) {
+        return res.status(404).json({ message: 'guest not found' });
+      }
+      await appendTransaction({
+        userId: gid,
+        kind: 'reward',
+        amount: earnedCoins,
+        balanceBefore: before,
+        balanceAfter: updated.coins,
+        reason: 'game_win',
+        gameId: payload.gameId,
+        sessionId: payload.sessionId,
+        guestId: gid,
+      });
+      logger.info('claim success (guest)', {
+        guestId: gid,
+        sessionId: payload.sessionId,
+        earnedCoins,
+        requestId: req.requestId,
+      });
+      return res.status(200).json({
+        earnedCoins,
+        coins: updated.coins,
+        signupPromptCount: updated.signupPromptCount,
+        signupRequired: updated.signupRequired,
+      });
+    }
+
+    const uid = authUserId!;
+    const user = await findUserById(uid);
     if (!user) {
       return res.status(404).json({ message: 'user not found' });
     }
-
     const before = user.coins;
-    const updated = await addCoinsToUser(authUserId, earnedCoins);
+    const updated = await addCoinsToUser(uid, earnedCoins);
     if (!updated) {
       return res.status(404).json({ message: 'user not found' });
     }
-
     await appendTransaction({
-      userId: authUserId,
+      userId: uid,
       kind: 'reward',
       amount: earnedCoins,
       balanceBefore: before,
@@ -183,14 +299,12 @@ export async function claimSession(req: Request, res: Response) {
       gameId: payload.gameId,
       sessionId: payload.sessionId,
     });
-
     logger.info('claim success', {
-      userId: authUserId,
+      userId: uid,
       sessionId: payload.sessionId,
       earnedCoins,
       requestId: req.requestId,
     });
-
     return res.status(200).json({
       earnedCoins,
       coins: updated.coins,

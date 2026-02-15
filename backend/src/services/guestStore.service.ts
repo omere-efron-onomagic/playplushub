@@ -68,7 +68,7 @@ export async function createGuestRecord(): Promise<GuestRecord> {
 
     const guest: GuestRecord = {
       id: randomUUID(),
-      coins: 0,
+      coins: 10,
       createdAt: now,
       updatedAt: now,
       migratedTo: null,
@@ -85,6 +85,31 @@ export async function createGuestRecord(): Promise<GuestRecord> {
 export async function findGuestById(id: string): Promise<GuestRecord | null> {
   const guests = await readGuests();
   return guests.find((g) => g.id === id) ?? null;
+}
+
+/** Deduct coins from guest. Throws 'insufficient_funds' if balance would go negative. */
+export async function deductCoinsFromGuest(
+  guestId: string,
+  amount: number,
+): Promise<GuestRecord | null> {
+  return enqueueWrite(async () => {
+    const guests = await readGuests();
+    const idx = guests.findIndex((g) => g.id === guestId);
+    if (idx < 0) return null;
+
+    const guest = guests[idx];
+    if (!guest || guest.migratedTo) return null;
+
+    if (guest.coins < amount) {
+      throw new Error('insufficient_funds');
+    }
+
+    guest.coins -= amount;
+    guest.updatedAt = new Date().toISOString();
+    guests[idx] = guest;
+    await writeGuests(guests);
+    return guest;
+  });
 }
 
 export async function addCoinsToGuest(

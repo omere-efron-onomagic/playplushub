@@ -29,7 +29,7 @@ Status labels:
 |---|---|---|
 | One playable game loop | Implemented | Link-four style game is playable end-to-end |
 | Per-level rewards | Implemented | Server-authoritative; reward computed from game catalog and validated outcome |
-| Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth users) |
+| Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth and guest users) |
 | No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
 | XP progression (+10 baseline) | Planned | Product rule defined in docs for MVP |
 | Avatar accessories purchase/equip | Partial | UI exists; purchase/equip persistence is not complete |
@@ -41,7 +41,7 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | Register/login/me API | Implemented | Basic auth endpoints and token flow exist |
-| Guest mode | Implemented | Backend-issued guest token with server-persisted progression |
+| Guest mode | Implemented | Backend-issued guest token with server-persisted progression; guests use session/start and session/claim (spend-before-play) |
 | Guest persistence across sessions | Implemented | Guest token stored client-side; progression persisted server-side in JSON store |
 | Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
 | Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |

@@ -11,6 +11,8 @@ export type EconomyTransaction = {
   gameId: string;
   sessionId: string;
   createdAt: string;
+  /** Set for guest transactions; userId holds guest id when present. */
+  guestId?: string;
 };
 
 export type GameCatalogEntry = {
@@ -26,6 +28,8 @@ export type GameSessionPayload = {
   userId: string;
   gameId: string;
   exp: number;
+  /** When true, userId holds the guest ID; claim requires X-Guest-Token. */
+  isGuest?: boolean;
 };
 
 export type LinkFourOutcome = {

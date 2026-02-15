@@ -1,16 +1,326 @@
 [
   {
-    "id": "d92da919-a56a-4917-ab87-f2f95c2b432b",
+    "id": "784c6c54-1d57-4bf7-8edb-31e1209a409b",
     "coins": 0,
-    "createdAt": "2026-02-15T21:02:53.188Z",
-    "updatedAt": "2026-02-15T21:02:53.188Z",
-    "migratedTo": null
+    "createdAt": "2026-02-15T22:40:37.774Z",
+    "updatedAt": "2026-02-15T22:40:37.903Z",
+    "migratedTo": "5097a4ed-67b5-4ec4-99cc-e7e96ff8593a",
+    "signupPromptCount": 0,
+    "signupRequired": false
   },
   {
-    "id": "f4a92cd7-67ae-4241-804e-71ebd380de07",
-    "coins": 20,
-    "createdAt": "2026-02-15T21:02:57.415Z",
-    "updatedAt": "2026-02-15T21:07:13.835Z",
-    "migratedTo": null
+    "id": "13224489-735b-4fb4-a159-ac9173446790",
+    "coins": 28,
+    "createdAt": "2026-02-15T22:41:09.136Z",
+    "updatedAt": "2026-02-15T22:41:14.626Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
+  },
+  {
+    "id": "110ebda7-9ed2-41f3-bbeb-baf9d9e4815a",
+    "coins": 28,
+    "createdAt": "2026-02-15T22:41:15.606Z",
+    "updatedAt": "2026-02-15T22:41:20.782Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
+  },
+  {
+    "id": "ef7573e8-6383-4a20-8ac9-37ae876b07a4",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:21.873Z",
+    "updatedAt": "2026-02-15T22:41:21.873Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "648916fc-6e04-41bd-aa24-3666ac9d5b22",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:21.957Z",
+    "updatedAt": "2026-02-15T22:41:21.957Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "a9a50035-849a-4763-baca-9f365253990f",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:23.836Z",
+    "updatedAt": "2026-02-15T22:41:23.836Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "296ba4b0-45d4-4dd6-b52d-a57b256d18fb",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:23.920Z",
+    "updatedAt": "2026-02-15T22:41:23.920Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "9002b67d-07ce-411a-a09d-e3f2163f10ee",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:25.285Z",
+    "updatedAt": "2026-02-15T22:41:25.285Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "968ef4b3-4f3a-4176-880d-9d85012ab7a4",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:25.370Z",
+    "updatedAt": "2026-02-15T22:41:25.370Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "4b4528e0-6404-47e1-a09e-4099435529c3",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:26.811Z",
+    "updatedAt": "2026-02-15T22:41:26.811Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "cbcbe26d-6ea6-46ff-bc88-e496b95f917f",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:41:26.895Z",
+    "updatedAt": "2026-02-15T22:41:26.895Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "506062cc-a816-4f92-963b-84e480e35788",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:09.884Z",
+    "updatedAt": "2026-02-15T22:42:10.141Z",
+    "migratedTo": "373da067-9c78-428c-87e2-627d731d2dfd",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "f08040dc-e2e0-4839-a8e2-070ec33030c1",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:11.370Z",
+    "updatedAt": "2026-02-15T22:42:11.370Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "43c0f8bf-7907-4f7e-9c1a-3474b6b760d9",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:11.449Z",
+    "updatedAt": "2026-02-15T22:42:11.449Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "fd232fa5-5811-4e74-94f0-9273560428fb",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:11.585Z",
+    "updatedAt": "2026-02-15T22:42:11.585Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "c4f4178d-0d10-40de-9063-25af564a3ac5",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:11.603Z",
+    "updatedAt": "2026-02-15T22:42:11.686Z",
+    "migratedTo": "c971bb90-072e-4ab5-bc4b-87bd8021d9a6",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "5910be38-92ff-4dca-b2c8-d39326138a7c",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:12.724Z",
+    "updatedAt": "2026-02-15T22:42:12.724Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "9a616a69-92b4-4262-bf6c-6b9979cf4f8a",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:12.804Z",
+    "updatedAt": "2026-02-15T22:42:12.926Z",
+    "migratedTo": "7d5aad27-3def-46a5-8e6b-16ed50fcea77",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "465d9ea1-6e3e-4405-a8a1-249ccc7defd5",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:14.231Z",
+    "updatedAt": "2026-02-15T22:42:14.766Z",
+    "migratedTo": "ef7c52a8-bd3b-4f08-85aa-2c2dcbd7989f",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "e4317897-ed9f-4bea-bd86-c683aa4a4585",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:16.075Z",
+    "updatedAt": "2026-02-15T22:42:16.075Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "52ee4674-dff8-4d77-aae3-f6a4dc2637ac",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:16.157Z",
+    "updatedAt": "2026-02-15T22:42:16.285Z",
+    "migratedTo": "187fbcdf-1195-4a5a-8ec6-1453d0fe5692",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "53008a77-a73d-498f-b912-b753f1083866",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:21.491Z",
+    "updatedAt": "2026-02-15T22:42:21.491Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "fdc957f3-2012-49a4-ad10-9212a9de1487",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:21.574Z",
+    "updatedAt": "2026-02-15T22:42:21.695Z",
+    "migratedTo": "e5718583-9d44-4596-9d34-8cb7dc9e6bee",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "4e192987-e949-4bba-81b1-488e6d007bd3",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:22.900Z",
+    "updatedAt": "2026-02-15T22:42:22.900Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "461c6e30-c86c-4a51-b466-c6191d4b91b6",
+    "coins": 0,
+    "createdAt": "2026-02-15T22:42:22.973Z",
+    "updatedAt": "2026-02-15T22:42:23.103Z",
+    "migratedTo": "80879213-da7a-4e36-a112-ca857b70f5d3",
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "10ef5c72-8dcb-412d-b1da-0719a9ceac06",
+    "coins": 28,
+    "createdAt": "2026-02-15T22:42:34.954Z",
+    "updatedAt": "2026-02-15T22:42:40.158Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
+  },
+  {
+    "id": "3d3475e6-ce29-48b2-8977-dbaa9eb5bcd3",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:41.406Z",
+    "updatedAt": "2026-02-15T22:42:41.406Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "47b6f928-6c59-4c19-be15-83d84b3e18b0",
+    "coins": 28,
+    "createdAt": "2026-02-15T22:42:41.490Z",
+    "updatedAt": "2026-02-15T22:42:46.561Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
+  },
+  {
+    "id": "bfe39eba-4a9f-4bd0-8f7e-0543e6ec4230",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:47.706Z",
+    "updatedAt": "2026-02-15T22:42:47.706Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "ebbd7c1e-ecaa-4427-8716-78e267ace4e5",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:49.628Z",
+    "updatedAt": "2026-02-15T22:42:49.628Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "133b8cfb-2521-40c3-aa76-730286fb6a22",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:49.715Z",
+    "updatedAt": "2026-02-15T22:42:49.715Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "0382e175-720e-4b54-a6b3-9a5ad8efb45d",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:50.987Z",
+    "updatedAt": "2026-02-15T22:42:50.987Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "844b4d49-cc7c-4d9f-a574-9c41a20514f2",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:51.078Z",
+    "updatedAt": "2026-02-15T22:42:51.078Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "c95f4936-79bd-48eb-9a26-a09a4afadd31",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:52.279Z",
+    "updatedAt": "2026-02-15T22:42:52.279Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "577d9480-bf8d-4a50-9be0-64122c1e5282",
+    "coins": 10,
+    "createdAt": "2026-02-15T22:42:52.366Z",
+    "updatedAt": "2026-02-15T22:42:52.366Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "7c174b12-9235-4abb-9307-ebbe697209eb",
+    "coins": 46,
+    "createdAt": "2026-02-15T22:46:14.648Z",
+    "updatedAt": "2026-02-15T22:48:13.983Z",
+    "migratedTo": null,
+    "signupPromptCount": 2,
+    "signupRequired": false
   }
 ]

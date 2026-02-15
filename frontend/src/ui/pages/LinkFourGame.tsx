@@ -1,7 +1,5 @@
 import { linkFourLevels } from '@/data/linkFourLevels';
-import { games } from '@/data/games';
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
-import { useUpdateGuestProgressionMutation } from '@/store/apis/auth.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
@@ -26,9 +24,7 @@ export function LinkFourGame() {
   const location = useLocation();
   const user = useAppSelector((state) => state.user);
   const [claimReward] = useClaimGameSessionRewardMutation();
-  const [updateGuestProgression] = useUpdateGuestProgressionMutation();
   const { gameId } = useParams<{ gameId: string }>();
-  const selectedGame = games.find((game) => game.id === gameId) ?? games[0];
   const playState = location.state as PlayLocationState;
   const sessionToken = playState?.sessionToken;
   const totalLevels = linkFourLevels.length;
@@ -46,36 +42,23 @@ export function LinkFourGame() {
   const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
 
   const level = linkFourLevels[currentLevel];
-  const needsSessionRedirect = !user.isGuest && !sessionToken;
+  const needsSessionRedirect = !sessionToken;
 
-  // Auth user without session: redirect in useEffect (navigate during render is unreliable)
-  useEffect(() => {
-    if (needsSessionRedirect) {
-      navigate(`/game/${gameId ?? '1'}`, { replace: true });
-    }
-  }, [needsSessionRedirect, navigate, gameId]);
-
-  // Gate: guest with signupRequired cannot play
-  if (user.isGuest && user.signupRequired) {
-    return <SignupRequiredGate />;
-  }
-
-  // Auth user must have started session from GamePage (spend-before-play)
-  if (needsSessionRedirect) {
-    return null;
-  }
-
-  // Build shuffled letter bank for current level
+  // Build shuffled letter bank for current level (hooks before any returns)
   const letterBank = useMemo(() => {
     const answerLetters = level.answer.split('');
     const extra = level.extraLetters.split('');
     return shuffleArray([...answerLetters, ...extra]);
   }, [level]);
 
-  // Track which bank slots are used
   const [usedBankSlots, setUsedBankSlots] = useState<Set<number>>(new Set());
 
-  // Reset selections when level changes
+  useEffect(() => {
+    if (needsSessionRedirect) {
+      navigate(`/game/${gameId ?? '1'}`, { replace: true });
+    }
+  }, [needsSessionRedirect, navigate, gameId]);
+
   useEffect(() => {
     setSelectedLetters([]);
     setUsedBankSlots(new Set());
@@ -83,57 +66,48 @@ export function LinkFourGame() {
     setShowSuccess(false);
   }, [currentLevel]);
 
-  const rewardCoins = selectedGame?.rewardCoins ?? 20;
-
   useEffect(() => {
-    if (!gameComplete || rewardHandled) {
+    if (!gameComplete || rewardHandled || !sessionToken) {
       return;
     }
-
     setRewardHandled(true);
-
     const applyReward = async () => {
       try {
-        if (user.isGuest && user.guestToken) {
-          const response = await updateGuestProgression({ addCoins: rewardCoins }).unwrap();
+        const outcome = {
+          levelsCompleted: solvedLevels.size,
+          totalLevels,
+          won: true,
+        };
+        const response = await claimReward({ sessionToken, outcome }).unwrap();
+        setEarnedCoins(response.earnedCoins);
+        if (user.isGuest) {
           dispatch(
             setGuestProgression({
-              id: response.guest.id,
-              coins: response.guest.coins,
-              signupPromptCount: response.guest.signupPromptCount,
-              signupRequired: response.guest.signupRequired,
+              id: user.id,
+              coins: response.coins,
+              signupPromptCount: response.signupPromptCount ?? user.signupPromptCount,
+              signupRequired: response.signupRequired ?? user.signupRequired,
             }),
           );
-          setEarnedCoins(rewardCoins);
-          setGuestSignupRequired(response.guest.signupRequired);
-          setShowSoftPrompt(!response.guest.signupRequired);
-        } else if (!user.isGuest && sessionToken) {
-          const outcome = {
-            levelsCompleted: solvedLevels.size,
-            totalLevels,
-            won: true,
-          };
-          const response = await claimReward({ sessionToken, outcome }).unwrap();
-          dispatch(setCoins(response.coins));
-          setEarnedCoins(response.earnedCoins);
+          setGuestSignupRequired(response.signupRequired ?? false);
+          setShowSoftPrompt(!(response.signupRequired ?? false));
         } else {
-          setEarnedCoins(0);
+          dispatch(setCoins(response.coins));
         }
       } catch {
         setEarnedCoins(0);
       }
     };
-
     void applyReward();
   }, [
     dispatch,
     gameComplete,
-    rewardCoins,
     claimReward,
-    updateGuestProgression,
     rewardHandled,
     user.isGuest,
-    user.guestToken,
+    user.id,
+    user.signupPromptCount,
+    user.signupRequired,
     sessionToken,
     solvedLevels.size,
     totalLevels,
@@ -190,6 +164,13 @@ export function LinkFourGame() {
     },
     [selectedLetters, showSuccess]
   );
+
+  if (user.isGuest && user.signupRequired) {
+    return <SignupRequiredGate />;
+  }
+  if (needsSessionRedirect) {
+    return null;
+  }
 
   if (gameComplete) {
     const isGuestAtThreshold = user.isGuest && guestSignupRequired === true;

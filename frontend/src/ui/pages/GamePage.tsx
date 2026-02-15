@@ -12,17 +12,19 @@ export function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const game = games.find((g) => g.id === gameId);
 
-  const handlePlayClick = async () => {
-    if (!game || isGuest) return;
-    try {
-      const res = await startSession({ gameId: game.id }).unwrap();
-      dispatch(setCoins(res.coins));
-      navigate(`/play/${game.id}`, {
-        state: { sessionToken: res.sessionToken, sessionId: res.sessionId },
-      });
-    } catch {
-      // Error shown via startError
-    }
+  const handlePlayClick = () => {
+    if (!game) return;
+    void (async () => {
+      try {
+        const res = await startSession({ gameId: game.id }).unwrap();
+        dispatch(setCoins(res.coins));
+        navigate(`/play/${game.id}`, {
+          state: { sessionToken: res.sessionToken, sessionId: res.sessionId },
+        });
+      } catch {
+        // Error shown via startError
+      }
+    })();
   };
 
   if (!game) {
@@ -39,7 +41,7 @@ export function GamePage() {
     );
   }
 
-  const canAfford = !isGuest && coins >= game.coinCost;
+  const canAfford = coins >= game.coinCost;
   const showInsufficientFunds = startError && 'data' in startError && (startError.data as { code?: string })?.code === 'INSUFFICIENT_FUNDS';
 
   return (
@@ -111,13 +113,6 @@ export function GamePage() {
                 className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] touch-manipulation sm:min-h-0"
               >
                 Sign up to play
-              </Link>
-            ) : isGuest ? (
-              <Link
-                to={`/play/${game.id}`}
-                className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] touch-manipulation sm:min-h-0"
-              >
-                PLAY NOW
               </Link>
             ) : (
               <>

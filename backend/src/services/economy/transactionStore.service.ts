@@ -48,6 +48,7 @@ export type AppendTxInput = {
   reason: string;
   gameId: string;
   sessionId: string;
+  guestId?: string;
 };
 
 export async function appendTransaction(input: AppendTxInput): Promise<EconomyTransaction> {
@@ -55,7 +56,15 @@ export async function appendTransaction(input: AppendTxInput): Promise<EconomyTr
     const txs = await readTx();
     const tx: EconomyTransaction = {
       txId: randomUUID(),
-      ...input,
+      userId: input.userId,
+      kind: input.kind,
+      amount: input.amount,
+      balanceBefore: input.balanceBefore,
+      balanceAfter: input.balanceAfter,
+      reason: input.reason,
+      gameId: input.gameId,
+      sessionId: input.sessionId,
+      ...(input.guestId && { guestId: input.guestId }),
       createdAt: new Date().toISOString(),
     };
     txs.push(tx);

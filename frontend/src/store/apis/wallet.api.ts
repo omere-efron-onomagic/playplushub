@@ -29,6 +29,8 @@ type ClaimPayload = {
 type ClaimResponse = {
   earnedCoins: number;
   coins: number;
+  signupPromptCount?: number;
+  signupRequired?: boolean;
 };
 
 export const walletApi = createApi({

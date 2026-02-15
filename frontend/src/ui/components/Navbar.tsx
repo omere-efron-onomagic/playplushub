@@ -56,7 +56,7 @@ export function Navbar() {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1 rounded-full border border-gv-gold/40 bg-gv-gold/10 px-2.5 py-1.5 sm:gap-1.5 sm:px-4">
             <span className="text-xs sm:text-sm">{'\uD83E\uDE99'}</span>
-            <span className="font-heading text-xs font-bold text-gv-gold sm:text-sm">
+            <span className="font-heading text-xs font-bold text-gv-gold sm:text-sm" data-testid="navbar-coins">
               {user.coins}
             </span>
           </div>

@@ -227,7 +227,7 @@ Possible errors:
 
 ### `POST /wallet/session/start`
 
-Start a game session (spend coins before play). Auth required: `Authorization: Bearer <token>`
+Start a game session (spend coins before play). Auth required: `Authorization: Bearer <token>` **or** `X-Guest-Token` header.
 
 Request body:
 
@@ -251,14 +251,14 @@ Response (200):
 Possible errors:
 
 - `400` invalid gameId
-- `401` unauthorized
-- `404` user not found
+- `401` authorization or guest token required, or invalid/expired token
+- `404` user or guest not found
 - `422` insufficient funds (code: `INSUFFICIENT_FUNDS`, includes `coinCost`, `coins`)
 - `500` server error
 
 ### `POST /wallet/session/claim`
 
-Claim reward after game completion. Auth required. Enforces one-time claim per session.
+Claim reward after game completion. Auth required: Bearer token or `X-Guest-Token`. Enforces one-time claim per session.
 
 Request body:
 
@@ -282,11 +282,13 @@ Response (200):
 }
 ```
 
+For guest claims, response may include `signupPromptCount` and `signupRequired` for cadence sync.
+
 Possible errors:
 
 - `400` invalid payload (missing sessionToken, invalid outcome shape)
 - `401` invalid or expired session token
-- `403` session does not belong to this user
+- `403` session does not belong to this user or guest
 - `409` reward already claimed (code: `DUPLICATE_CLAIM`)
 - `422` invalid gameplay outcome (code: `INVALID_OUTCOME`)
 - `500` server error
@@ -309,7 +311,6 @@ primary game economy API surface.
 ## API Gaps to Close
 
 1. Event-based progression APIs (XP, missions, streaks)
-2. Guest session flow (guests currently use PATCH /auth/guest for rewards; no spend-before-play)
 
 ## Suggested Future API Domains
 
