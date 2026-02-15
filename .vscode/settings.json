@@ -5,5 +5,7 @@
   "eslint.workingDirectories": [
     { "directory": "frontend", "changeProcessCWD": true },
     { "directory": "backend", "changeProcessCWD": true }
-  ]
+  ],
+  "testing.automaticallyOpenPeekView": "failureInVisibleDocument",
+  "testing.openTesting": "openOnTestStart"
 }

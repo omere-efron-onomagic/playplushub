@@ -18,6 +18,7 @@ This repo now includes shared project context under `.cursor/`:
 
 - Rules: `.cursor/rules/*.mdc`
 - Skills: `.cursor/skills/*/SKILL.md`
+- Agents: `.cursor/agents/*.md` (e.g. test-runner for proactive test execution)
 
 ### Rules
 
