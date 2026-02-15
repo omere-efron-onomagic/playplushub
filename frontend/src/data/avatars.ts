@@ -5,7 +5,7 @@ export const avatars: Avatar[] = [
     id: '1',
     name: 'Rookie MC',
     level: 1,
-    image: 'https://placehold.co/300x350/d4a520/0a0e17?text=Lvl+1',
+    image: '/avatar-default.png',
     perks: ['Basic emotes', '2x coins'],
     coinCost: 0,
     equipped: true
