@@ -12,6 +12,7 @@ export type Game = {
   category: GameCategory;
   image: string;
   coinCost: number;
+  rewardCoins: number;
   rating: number;
   players: string;
   isHot: boolean;

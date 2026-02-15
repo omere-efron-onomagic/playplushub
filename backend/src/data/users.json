@@ -1,0 +1,11 @@
+[
+  {
+    "id": "a1507042-6a1e-4926-82ef-d42d4d1058bc",
+    "name": "noam",
+    "email": "noamelisha21@gmail.com",
+    "passwordHash": "637212e7b64320b35c12d58c133e0e0a:5f12db7af545192d5e17c80c936bd6919c26f47f9f6ef7d875167efb063f7a9f618f64273b8a8c5a98cb4bbeecc5f70c142754464394ad9339bf7266dc987fff",
+    "coins": 20,
+    "createdAt": "2026-02-15T17:17:07.616Z",
+    "updatedAt": "2026-02-15T17:19:20.939Z"
+  }
+]

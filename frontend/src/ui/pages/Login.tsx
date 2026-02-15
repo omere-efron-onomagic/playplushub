@@ -1,12 +1,36 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useLoginMutation } from '@/store/apis/auth.api';
+import { setAuthenticatedUser } from '@/store/slices/user.slice';
+import { useAppDispatch } from '@/store/hooks';
 
 export function Login() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [login, { isLoading }] = useLoginMutation();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage('');
+
+    try {
+      const response = await login({ email, password }).unwrap();
+      dispatch(
+        setAuthenticatedUser({
+          id: response.user.id,
+          name: response.user.name,
+          email: response.user.email,
+          coins: response.user.coins,
+          token: response.token,
+        }),
+      );
+      navigate('/');
+    } catch {
+      setErrorMessage('Invalid email or password');
+    }
   }
 
   return (
@@ -44,11 +68,14 @@ export function Login() {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full rounded-lg bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark py-3 font-heading text-sm font-bold tracking-wider text-gv-bg transition-all hover:shadow-lg hover:shadow-gv-gold/20"
           >
-            ENTER THE VAULT
+            {isLoading ? 'ENTERING...' : 'ENTER THE VAULT'}
           </button>
         </div>
+
+        {errorMessage && <p className="mt-4 text-center text-sm text-red-400">{errorMessage}</p>}
 
         <p className="mt-6 text-center text-sm text-gv-text-muted">
           New player?{' '}

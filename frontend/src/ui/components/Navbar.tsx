@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router';
 import { useState } from 'react';
+import { useAppSelector } from '@/store/hooks';
 
 const navLinks = [
   { to: '/', label: 'Machine', icon: null },
@@ -11,6 +12,7 @@ const navLinks = [
 export function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const user = useAppSelector((state) => state.user);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gv-gold/20 bg-gv-bg/95 backdrop-blur-sm">
@@ -50,7 +52,9 @@ export function Navbar() {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1 rounded-full border border-gv-gold/40 bg-gv-gold/10 px-2.5 py-1.5 sm:gap-1.5 sm:px-4">
             <span className="text-xs sm:text-sm">{'\uD83E\uDE99'}</span>
-            <span className="font-heading text-xs font-bold text-gv-gold sm:text-sm">250</span>
+            <span className="font-heading text-xs font-bold text-gv-gold sm:text-sm">
+              {user.coins}
+            </span>
           </div>
 
           <div className="hidden sm:flex sm:items-center sm:gap-3">

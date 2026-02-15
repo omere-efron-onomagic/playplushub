@@ -1,6 +1,10 @@
 import { linkFourLevels } from '@/data/linkFourLevels';
+import { games } from '@/data/games';
+import { useRewardCoinsMutation } from '@/store/apis/wallet.api';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { addGuestCoins, resetGuestCoins, setCoins } from '@/store/slices/user.slice';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -12,6 +16,12 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 export function LinkFourGame() {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
+  const [rewardCoinsMutation] = useRewardCoinsMutation();
+  const { gameId } = useParams<{ gameId: string }>();
+  const selectedGame = games.find((game) => game.id === gameId) ?? games[0];
+  const rewardCoins = selectedGame?.rewardCoins ?? 20;
   const [currentLevel, setCurrentLevel] = useState(0);
   const [selectedLetters, setSelectedLetters] = useState<
     { letter: string; bankIndex: number }[]
@@ -20,6 +30,8 @@ export function LinkFourGame() {
   const [shakeAnswer, setShakeAnswer] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
+  const [earnedCoins, setEarnedCoins] = useState(0);
+  const [rewardHandled, setRewardHandled] = useState(false);
 
   const level = linkFourLevels[currentLevel];
 
@@ -40,6 +52,51 @@ export function LinkFourGame() {
     setShakeAnswer(false);
     setShowSuccess(false);
   }, [currentLevel]);
+
+  useEffect(() => {
+    return () => {
+      if (user.isGuest) {
+        dispatch(resetGuestCoins());
+      }
+    };
+  }, [dispatch, user.isGuest]);
+
+  useEffect(() => {
+    if (!gameComplete || rewardHandled) {
+      return;
+    }
+
+    setRewardHandled(true);
+
+    if (user.isGuest) {
+      dispatch(addGuestCoins(rewardCoins));
+      setEarnedCoins(rewardCoins);
+      return;
+    }
+
+    const applyReward = async () => {
+      try {
+        const response = await rewardCoinsMutation({
+          gameId: selectedGame.id,
+          rewardCoins,
+        }).unwrap();
+        dispatch(setCoins(response.coins));
+        setEarnedCoins(response.earnedCoins);
+      } catch {
+        setEarnedCoins(0);
+      }
+    };
+
+    void applyReward();
+  }, [
+    dispatch,
+    gameComplete,
+    rewardCoins,
+    rewardCoinsMutation,
+    rewardHandled,
+    selectedGame.id,
+    user.isGuest,
+  ]);
 
   const handleLetterClick = useCallback(
     (letter: string, bankIndex: number) => {
@@ -105,7 +162,7 @@ export function LinkFourGame() {
             All 10 levels completed!
           </p>
           <div className="mt-2 font-heading text-xl font-bold text-gv-gold sm:text-2xl">
-            +20 Coins Earned
+            +{earnedCoins} Coins Earned
           </div>
           <Link
             to="/"

@@ -3,8 +3,22 @@ import 'dotenv/config';
 import { connectToMongoDB, startServer } from './utils.js';
 import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
+import { authRouter } from './routes/auth.routes.js';
+import { walletRouter } from './routes/wallet.routes.js';
 import cors from 'cors';
 import helmet from 'helmet';
+
+function getAllowedOrigins(): string[] {
+  const fromEnv = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  const localDefaults = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
+  return Array.from(new Set([...fromEnv, ...localDefaults]));
+}
+
+const allowedOrigins = getAllowedOrigins();
 // create a new express application
 const app = express();
 
@@ -16,7 +30,20 @@ app.use(helmet());
 // credentials: true means that the browser will send the credentials (cookies, authentication tokens, etc.) to the backend
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      // Allow non-browser tools (curl/postman) that do not send origin.
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   }),
 );
@@ -36,6 +63,8 @@ app.get('/health', (_req, res) => {
 // initialize routers
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+app.use('/auth', authRouter);
+app.use('/wallet', walletRouter);
 
 // if the route is not found, return a 404 error
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
@@ -52,9 +81,15 @@ const uri = process.env.MONGODB_URI;
 
 // main function to start the server
 async function main() {
-  if (!uri) throw new Error('MONGODB_URI is not set');
-
-  await connectToMongoDB(uri);
+  if (uri) {
+    try {
+      await connectToMongoDB(uri);
+    } catch (error) {
+      console.error('MongoDB connection failed, continuing with JSON-backed auth only:', error);
+    }
+  } else {
+    console.warn('MONGODB_URI is not set, running without MongoDB connection');
+  }
 
   await startServer(app, port);
   console.log(`✅ Server is running on port ${port}! 🚀`);
