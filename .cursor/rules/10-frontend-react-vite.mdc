@@ -1,0 +1,20 @@
+---
+description: "Frontend architecture and coding standards for PlayPlusHub"
+globs: frontend/**/*.ts,frontend/**/*.tsx
+---
+# Frontend Standards (React + Vite + TypeScript)
+
+Authoritative context:
+
+- [ARCHITECTURE.md](mdc:docs/ARCHITECTURE.md)
+- [FEATURE_STATUS.md](mdc:docs/FEATURE_STATUS.md)
+- [API_SPEC.md](mdc:docs/API_SPEC.md)
+
+Rules:
+
+1. Keep route-level logic in `frontend/src/ui/pages` and reusable UI in `frontend/src/ui/components`.
+2. Keep API calls in RTK Query slices under `frontend/src/store/apis`; avoid direct `fetch` calls inside components.
+3. Reuse shared state in Redux slices and hooks from `frontend/src/store/hooks` instead of duplicating local state.
+4. Treat `frontend/src/data` as static MVP data unless explicitly implementing backend-backed data.
+5. Preserve accessibility and responsive behavior in existing UI flows.
+6. Keep changes scoped and avoid expanding template leftovers unless explicitly requested.

@@ -1,0 +1,14 @@
+---
+description: "Keep product and technical docs synced with implementation changes"
+globs: docs/**/*.md,README.md
+---
+# Documentation Sync Requirements
+
+Always align implementation and documentation.
+
+If behavior changes in auth, wallet, economy, progression, or architecture:
+
+1. Update the relevant docs in `docs/`.
+2. Ensure status labels (`Implemented`, `Partial`, `Planned`) stay accurate.
+3. Keep `README.md` docs index and setup notes aligned.
+4. Prefer concise, factual updates over speculative roadmap language.

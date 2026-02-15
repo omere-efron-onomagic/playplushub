@@ -1,0 +1,9 @@
+{
+  "security.workspace.trust.enabled": true,
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "eslint.workingDirectories": [
+    { "directory": "frontend", "changeProcessCWD": true },
+    { "directory": "backend", "changeProcessCWD": true }
+  ]
+}

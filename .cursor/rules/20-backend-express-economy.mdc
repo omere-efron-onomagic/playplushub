@@ -1,0 +1,20 @@
+---
+description: "Backend API, validation, and economy integrity rules"
+globs: backend/**/*.ts
+---
+# Backend Standards (Express + TypeScript)
+
+Authoritative context:
+
+- [ARCHITECTURE.md](mdc:docs/ARCHITECTURE.md)
+- [API_SPEC.md](mdc:docs/API_SPEC.md)
+- [ROADMAP_MVP.md](mdc:docs/ROADMAP_MVP.md)
+
+Rules:
+
+1. Maintain clear route -> validator -> controller -> service separation.
+2. Validate request payloads in validators before business logic.
+3. Treat economy values as server-authoritative; do not permanently trust client-supplied reward/spend amounts.
+4. Keep current MVP persistence behavior stable unless migration is explicitly requested.
+5. Keep protected routes behind auth middleware and return explicit error responses.
+6. If API response shape changes, update frontend API slices and docs in the same task.

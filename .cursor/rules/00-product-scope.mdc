@@ -1,0 +1,20 @@
+---
+description: "Enforce PlayPlusHub MVP scope and delivery priorities"
+alwaysApply: true
+---
+# PlayPlusHub Product Scope
+
+Use these docs as product truth before making feature or architecture decisions:
+
+- [ROADMAP_MVP.md](mdc:docs/ROADMAP_MVP.md)
+- [FEATURE_STATUS.md](mdc:docs/FEATURE_STATUS.md)
+- [ARCHITECTURE.md](mdc:docs/ARCHITECTURE.md)
+- [API_SPEC.md](mdc:docs/API_SPEC.md)
+
+Rules:
+
+1. Prioritize work by roadmap phase order unless the user explicitly overrides.
+2. Treat `Implemented`, `Partial`, and `Planned` states as strict boundaries.
+3. Do not represent `Planned` features as production-ready behavior.
+4. Preserve current API contracts when possible to reduce frontend churn.
+5. If auth, wallet, progression, or API behavior changes, update docs in the same task.

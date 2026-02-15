@@ -1,0 +1,17 @@
+---
+description: "Handle template/scaffold leftovers safely"
+alwaysApply: true
+---
+# Template and Scaffold Boundaries
+
+Treat these as non-core unless the user explicitly asks to evolve them:
+
+- `frontend/src/store/apis/pokemon.api.ts`
+- `frontend/src/store/slices/counter.slice.ts`
+- `frontend/src/sockets/*` realtime scaffold
+
+Rules:
+
+1. Do not depend on template leftovers for product-critical flows.
+2. Keep MVP-critical changes focused on auth, wallet, progression, game loop, and docs.
+3. If touching leftover modules, clearly separate them from production logic.
