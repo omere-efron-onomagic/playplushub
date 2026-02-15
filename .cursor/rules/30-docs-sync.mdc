@@ -6,7 +6,7 @@ globs: docs/**/*.md,README.md
 
 Always align implementation and documentation.
 
-If behavior changes in auth, wallet, economy, progression, or architecture:
+If behavior changes in auth, wallet, economy, progression, logging/observability, or architecture:
 
 1. Update the relevant docs in `docs/`.
 2. Ensure status labels (`Implemented`, `Partial`, `Planned`) stay accurate.

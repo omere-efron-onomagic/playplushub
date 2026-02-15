@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { logger } from '../logger/logger.js';
 
 export type StoredUser = {
   id: string;
@@ -31,6 +32,7 @@ async function ensureDataFile(): Promise<void> {
   try {
     await readFile(usersFilePath, 'utf-8');
   } catch {
+    logger.debug('users.json not found, initializing empty');
     await writeFile(usersFilePath, '[]', 'utf-8');
   }
 }

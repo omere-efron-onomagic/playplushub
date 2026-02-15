@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { GuestRecord, MigrationResult } from '../types/user.types.js';
 import { addCoinsToUser } from './userStore.service.js';
+import { logger } from '../logger/logger.js';
 
 const currentFile = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFile);
@@ -17,6 +18,7 @@ async function ensureDataFile(): Promise<void> {
   try {
     await readFile(guestsFilePath, 'utf-8');
   } catch {
+    logger.debug('guests.json not found, initializing empty');
     await writeFile(guestsFilePath, '[]', 'utf-8');
   }
 }

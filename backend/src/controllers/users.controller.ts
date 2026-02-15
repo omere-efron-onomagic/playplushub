@@ -8,7 +8,8 @@ export async function listUsers(_req: Request, res: Response) {
   try {
     const users = await UserModel.find();
     return res.status(200).json(users);
-  } catch (_err) {
+  } catch (err) {
+    logger.error('listUsers failed', { err });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -23,7 +24,8 @@ export async function getUserById(req: Request, res: Response) {
     }
 
     return res.status(200).json(user);
-  } catch (_err) {
+  } catch (err) {
+    logger.error('getUserById failed', { err });
     return res.status(500).json({ message: 'server error' });
   }
 }

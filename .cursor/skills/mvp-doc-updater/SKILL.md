@@ -7,7 +7,7 @@ description: Use after implementation changes to keep roadmap, status, API, and 
 ## When to Use
 
 - Any feature state changes (`Planned` -> `Partial` -> `Implemented`).
-- Any auth/wallet/economy/API/architecture behavior changes.
+- Any auth/wallet/economy/API/architecture/logging behavior changes.
 - README setup or project structure has changed.
 
 ## Instructions

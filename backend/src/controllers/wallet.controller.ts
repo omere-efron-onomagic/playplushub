@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { addCoinsToUser } from '../services/userStore.service.js';
+import { logger } from '../logger/logger.js';
 
 type RewardBody = {
   gameId: string;
@@ -32,7 +33,8 @@ export async function rewardCoins(req: Request, res: Response) {
       earnedCoins: rewardCoins,
       coins: user.coins,
     });
-  } catch {
+  } catch (error) {
+    logger.error('rewardCoins failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }

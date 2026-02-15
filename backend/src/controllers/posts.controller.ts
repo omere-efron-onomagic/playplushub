@@ -3,6 +3,7 @@ import { PostModel } from '../models/Post.model.js';
 import { UserModel } from '../models/User.model.js';
 import type { CreatePostBody, UpdatePostBody } from '../types/posts.types.js';
 import type { ObjectIdParams } from '../types/common.types.js';
+import { logger } from '../logger/logger.js';
 
 // CREATE post + link into user.posts
 export async function createPost(req: Request, res: Response) {
@@ -19,7 +20,8 @@ export async function createPost(req: Request, res: Response) {
     await user.save();
 
     return res.status(201).json(post);
-  } catch {
+  } catch (error) {
+    logger.error('createPost failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -32,7 +34,8 @@ export async function listPosts(_req: Request, res: Response) {
       .populate('createdBy', 'email name'); // only return those fields
 
     return res.json(posts);
-  } catch {
+  } catch (error) {
+    logger.error('listPosts failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -45,7 +48,8 @@ export async function getPostById(req: Request, res: Response) {
     if (!post) return res.status(404).json({ message: 'post not found' });
 
     return res.json(post);
-  } catch {
+  } catch (error) {
+    logger.error('getPostById failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -63,7 +67,8 @@ export async function updatePost(req: Request, res: Response) {
 
     if (!updated) return res.status(404).json({ message: 'post not found' });
     return res.json(updated);
-  } catch {
+  } catch (error) {
+    logger.error('updatePost failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }
@@ -80,7 +85,8 @@ export async function deletePost(req: Request, res: Response) {
     await UserModel.updateOne({ _id: post.createdBy }, { $pull: { posts: post._id } });
 
     return res.status(204).send();
-  } catch {
+  } catch (error) {
+    logger.error('deletePost failed', { err: error });
     return res.status(500).json({ message: 'server error' });
   }
 }

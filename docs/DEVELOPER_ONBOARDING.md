@@ -26,6 +26,7 @@ Rules are committed and apply to everyone in the project.
 - `00-product-scope.mdc`: roadmap and status boundaries
 - `10-frontend-react-vite.mdc`: React/Vite/RTK Query conventions
 - `20-backend-express-economy.mdc`: backend contract and economy guardrails
+- `25-backend-logging.mdc`: backend logging (use `logger`, not `console`; structured levels; redaction)
 - `30-docs-sync.mdc`: implementation-to-doc consistency
 - `40-template-leftovers.mdc`: safe handling of scaffold modules
 
@@ -34,6 +35,7 @@ Rules are committed and apply to everyone in the project.
 Skills are reusable playbooks for recurring tasks.
 
 - `backend-economy-guardrails`
+- `backend-logging` (for adding or refactoring backend observability)
 - `rtk-query-contract-sync`
 - `mvp-doc-updater`
 - `auth-guest-migration`
@@ -144,6 +146,7 @@ Keep team MCP usage conventions documented in PR descriptions when relevant.
 - Respect feature status boundaries in `docs/FEATURE_STATUS.md`.
 - Keep API contract and client usage synchronized.
 - Treat economy logic as server-authoritative.
+- Use the project logger (`backend/src/logger/logger.ts`) for all backend output; never `console.*`.
 - Update docs in the same PR when behavior changes.
 
 ## 7) Definition of Done (Per Task)
@@ -201,6 +204,7 @@ Constraints:
 
 Use skills:
 - backend-economy-guardrails (if wallet/reward/spend/auth related)
+- backend-logging (if backend code is added or refactored)
 - rtk-query-contract-sync (if backend/frontend contract is touched)
 - mvp-doc-updater (if behavior/status/docs must change)
 
@@ -266,6 +270,7 @@ Constraints:
 Use skills:
 - rtk-query-contract-sync (for API/client contract alignment)
 - backend-economy-guardrails (for economy/auth/progression logic)
+- backend-logging (for backend observability and error handling)
 - auth-guest-migration (if guest/register migration is involved)
 - mvp-doc-updater (for status/architecture/API docs updates)
 

@@ -1,0 +1,44 @@
+---
+description: "Backend logging standards: use project logger, structured output, redaction"
+globs: backend/**/*.ts
+---
+# Backend Logging Standards
+
+Use the centralized logger for all backend observability. Do not use `console.log`, `console.error`, `console.warn`, or `console.debug`.
+
+## Logger Usage
+
+- **Import**: `import { logger } from './logger/logger.js';` (adjust path from file location)
+- **Module**: [backend/src/logger/logger.ts](mdc:backend/src/logger/logger.ts)
+
+## Log Levels
+
+| Level  | Use for |
+|--------|---------|
+| `debug` | Request/response flow, internal state, detailed trace |
+| `info`  | Startup, successful connections, expected lifecycle events |
+| `warn`  | Recoverable issues, config fallbacks, deprecated usage |
+| `error` | Failures, exceptions, unexpected conditions |
+
+## Rules
+
+1. **Never use `console.*`** in backend code. Use `logger.debug`, `logger.info`, `logger.warn`, or `logger.error`.
+2. **Log errors in catch blocks**: When handling exceptions, call `logger.error('descriptive_message', { err: error })` before returning a 5xx response.
+3. **Structured metadata**: Pass a second argument as an object, e.g. `logger.info('event_name', { key: value })`.
+4. **Redact before log**: When logging request body, headers, or user input, use `redactSensitive()` from the logger module. Passwords, tokens, and auth headers are redacted automatically in the request middleware.
+5. **Level selection**: Default `LOG_LEVEL` is `debug`. Use `info` for normal operations, `error` for failures that need visibility even when level is `info` or `warn`.
+
+## Example
+
+```ts
+import { logger } from '../logger/logger.js';
+
+// Success path
+logger.info('User registered', { userId: user.id });
+
+// Error path
+} catch (error) {
+  logger.error('register failed', { err: error });
+  return res.status(500).json({ message: 'server error' });
+}
+```
