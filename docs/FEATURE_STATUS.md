@@ -22,9 +22,9 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | One playable game loop | Implemented | Link-four style game is playable end-to-end |
-| Per-level rewards | Partial | Reward call exists; server trusts client payload |
-| Coin spend to start game | Planned | No strict server-side spending enforcement yet |
-| No-negative coin rule | Planned | Rule defined; not globally enforced by all game flows |
+| Per-level rewards | Implemented | Server-authoritative; reward computed from game catalog and validated outcome |
+| Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth users) |
+| No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
 | XP progression (+10 baseline) | Planned | Product rule defined in docs for MVP |
 | Avatar accessories purchase/equip | Partial | UI exists; purchase/equip persistence is not complete |
 | Favorites | Partial | Static demo behavior, not user-persisted |
@@ -38,7 +38,7 @@ Status labels:
 | Guest mode | Implemented | Backend-issued guest token with server-persisted progression |
 | Guest persistence across sessions | Implemented | Guest token stored client-side; progression persisted server-side in JSON store |
 | Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
-| Wallet reward endpoint | Partial | Works, but anti-cheat validation is missing |
+| Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |
 | Backend persistence approach (JSON) | Implemented | Current MVP source of truth for auth/wallet users |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |
 
@@ -50,7 +50,7 @@ Status labels:
 | Rewarded ads for coin refill | Planned | Core ad network integration not completed |
 | Missions (daily/weekly) | Planned | Flow exists in product doc, not in code |
 | Leaderboard | Planned | Product target only |
-| Anti-cheat and reward validation | Planned | Needed before scale |
+| Anti-cheat and reward validation | Implemented | Session token, one-time claim, server-computed rewards |
 
 ## Template/Scaffold Leftovers
 

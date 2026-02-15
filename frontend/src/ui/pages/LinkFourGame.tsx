@@ -1,13 +1,13 @@
 import { linkFourLevels } from '@/data/linkFourLevels';
 import { games } from '@/data/games';
-import { useRewardCoinsMutation } from '@/store/apis/wallet.api';
+import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useUpdateGuestProgressionMutation } from '@/store/apis/auth.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -18,14 +18,20 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
+type PlayLocationState = { sessionToken?: string; sessionId?: string } | null;
+
 export function LinkFourGame() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const user = useAppSelector((state) => state.user);
-  const [rewardCoinsMutation] = useRewardCoinsMutation();
+  const [claimReward] = useClaimGameSessionRewardMutation();
   const [updateGuestProgression] = useUpdateGuestProgressionMutation();
   const { gameId } = useParams<{ gameId: string }>();
   const selectedGame = games.find((game) => game.id === gameId) ?? games[0];
-  const rewardCoins = selectedGame?.rewardCoins ?? 20;
+  const playState = location.state as PlayLocationState;
+  const sessionToken = playState?.sessionToken;
+  const totalLevels = linkFourLevels.length;
   const [currentLevel, setCurrentLevel] = useState(0);
   const [selectedLetters, setSelectedLetters] = useState<
     { letter: string; bankIndex: number }[]
@@ -46,6 +52,12 @@ export function LinkFourGame() {
     return <SignupRequiredGate />;
   }
 
+  // Auth user must have started session from GamePage (spend-before-play)
+  if (!user.isGuest && !sessionToken) {
+    navigate(`/game/${gameId ?? '1'}`, { replace: true });
+    return null;
+  }
+
   // Build shuffled letter bank for current level
   const letterBank = useMemo(() => {
     const answerLetters = level.answer.split('');
@@ -63,6 +75,8 @@ export function LinkFourGame() {
     setShakeAnswer(false);
     setShowSuccess(false);
   }, [currentLevel]);
+
+  const rewardCoins = selectedGame?.rewardCoins ?? 20;
 
   useEffect(() => {
     if (!gameComplete || rewardHandled) {
@@ -86,16 +100,17 @@ export function LinkFourGame() {
           setEarnedCoins(rewardCoins);
           setGuestSignupRequired(response.guest.signupRequired);
           setShowSoftPrompt(!response.guest.signupRequired);
-        } else if (!user.isGuest) {
-          const response = await rewardCoinsMutation({
-            gameId: selectedGame.id,
-            rewardCoins,
-          }).unwrap();
+        } else if (!user.isGuest && sessionToken) {
+          const outcome = {
+            levelsCompleted: solvedLevels.size,
+            totalLevels,
+            won: true,
+          };
+          const response = await claimReward({ sessionToken, outcome }).unwrap();
           dispatch(setCoins(response.coins));
           setEarnedCoins(response.earnedCoins);
         } else {
-          // Guest without server token - local fallback
-          setEarnedCoins(rewardCoins);
+          setEarnedCoins(0);
         }
       } catch {
         setEarnedCoins(0);
@@ -107,12 +122,14 @@ export function LinkFourGame() {
     dispatch,
     gameComplete,
     rewardCoins,
-    rewardCoinsMutation,
+    claimReward,
     updateGuestProgression,
     rewardHandled,
-    selectedGame.id,
     user.isGuest,
     user.guestToken,
+    sessionToken,
+    solvedLevels.size,
+    totalLevels,
   ]);
 
   const handleLetterClick = useCallback(

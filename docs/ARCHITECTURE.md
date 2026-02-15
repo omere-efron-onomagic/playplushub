@@ -48,12 +48,14 @@ unification.
 ### Current Persistence
 
 - Auth and wallet profile data: JSON-backed storage (`backend/src/data/users.json`)
+- Economy: `economy_transactions.json` (append-only audit), `claimed_sessions.json` (replay protection)
+- Game catalog: server-authoritative in `backend/src/services/economy/gameCatalog.service.ts`
 - Legacy/scaffold endpoints: some routes still rely on Mongo-backed models
 
 ### API Domain Groups
 
 - `auth`: register/login/session check, guest lifecycle, guest-to-account migration
-- `wallet`: reward updates
+- `wallet`: session start (spend before play), session claim (server-computed reward)
 - `users` and `posts`: available in code, treated as legacy/non-core for product
 
 ### Guest Persistence
@@ -69,9 +71,11 @@ unification.
 2. Auth token (if available) is attached as Bearer header.
 3. Guest token (if available) is attached as `X-Guest-Token` header.
 4. Backend validates token for protected routes.
-5. Wallet/auth updates are persisted in JSON-backed user store.
-6. Guest progression updates are persisted in JSON-backed guest store.
-7. Structured logging (Winston, JSON) captures request lifecycle, startup, and errors; sensitive fields are redacted.
+5. Wallet auth flow (session-based): Client calls `POST /wallet/session/start` before play; server deducts coin cost, returns signed session token. After game completion, client calls `POST /wallet/session/claim` with token and outcome; server verifies one-time claim and computes reward from authoritative game catalog.
+6. Economy transactions (spend/reward) are logged append-only in `economy_transactions.json`.
+7. Wallet/auth updates are persisted in JSON-backed user store.
+8. Guest progression updates are persisted in JSON-backed guest store (PATCH /auth/guest; no session flow yet).
+9. Structured logging (Winston, JSON) captures request lifecycle, economy events, startup, and errors; sensitive fields are redacted.
 
 ### Guest Hydration Flow
 
@@ -108,18 +112,18 @@ unification.
 
 ## Trust and Validation Boundaries
 
-Current risk:
+Implemented (session-based economy):
 
-- Reward amounts can be overly trusted from the client payload.
-
-Required boundary for next phase:
-
-- Server computes rewards from authoritative game/session state.
-- Client sends events, not authoritative currency values.
+- Server deducts coin cost at `POST /wallet/session/start`; no play without sufficient funds.
+- Server computes rewards from authoritative game catalog and validated outcome at `POST /wallet/session/claim`.
+- Client sends session token and outcome (levelsCompleted, totalLevels, won), not authoritative currency values.
+- One-time claim per session; duplicate claims return 409.
+- No-negative balance enforced on spend; transaction audit trail in `economy_transactions.json`.
 
 ## Non-Goals in Current MVP
 
-- No full anti-cheat system yet
+- No full anti-cheat system (basic replay/duplicate-claim protection implemented)
 - No production-grade analytics pipeline
 - No complete ad-network integration
 - No full realtime gameplay synchronization
+- No guest session flow (guests play without spend, reward via PATCH /auth/guest)

@@ -122,3 +122,29 @@ export async function addCoinsToUser(userId: string, coinsToAdd: number): Promis
     return user;
   });
 }
+
+/** Deduct coins from user. Throws 'insufficient_funds' if balance would go negative. */
+export async function deductCoinsFromUser(
+  userId: string,
+  amount: number,
+): Promise<StoredUser | null> {
+  return enqueueWrite(async () => {
+    const users = await readUsers();
+    const userIndex = users.findIndex((item) => item.id === userId);
+
+    if (userIndex < 0) return null;
+
+    const user = users[userIndex];
+    if (!user) return null;
+
+    if (user.coins < amount) {
+      throw new Error('insufficient_funds');
+    }
+
+    user.coins -= amount;
+    user.updatedAt = new Date().toISOString();
+    users[userIndex] = user;
+    await writeUsers(users);
+    return user;
+  });
+}

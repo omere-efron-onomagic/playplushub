@@ -225,16 +225,15 @@ Possible errors:
 
 ## Wallet
 
-### `POST /wallet/reward`
+### `POST /wallet/session/start`
 
-Auth required: `Authorization: Bearer <token>`
+Start a game session (spend coins before play). Auth required: `Authorization: Bearer <token>`
 
 Request body:
 
 ```json
 {
-  "gameId": "1",
-  "rewardCoins": 20
+  "gameId": "1"
 }
 ```
 
@@ -242,18 +241,59 @@ Response (200):
 
 ```json
 {
-  "gameId": "1",
-  "earnedCoins": 20,
-  "coins": 140
+  "sessionId": "uuid",
+  "sessionToken": "base64payload.signature",
+  "coins": 18,
+  "coinCost": 2
 }
 ```
 
 Possible errors:
 
-- `400` invalid request payload
+- `400` invalid gameId
 - `401` unauthorized
 - `404` user not found
+- `422` insufficient funds (code: `INSUFFICIENT_FUNDS`, includes `coinCost`, `coins`)
 - `500` server error
+
+### `POST /wallet/session/claim`
+
+Claim reward after game completion. Auth required. Enforces one-time claim per session.
+
+Request body:
+
+```json
+{
+  "sessionToken": "base64payload.signature",
+  "outcome": {
+    "levelsCompleted": 2,
+    "totalLevels": 2,
+    "won": true
+  }
+}
+```
+
+Response (200):
+
+```json
+{
+  "earnedCoins": 20,
+  "coins": 38
+}
+```
+
+Possible errors:
+
+- `400` invalid payload (missing sessionToken, invalid outcome shape)
+- `401` invalid or expired session token
+- `403` session does not belong to this user
+- `409` reward already claimed (code: `DUPLICATE_CLAIM`)
+- `422` invalid gameplay outcome (code: `INVALID_OUTCOME`)
+- `500` server error
+
+### `POST /wallet/reward` (deprecated)
+
+Returns `410 Gone` with message directing clients to use session/start and session/claim instead.
 
 ## Legacy/Non-Core Endpoints
 
@@ -268,10 +308,8 @@ primary game economy API surface.
 
 ## API Gaps to Close
 
-1. Server-side reward validation per game/level
-2. Server-side spend validation before game start
-3. Anti-duplicate reward claim logic
-4. Event-based progression APIs (XP, missions, streaks)
+1. Event-based progression APIs (XP, missions, streaks)
+2. Guest session flow (guests currently use PATCH /auth/guest for rewards; no spend-before-play)
 
 ## Suggested Future API Domains
 
