@@ -23,7 +23,7 @@ The brand is currently "PlayPlusHub" and may change later.
 ## Implemented vs Planned
 
 - Implemented (MVP quality): UI shell, game catalog pages, login/signup, one game,
-  basic wallet reward endpoint, guest mode state handling
+  basic wallet reward endpoint, guest mode state handling, E2E regression tests (Playwright)
 - Partial: ad placements in UI, onboarding conversion behavior, avatar/shop/favorites/
   trending logic, mixed backend model
 - Planned: full multi-game backend validation, missions, leaderboard, full economy
@@ -66,6 +66,17 @@ Backend (`backend/.env`):
 Frontend (`frontend/.env.development`):
 
 - `VITE_API_URL` (example: `http://localhost:3000`)
+
+## E2E Testing
+
+With backend and frontend running, from `frontend/`:
+
+```bash
+npx playwright install   # first time only
+npm run test:e2e
+```
+
+See `frontend/README.md` for full E2E commands and troubleshooting.
 
 ## Run (if you are starting locally)
 

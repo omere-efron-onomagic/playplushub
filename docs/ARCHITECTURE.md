@@ -31,6 +31,12 @@ unification.
 - `store/apis`: API client definitions
 - `sockets`: realtime scaffold (not active in current MVP)
 
+### Testing
+
+- Playwright E2E tests in `frontend/tests/e2e/`. Specs: smoke-navigation, auth-flow, economy-session, guest-flow.
+- Tests assume frontend (`:5173`) and backend dev servers are running.
+- Auth users landing on `/play/:id` without a session token are redirected to `/game/:id` (LinkFourGame, useEffect-based).
+
 ### Current Data Behavior
 
 - Game catalog and many page sections are static data-driven.

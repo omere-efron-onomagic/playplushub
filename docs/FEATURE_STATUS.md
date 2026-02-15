@@ -6,6 +6,12 @@ Status labels:
 - `Partial`: present but incomplete, static, or MVP-only quality
 - `Planned`: intended but not implemented yet
 
+## Testing
+
+| Feature | Status | Notes |
+|---|---|---|
+| E2E regression suite (Playwright) | Implemented | Smoke, auth, economy, guest flows; reuse-running servers |
+
 ## Platform and UX
 
 | Feature | Status | Notes |
