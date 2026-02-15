@@ -1,4 +1,6 @@
 import { AvatarShop } from '@/ui/pages/AvatarShop';
+import { GamePage } from '@/ui/pages/GamePage';
+import { LinkFourGame } from '@/ui/pages/LinkFourGame';
 import { Favorites } from '@/ui/pages/Favorites';
 import { Home } from '@/ui/pages/Home';
 import { Login } from '@/ui/pages/Login';
@@ -17,6 +19,8 @@ export const router = createBrowserRouter([
       { path: 'favorites', Component: Favorites },
       { path: 'trending', Component: Trending },
       { path: 'avatar-shop', Component: AvatarShop },
+      { path: 'game/:gameId', Component: GamePage },
+      { path: 'play/:gameId', Component: LinkFourGame },
       { path: 'login', Component: Login },
       { path: 'signup', Component: SignUp }
     ]

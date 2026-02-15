@@ -6,8 +6,6 @@ export type GameCategory =
   | 'Trivia'
   | 'Action';
 
-export type BadgeType = 'hot' | 'pick' | null;
-
 export type Game = {
   id: string;
   title: string;
@@ -16,5 +14,6 @@ export type Game = {
   coinCost: number;
   rating: number;
   players: string;
-  badge: BadgeType;
+  isHot: boolean;
+  isPick: boolean;
 };

@@ -1,9 +1,13 @@
 import { GameCard } from '@/ui/components/GameCard';
 import { games } from '@/data/games';
 
-// Simulated trending / developer picks
-const trendingGames = games.filter((g) => g.badge === 'hot').slice(0, 3);
-const devChoiceGames = games.filter((g) => g.badge === 'pick' || g.rating >= 4.5).slice(0, 3);
+// Match the design: Trending = 4 Pics 1 Word, Mystery Box, Neon Racer
+const trendingIds = ['1', '3', '5'];
+const trendingGames = games.filter((g) => trendingIds.includes(g.id));
+
+// Match the design: Developer's Choice = Cooking Panic!, Neon Racer, Arena Clash
+const devChoiceIds = ['2', '5', '7'];
+const devChoiceGames = games.filter((g) => devChoiceIds.includes(g.id));
 
 export function Trending() {
   return (
@@ -22,15 +26,15 @@ export function Trending() {
       </section>
 
       {/* Ad Space */}
-      <div className="mb-12 flex h-20 items-center justify-center rounded-xl border border-gv-border bg-gv-surface">
-        <span className="text-sm tracking-widest text-gv-text-muted">AD SPACE</span>
+      <div className="mb-12 flex h-20 items-center justify-center rounded-xl border border-gv-border bg-gv-surface/50">
+        <span className="text-sm tracking-[0.3em] text-gv-text-muted">AD SPACE</span>
       </div>
 
       {/* Developer's Choice */}
       <section>
         <h2 className="mb-6 flex items-center gap-2 font-heading text-2xl font-bold tracking-wider text-gv-text">
           <span className="text-gv-gold">{'\uD83C\uDFC6'}</span>
-          DEVELOPER'S CHOICE
+          DEVELOPER&apos;S CHOICE
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {devChoiceGames.map((game) => (
