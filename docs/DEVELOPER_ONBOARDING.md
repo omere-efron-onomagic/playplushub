@@ -24,6 +24,7 @@ This repo now includes shared project context under `.cursor/`:
 Rules are committed and apply to everyone in the project.
 
 - `00-product-scope.mdc`: roadmap and status boundaries
+- `05-context7.mdc`: use Context7 MCP for library/API docs and code gen
 - `10-frontend-react-vite.mdc`: React/Vite/RTK Query conventions
 - `20-backend-express-economy.mdc`: backend contract and economy guardrails
 - `25-backend-logging.mdc`: backend logging (use `logger`, not `console`; structured levels; redaction)
@@ -64,10 +65,11 @@ For each task prompt, include:
 Use User Rules for personal style preferences only (tone, formatting style, etc.).
 Do not place personal preferences in project rules.
 
-### Use `@Docs` for framework/library references
+### Use Context7 for framework/library references
 
-Use `@Docs` in chat when implementing or configuring external libraries.
-For this team workflow, prefer official/current docs before coding decisions.
+Use the Context7 MCP (via project rule `05-context7.mdc`) for up-to-date docs when implementing or configuring external libraries. The AI will call `resolve-library-id` and `query-docs` automatically for lib/API work.
+
+Alternatively, use `@Docs` in chat when you need a specific doc reference.
 
 ## 4) Worktrees Workflow (Recommended)
 
@@ -132,10 +134,43 @@ Conflict-safe rules for all 4 tasks:
 
 Cursor supports MCP tools for connected context and tooling.
 
-Recommended baseline:
+### Context7 MCP (Recommended)
 
-- Keep `context7` available for official docs lookups.
-- Add browser MCP tools for frontend validation tasks when needed.
+Context7 fetches up-to-date library docs and code examples. The project rule `05-context7.mdc` instructs the AI to use it for libs, APIs, and code generation.
+
+**Setup** — Edit `~/.cursor/mcp.json` (create if missing):
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp", "--api-key", "YOUR_API_KEY"]
+    }
+  }
+}
+```
+
+Or use the remote server:
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Get an API key at [context7.com](https://context7.com).
+
+### Other MCP
+
+- Add browser MCP tools for frontend validation when needed.
 - Add DB MCP only when Mongo-backed flows become first-class.
 
 Keep team MCP usage conventions documented in PR descriptions when relevant.

@@ -1,0 +1,24 @@
+---
+description: "Use Context7 MCP for up-to-date library and API documentation"
+alwaysApply: true
+---
+# Context7 Usage
+
+Context7 provides current library docs and code examples. Use it before implementing or configuring external libs or APIs.
+
+## When to Use Context7
+
+1. **External libraries** — Before adding, configuring, or using any npm package, API, or framework.
+2. **Code generation** — When generating setup, configuration, or boilerplate.
+3. **Documentation lookups** — When you need accurate API signatures, options, or migration guides.
+
+## Workflow
+
+1. Call `resolve-library-id` with the library name to get the Context7 library ID.
+2. Call `query-docs` with that ID and your question.
+3. Use the returned docs/examples to implement; do not rely on training data for lib APIs.
+
+## Limits
+
+- Do not call `resolve-library-id` or `query-docs` more than 3 times per question.
+- If no good match after 3 calls, proceed with best available info.
