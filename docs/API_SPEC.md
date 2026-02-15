@@ -114,7 +114,9 @@ Response (201):
   "guestToken": "...",
   "guest": {
     "id": "uuid",
-    "coins": 0
+    "coins": 0,
+    "signupPromptCount": 0,
+    "signupRequired": false
   }
 }
 ```
@@ -133,10 +135,17 @@ Response (200):
 {
   "guest": {
     "id": "uuid",
-    "coins": 40
+    "coins": 40,
+    "signupPromptCount": 2,
+    "signupRequired": false
   }
 }
 ```
+
+Guest cadence fields:
+
+- `signupPromptCount`: number of win-triggered prompts so far (incremented once per successful `PATCH /auth/guest` reward)
+- `signupRequired`: `true` when `signupPromptCount >= 5`; guest must sign up to continue playing
 
 Possible errors:
 
@@ -163,10 +172,14 @@ Response (200):
 {
   "guest": {
     "id": "uuid",
-    "coins": 60
+    "coins": 60,
+    "signupPromptCount": 3,
+    "signupRequired": false
   }
 }
 ```
+
+Each successful reward update increments `signupPromptCount` by 1 and sets `signupRequired=true` when count reaches 5.
 
 Possible errors:
 

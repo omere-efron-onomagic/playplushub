@@ -36,6 +36,8 @@ function useGuestHydration() {
             guestToken: result.guestToken,
             id: result.guest.id,
             coins: result.guest.coins,
+            signupPromptCount: result.guest.signupPromptCount,
+            signupRequired: result.guest.signupRequired,
           }),
         );
       } catch {

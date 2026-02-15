@@ -78,7 +78,16 @@ unification.
 1. On app load, if no auth user exists, frontend checks for a persisted guest token.
 2. If guest token exists, frontend calls `GET /auth/guest` to restore progression.
 3. If no guest token exists, frontend calls `POST /auth/guest` to create a new guest.
-4. Redux state is synced with the server response.
+4. Redux state is synced with the server response, including `signupPromptCount` and
+   `signupRequired` for prompt cadence gating.
+
+### Guest Prompt Cadence Flow
+
+1. Each successful guest reward (`PATCH /auth/guest`) increments `signupPromptCount` by 1.
+2. When `signupPromptCount >= 5`, backend sets `signupRequired=true`.
+3. Frontend shows a soft sign-up prompt after each win (dismissible) when below threshold.
+4. When `signupRequired` is true, frontend gates play/replay (SignupRequiredGate) and blocks
+   game entry until the user signs up or logs in.
 
 ### Guest-to-Account Migration Flow
 

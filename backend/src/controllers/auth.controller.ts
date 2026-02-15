@@ -26,7 +26,12 @@ function toPublicUser(user: StoredUser) {
 }
 
 function toPublicGuest(guest: GuestRecord): PublicGuest {
-  return { id: guest.id, coins: guest.coins };
+  return {
+    id: guest.id,
+    coins: guest.coins,
+    signupPromptCount: guest.signupPromptCount,
+    signupRequired: guest.signupRequired,
+  };
 }
 
 /* ---------- existing auth endpoints (backward-compatible) ---------- */

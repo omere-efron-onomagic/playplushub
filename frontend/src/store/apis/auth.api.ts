@@ -11,6 +11,8 @@ export type AuthUser = {
 export type PublicGuest = {
   id: string;
   coins: number;
+  signupPromptCount: number;
+  signupRequired: boolean;
 };
 
 type AuthResponse = {

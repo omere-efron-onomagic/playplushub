@@ -6,4 +6,6 @@ export type User = {
   token: string | null;
   guestToken: string | null;
   isGuest: boolean;
+  signupPromptCount: number;
+  signupRequired: boolean;
 };

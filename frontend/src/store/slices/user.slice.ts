@@ -23,6 +23,8 @@ function createGuestState(): UserState {
     token: null,
     guestToken: null,
     isGuest: true,
+    signupPromptCount: 0,
+    signupRequired: false,
   };
 }
 
@@ -47,6 +49,8 @@ function loadPersistedUser(): UserState {
           token: parsed.token,
           guestToken: null,
           isGuest: false,
+          signupPromptCount: 0,
+          signupRequired: false,
         };
       }
     } catch {
@@ -65,6 +69,8 @@ function loadPersistedUser(): UserState {
       token: null,
       guestToken,
       isGuest: true,
+      signupPromptCount: 0,
+      signupRequired: false,
     };
   }
 
@@ -118,19 +124,37 @@ export const userSlice = createSlice({
     /** Set guest identity after backend creates the guest record. */
     setGuestIdentity: (
       state,
-      action: PayloadAction<{ guestToken: string; id: string; coins: number }>,
+      action: PayloadAction<{
+        guestToken: string;
+        id: string;
+        coins: number;
+        signupPromptCount?: number;
+        signupRequired?: boolean;
+      }>,
     ) => {
       state.id = action.payload.id;
       state.coins = action.payload.coins;
       state.guestToken = action.payload.guestToken;
       state.isGuest = true;
+      state.signupPromptCount = action.payload.signupPromptCount ?? 0;
+      state.signupRequired = action.payload.signupRequired ?? false;
       localStorage.setItem(GUEST_STORAGE_KEY, action.payload.guestToken);
     },
     /** Sync guest progression from server hydration. */
-    setGuestProgression: (state, action: PayloadAction<{ id: string; coins: number }>) => {
+    setGuestProgression: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        coins: number;
+        signupPromptCount?: number;
+        signupRequired?: boolean;
+      }>,
+    ) => {
       if (!state.isGuest) return;
       state.id = action.payload.id;
       state.coins = action.payload.coins;
+      state.signupPromptCount = action.payload.signupPromptCount ?? state.signupPromptCount;
+      state.signupRequired = action.payload.signupRequired ?? state.signupRequired;
     },
     /** Clear guest token after migration completes. */
     clearGuestToken: (state) => {

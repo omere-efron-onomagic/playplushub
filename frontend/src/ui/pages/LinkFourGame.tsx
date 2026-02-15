@@ -3,7 +3,9 @@ import { games } from '@/data/games';
 import { useRewardCoinsMutation } from '@/store/apis/wallet.api';
 import { useUpdateGuestProgressionMutation } from '@/store/apis/auth.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setCoins } from '@/store/slices/user.slice';
+import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
+import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
+import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 
@@ -34,8 +36,15 @@ export function LinkFourGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [earnedCoins, setEarnedCoins] = useState(0);
   const [rewardHandled, setRewardHandled] = useState(false);
+  const [showSoftPrompt, setShowSoftPrompt] = useState(false);
+  const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
 
   const level = linkFourLevels[currentLevel];
+
+  // Gate: guest with signupRequired cannot play
+  if (user.isGuest && user.signupRequired) {
+    return <SignupRequiredGate />;
+  }
 
   // Build shuffled letter bank for current level
   const letterBank = useMemo(() => {
@@ -66,8 +75,17 @@ export function LinkFourGame() {
       try {
         if (user.isGuest && user.guestToken) {
           const response = await updateGuestProgression({ addCoins: rewardCoins }).unwrap();
-          dispatch(setCoins(response.guest.coins));
+          dispatch(
+            setGuestProgression({
+              id: response.guest.id,
+              coins: response.guest.coins,
+              signupPromptCount: response.guest.signupPromptCount,
+              signupRequired: response.guest.signupRequired,
+            }),
+          );
           setEarnedCoins(rewardCoins);
+          setGuestSignupRequired(response.guest.signupRequired);
+          setShowSoftPrompt(!response.guest.signupRequired);
         } else if (!user.isGuest) {
           const response = await rewardCoinsMutation({
             gameId: selectedGame.id,
@@ -150,6 +168,7 @@ export function LinkFourGame() {
   );
 
   if (gameComplete) {
+    const isGuestAtThreshold = user.isGuest && guestSignupRequired === true;
     return (
       <div className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-center px-4 py-6">
         <div className="text-center">
@@ -163,13 +182,33 @@ export function LinkFourGame() {
           <div className="mt-2 font-heading text-xl font-bold text-gv-gold sm:text-2xl">
             +{earnedCoins} Coins Earned
           </div>
-          <Link
-            to="/"
-            className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-6 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 active:scale-[0.98] touch-manipulation sm:mt-8 sm:px-8"
-          >
-            BACK TO MACHINE
-          </Link>
+          {isGuestAtThreshold ? (
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8">
+              <Link
+                to="/signup"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-6 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 active:scale-[0.98] touch-manipulation sm:px-8"
+              >
+                Sign up to continue playing
+              </Link>
+              <Link
+                to="/"
+                className="text-sm text-gv-text-muted underline transition-colors hover:text-gv-gold"
+              >
+                Back to machine
+              </Link>
+            </div>
+          ) : (
+            <Link
+              to="/"
+              className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-6 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 active:scale-[0.98] touch-manipulation sm:mt-8 sm:px-8"
+            >
+              BACK TO MACHINE
+            </Link>
+          )}
         </div>
+        {user.isGuest && showSoftPrompt && !guestSignupRequired && (
+          <GuestSignupPrompt onDismiss={() => setShowSoftPrompt(false)} />
+        )}
       </div>
     );
   }

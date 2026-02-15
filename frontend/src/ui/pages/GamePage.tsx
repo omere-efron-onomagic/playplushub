@@ -1,7 +1,9 @@
 import { games } from '@/data/games';
+import { useAppSelector } from '@/store/hooks';
 import { Link, useParams } from 'react-router';
 
 export function GamePage() {
+  const { isGuest, signupRequired } = useAppSelector((s) => s.user);
   const { gameId } = useParams<{ gameId: string }>();
   const game = games.find((g) => g.id === gameId);
 
@@ -82,12 +84,21 @@ export function GamePage() {
               <span className="text-xs text-gv-text-muted sm:text-sm">to play</span>
             </div>
 
-            <Link
-              to={`/play/${game.id}`}
-              className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] touch-manipulation sm:min-h-0"
-            >
-              PLAY NOW
-            </Link>
+            {isGuest && signupRequired ? (
+              <Link
+                to="/signup"
+                className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] touch-manipulation sm:min-h-0"
+              >
+                Sign up to play
+              </Link>
+            ) : (
+              <Link
+                to={`/play/${game.id}`}
+                className="flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-8 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 hover:shadow-gv-gold/30 active:scale-[0.98] touch-manipulation sm:min-h-0"
+              >
+                PLAY NOW
+              </Link>
+            )}
           </div>
         </div>
       </div>

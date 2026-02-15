@@ -28,12 +28,26 @@ async function readGuests(): Promise<GuestRecord[]> {
   if (!Array.isArray(parsed)) {
     return [];
   }
-  return parsed as GuestRecord[];
+  return (parsed as Record<string, unknown>[]).map(normalizeGuest);
 }
 
 async function writeGuests(guests: GuestRecord[]): Promise<void> {
   const payload = JSON.stringify(guests, null, 2);
   await writeFile(guestsFilePath, payload, 'utf-8');
+}
+
+/** Normalize legacy guest records missing cadence fields. */
+function normalizeGuest(g: Record<string, unknown>): GuestRecord {
+  const base = g as Partial<GuestRecord>;
+  return {
+    id: String(base.id ?? ''),
+    coins: Number(base.coins ?? 0),
+    createdAt: String(base.createdAt ?? new Date().toISOString()),
+    updatedAt: String(base.updatedAt ?? new Date().toISOString()),
+    migratedTo: base.migratedTo ?? null,
+    signupPromptCount: Number(base.signupPromptCount ?? 0),
+    signupRequired: Boolean(base.signupRequired ?? (Number(base.signupPromptCount ?? 0) >= 5)),
+  };
 }
 
 function enqueueWrite<T>(operation: () => Promise<T>): Promise<T> {
@@ -56,6 +70,8 @@ export async function createGuestRecord(): Promise<GuestRecord> {
       createdAt: now,
       updatedAt: now,
       migratedTo: null,
+      signupPromptCount: 0,
+      signupRequired: false,
     };
 
     guests.push(guest);
@@ -82,6 +98,8 @@ export async function addCoinsToGuest(
     if (!guest || guest.migratedTo) return null;
 
     guest.coins += coinsToAdd;
+    guest.signupPromptCount += 1;
+    guest.signupRequired = guest.signupPromptCount >= 5;
     guest.updatedAt = new Date().toISOString();
     guests[idx] = guest;
     await writeGuests(guests);

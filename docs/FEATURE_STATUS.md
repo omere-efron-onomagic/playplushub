@@ -14,8 +14,8 @@ Status labels:
 | Multi-game catalog | Partial | Many game cards exist, but one playable game is implemented |
 | Responsive navigation/pages | Implemented | Core routing and pages are present |
 | Onboarding scenarios (social + organic) | Partial | Flow exists conceptually; conversion logic not fully enforced |
-| Soft sign-up prompts | Partial | Auth pages exist; prompt cadence logic is not fully implemented |
-| Sign-up requirement after 5 prompts | Planned | Product rule approved; not enforced in backend/frontend flow |
+| Soft sign-up prompts | Implemented | Shown after each guest win before threshold |
+| Sign-up requirement after 5 prompts | Implemented | Server-authoritative; gate enforced in backend and frontend |
 
 ## Gameplay and Economy
 
