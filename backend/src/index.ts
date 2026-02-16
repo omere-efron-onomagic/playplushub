@@ -16,19 +16,6 @@ import { logger } from './logger/logger.js';
 import cors from 'cors';
 import helmet from 'helmet';
 
-function getAllowedOrigins(): string[] {
-  const fromEnv = (process.env.FRONTEND_URL ?? '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-  const localDefaults = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
-  // MVP: include Vercel prod URL so CORS works even if FRONTEND_URL is misconfigured
-  const prodDefaults = ['https://playplushub.vercel.app', 'https://www.playplushub.vercel.app'];
-  return Array.from(new Set([...fromEnv, ...localDefaults, ...prodDefaults]));
-}
-
-const allowedOrigins = getAllowedOrigins();
 // create a new express application
 const app = express();
 
@@ -38,30 +25,8 @@ app.use(helmet());
 // cors is a middleware that allows the express application to accept requests from the frontend specifically
 // the origin is the URL of the frontend
 // credentials: true means that the browser will send the credentials (cookies, authentication tokens, etc.) to the backend
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow non-browser tools (curl/postman) that do not send origin.
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-      // MVP: allow any Vercel deployment (*.vercel.app)
-      if (origin.endsWith('.vercel.app')) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  }),
-);
+// MVP: allow all origins. Re-enable strict origin check when adding auth.
+app.use(cors({ origin: true, credentials: true }));
 
 // express.json() is a middleware that parses the request body and makes it available in req.body
 app.use(express.json());
@@ -89,8 +54,11 @@ app.use('/uploads', express.static(getUploadsDir()));
 // if the route is not found, return a 404 error
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
-// error handler (must be last)
+// error handler (must be last). Set CORS so 500 responses are not blocked by browser.
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   logger.error('unhandled_error', {
     message: err.message,
     stack: err.stack,
