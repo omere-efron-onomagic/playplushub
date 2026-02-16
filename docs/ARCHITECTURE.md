@@ -63,11 +63,11 @@ unification.
 
 ### Current Persistence
 
-- Auth and wallet profile data: JSON-backed storage (`backend/src/data/users.json`)
+- Auth and wallet profile data: JSON-backed storage (`users.json` under `DATA_DIR`, defaults to `backend/src/data`)
 - Economy: `economy_transactions.json` (append-only audit), `claimed_sessions.json` (replay protection)
 - Game catalog: `games_catalog.json`; Link Four levels: `link_four_levels.json`; economy reads via `gameCatalog.service.ts`
 - Round progression: `round_progression.json` (per-actor completed rounds; migration-safe defaults when missing)
-- Uploaded images: local filesystem in `backend/uploads/` (served at `/uploads/`)
+- Uploaded images: local filesystem under `UPLOADS_DIR` (defaults to `backend/uploads`, served at `/uploads/`)
 - Legacy/scaffold endpoints: some routes still rely on Mongo-backed models
 
 ### API Domain Groups
@@ -95,6 +95,7 @@ unification.
 7. Wallet/auth updates are persisted in JSON-backed user store.
 8. Guest progression (spend, reward, cadence) is persisted via wallet session flow in JSON-backed guest store.
 9. Structured logging (Winston, JSON) captures request lifecycle, economy events, startup, and errors; sensitive fields are redacted.
+10. Data and upload directories can be overridden using `DATA_DIR` and `UPLOADS_DIR` for persistent production mounts.
 
 ### Guest Hydration Flow
 

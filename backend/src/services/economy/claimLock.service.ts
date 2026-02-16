@@ -1,10 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolveDataFilePath } from '../../config/storagePaths.js';
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const claimedPath = path.resolve(currentDir, '../../data/claimed_sessions.json');
+const claimedPath = resolveDataFilePath('claimed_sessions.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

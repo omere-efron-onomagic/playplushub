@@ -1,16 +1,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type {
   GameCatalogEntryDto,
   CreateGameBody,
   PatchGameBody,
 } from '../types/game.types.js';
 import { logger } from '../logger/logger.js';
+import { resolveDataFilePath } from '../config/storagePaths.js';
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const catalogPath = path.resolve(currentDir, '../data/games_catalog.json');
+const catalogPath = resolveDataFilePath('games_catalog.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolveDataFilePath } from '../config/storagePaths.js';
 
 type ProgressionRecord = {
   actorId: string;
@@ -9,9 +9,7 @@ type ProgressionRecord = {
   roundId: string;
 };
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const progressionPath = path.resolve(currentDir, '../data/round_progression.json');
+const progressionPath = resolveDataFilePath('round_progression.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

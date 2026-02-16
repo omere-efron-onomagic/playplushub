@@ -1,12 +1,10 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { LinkFourLevelDto } from '../types/game.types.js';
 import { logger } from '../logger/logger.js';
+import { resolveDataFilePath } from '../config/storagePaths.js';
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const levelsPath = path.resolve(currentDir, '../data/link_four_levels.json');
+const levelsPath = resolveDataFilePath('link_four_levels.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

@@ -1,14 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { GuestRecord, MigrationResult } from '../types/user.types.js';
 import { addCoinsToUser } from './userStore.service.js';
 import { logger } from '../logger/logger.js';
+import { resolveDataFilePath } from '../config/storagePaths.js';
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const guestsFilePath = path.resolve(currentDir, '../data/guests.json');
+const guestsFilePath = resolveDataFilePath('guests.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

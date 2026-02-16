@@ -52,6 +52,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/DEVELOPER_ONBOARDING.md` - shared Cursor workflow, rules, skills, worktrees, and team best practices
 - `docs/ADDING_NEW_GAME.md` - checklist for adding a new game type (admin panel required)
 - `docs/TEST_SCENARIOS.md` - backend unit tests and integration/E2E test scenarios
+- `docs/DEPLOYMENT_CICD.md` - GitHub Actions + Vercel/Render deployment runbook
 
 ## Local Setup
 
@@ -72,6 +73,8 @@ Backend (`backend/.env`):
 - `AUTH_SECRET` (recommended for non-default token signing)
 - `ADMIN_SECRET` (optional; min 8 chars for admin panel at `/admin`; image upload, game/level CRUD)
 - `LOG_LEVEL` (optional; default `debug` for verbose logs; use `info`, `warn`, or `error` to reduce output)
+- `DATA_DIR` (optional; overrides JSON persistence directory, useful for persistent disks in production)
+- `UPLOADS_DIR` (optional; overrides uploaded images directory, useful for persistent disks in production)
 
 Frontend (`frontend/.env.development`):
 
@@ -87,6 +90,18 @@ npm run test:e2e
 ```
 
 See `frontend/README.md` for full E2E commands and troubleshooting.
+
+## CI/CD (main branch)
+
+- GitHub Actions workflow: `.github/workflows/ci.yml`
+- On PR/push to `main`, it runs:
+  - `backend`: `npm run typecheck`
+  - `frontend`: `npm run typecheck`
+- Deployment on merge/push to `main` is handled by:
+  - Vercel (frontend)
+  - Render (backend)
+
+Full setup: `docs/DEPLOYMENT_CICD.md`.
 
 ## Run (if you are starting locally)
 

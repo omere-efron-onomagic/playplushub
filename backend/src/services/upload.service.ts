@@ -1,12 +1,8 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import multer from 'multer';
 import { logger } from '../logger/logger.js';
-
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const uploadsDir = path.resolve(currentDir, '../../uploads');
+import { uploadsDir } from '../config/storagePaths.js';
 
 const ALLOWED_MIMES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
