@@ -60,9 +60,6 @@ export function GamePage() {
   const isRoundBased = !!game.totalRounds;
   const roundsLoading = isRoundBased && rounds.length === 0;
   const allRoundsComplete = isRoundBased && completedRoundIds.length >= (game.totalRounds ?? 0);
-  const hasPlayableRound = isRoundBased && rounds.some(
-    (r) => !completedRoundIds.includes(r.roundId),
-  );
 
   return (
     <div className="mx-auto max-w-4xl px-3 py-4 sm:px-4 sm:py-8">

@@ -75,7 +75,7 @@ export type CreateRoundLevel = {
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: adminBaseQuery,
-  tagTypes: ['AdminGames', 'AdminLevels', 'GameLevels'],
+  tagTypes: ['AdminGames', 'AdminLevels', 'GameLevels', 'GameRounds'],
   endpoints: (builder) => ({
     getAdminGames: builder.query<ApiGame[], void>({
       query: () => '/admin/games',
