@@ -144,6 +144,18 @@ export const games: Game[] = [
     players: '7.5K',
     isHot: false,
     isPick: false
+  },
+  {
+    id: '13',
+    title: 'Cinemoji',
+    category: 'Puzzle',
+    image: 'https://placehold.co/400x300/7B2CBF/ffffff?font=montserrat&text=%F0%9F%8E%AC%0ACINEMOJI',
+    coinCost: 3,
+    rewardCoins: 35,
+    rating: 4.9,
+    players: '4.2K',
+    isHot: true,
+    isPick: true
   }
 ];
 

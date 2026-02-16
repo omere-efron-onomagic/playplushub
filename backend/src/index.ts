@@ -5,6 +5,7 @@ import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { walletRouter } from './routes/wallet.routes.js';
+import { cinemojiRouter } from './routes/cinemoji.routes.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import { logger } from './logger/logger.js';
 import cors from 'cors';
@@ -69,6 +70,7 @@ app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/auth', authRouter);
 app.use('/wallet', walletRouter);
+app.use('/cinemoji', cinemojiRouter);
 
 // if the route is not found, return a 404 error
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));

@@ -55,6 +55,19 @@ Exit criteria:
 
 - Users can earn XP, unlock/buy, and equip consistently across sessions
 
+## MVP - Games Library Expansion
+
+Goal: add additional fully-playable game loops to increase retention.
+
+- [x] Add Cinemoji as a second playable game in the main catalog
+- [x] Implement two gameplay modes with staged progression
+- [x] Add hint/rewarded placeholder and ad placeholder surfaces in-game
+
+Exit criteria:
+
+- [x] Cinemoji is discoverable from home and playable end-to-end
+- [x] Coin spend/reward remains server-authoritative via wallet session flow
+
 ## Phase 4: Engagement Features
 
 Goal: increase retention and repeat sessions.

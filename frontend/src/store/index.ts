@@ -5,6 +5,7 @@ import { pokemonApi } from './apis/pokemon.api';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { authApi } from './apis/auth.api';
 import { walletApi } from './apis/wallet.api';
+import { cinemojiApi } from './apis/cinemoji.api';
 
 export const store = configureStore({
   reducer: {
@@ -13,9 +14,15 @@ export const store = configureStore({
     [pokemonApi.reducerPath]: pokemonApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [walletApi.reducerPath]: walletApi.reducer,
+    [cinemojiApi.reducerPath]: cinemojiApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(pokemonApi.middleware, authApi.middleware, walletApi.middleware),
+    getDefaultMiddleware().concat(
+      pokemonApi.middleware,
+      authApi.middleware,
+      walletApi.middleware,
+      cinemojiApi.middleware,
+    ),
 });
 
 setupListeners(store.dispatch);

@@ -1,0 +1,15 @@
+[mode1]
+1|Focus on classic movie icon pairs and family films.
+2|Think fantasy, heroes, and big franchise titles.
+3|Look for action and adventure clues.
+4|TV and modern hits: read emoji pairs as title symbols.
+
+[mode2]
+1|Start simple: pair the most obvious emoji combo.
+2|Check left emoji meaning first, then right context.
+3|Some pairs are character + world clues.
+4|Use elimination: remove impossible right-side matches.
+5|Watch for genre symbols (magic, crime, sci-fi).
+6|Titles can be one or multiple words.
+7|If stuck, solve by strongest icon first.
+8|Final stretch: keep calm and match precisely.

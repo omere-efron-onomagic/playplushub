@@ -14,6 +14,7 @@ const GAME_CATALOG: GameCatalogEntry[] = [
   { gameId: '10', coinCost: 3, rewardCoins: 30 },
   { gameId: '11', coinCost: 4, rewardCoins: 40 },
   { gameId: '12', coinCost: 1, rewardCoins: 10 },
+  { gameId: '13', coinCost: 3, rewardCoins: 35, totalLevels: 1 },
 ];
 
 export function getGameCatalogEntry(gameId: string): GameCatalogEntry | null {

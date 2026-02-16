@@ -17,7 +17,7 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | Vending-machine themed hub UI | Partial | Polished visuals exist, but economy data is not fully wired |
-| Multi-game catalog | Partial | Many game cards exist, but one playable game is implemented |
+| Multi-game catalog | Partial | Catalog supports multiple entries; two games are now fully playable |
 | Responsive navigation/pages | Implemented | Core routing and pages are present |
 | Onboarding scenarios (social + organic) | Partial | Flow exists conceptually; conversion logic not fully enforced |
 | Soft sign-up prompts | Implemented | Shown after each guest win before threshold |
@@ -28,6 +28,7 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | One playable game loop | Implemented | Link-four style game is playable end-to-end |
+| Cinemoji (2 modes, staged progression, hints, lives) | Implemented | New playable game with backend-driven content, hint/rewarded placeholders, and mode-specific flow |
 | Per-level rewards | Implemented | Server-authoritative; reward computed from game catalog and validated outcome |
 | Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth and guest users) |
 | No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
