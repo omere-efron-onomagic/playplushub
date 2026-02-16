@@ -11,6 +11,7 @@ export function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [avatar, setAvatar] = useState<'boy' | 'girl' | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [register, { isLoading }] = useRegisterMutation();
   const [migrateGuest] = useMigrateGuestMutation();
@@ -87,11 +88,45 @@ export function SignUp() {
             <label className="mb-1.5 block text-sm text-gv-text-muted">Password</label>
             <input
               type="password"
-              placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+              placeholder="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-lg border border-gv-border bg-gv-bg px-4 py-2.5 text-sm text-gv-text placeholder-gv-text-muted outline-none transition-colors focus:border-gv-gold/50"
             />
+          </div>
+
+          {/* Avatar Selection */}
+          <div>
+            <label className="mb-3 block text-sm text-gv-text-muted">Choose your Avatar</label>
+            <div className="flex justify-center gap-4">
+              {([
+                { id: 'boy' as const, src: '/avatar-boy.png', label: 'Boy' },
+                { id: 'girl' as const, src: '/avatar-girl.png', label: 'Girl' },
+              ]).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setAvatar(opt.id)}
+                  className={`flex flex-col items-center gap-2 rounded-xl p-2 transition-all ${avatar === opt.id
+                      ? 'scale-105 ring-2 ring-gv-gold shadow-lg shadow-gv-gold/20'
+                      : avatar === null
+                        ? 'opacity-60 hover:scale-105 hover:ring-2 hover:ring-gv-gold hover:shadow-lg hover:shadow-gv-gold/20 hover:opacity-100'
+                        : 'opacity-40'
+                    }`}
+                >
+                  <div className="h-36 w-28 overflow-hidden rounded-xl border-2 border-gv-gold/40 bg-gv-bg">
+                    <img
+                      src={opt.src}
+                      alt={opt.label}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                  <span className={`text-xs font-bold ${avatar === opt.id ? 'text-gv-gold' : 'text-gv-text-muted'}`}>
+                    {opt.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <button

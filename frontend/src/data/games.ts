@@ -11,7 +11,8 @@ export const games: Game[] = [
     rating: 4.5,
     players: '12.3K',
     isHot: true,
-    isPick: false
+    isPick: false,
+    vendingCode: '1001'
   },
   {
     id: '2',
@@ -23,7 +24,8 @@ export const games: Game[] = [
     rating: 4.8,
     players: '8.7K',
     isHot: false,
-    isPick: true
+    isPick: true,
+    vendingCode: '1002'
   },
   {
     id: '3',
@@ -35,7 +37,8 @@ export const games: Game[] = [
     rating: 4.2,
     players: '15.1K',
     isHot: true,
-    isPick: false
+    isPick: false,
+    vendingCode: '1003'
   },
   {
     id: '4',
@@ -47,7 +50,8 @@ export const games: Game[] = [
     rating: 4.0,
     players: '5.2K',
     isHot: false,
-    isPick: false
+    isPick: false,
+    vendingCode: '1004'
   },
   {
     id: '5',
@@ -59,7 +63,8 @@ export const games: Game[] = [
     rating: 4.5,
     players: '22.5K',
     isHot: true,
-    isPick: true
+    isPick: true,
+    vendingCode: '1005'
   },
   {
     id: '6',
@@ -71,7 +76,8 @@ export const games: Game[] = [
     rating: 4.3,
     players: '9.8K',
     isHot: false,
-    isPick: false
+    isPick: false,
+    vendingCode: '1006'
   },
   {
     id: '7',
@@ -83,7 +89,8 @@ export const games: Game[] = [
     rating: 4.7,
     players: '18.6K',
     isHot: false,
-    isPick: true
+    isPick: true,
+    vendingCode: '1007'
   },
   {
     id: '8',
@@ -95,7 +102,8 @@ export const games: Game[] = [
     rating: 4.1,
     players: '6.4K',
     isHot: false,
-    isPick: false
+    isPick: false,
+    vendingCode: '1008'
   },
   {
     id: '9',
@@ -107,7 +115,8 @@ export const games: Game[] = [
     rating: 4.6,
     players: '14.2K',
     isHot: true,
-    isPick: false
+    isPick: false,
+    vendingCode: '1009'
   },
   {
     id: '10',
@@ -119,7 +128,8 @@ export const games: Game[] = [
     rating: 4.4,
     players: '11.8K',
     isHot: false,
-    isPick: true
+    isPick: true,
+    vendingCode: '1010'
   },
   {
     id: '11',
@@ -131,7 +141,8 @@ export const games: Game[] = [
     rating: 4.3,
     players: '9.1K',
     isHot: false,
-    isPick: false
+    isPick: false,
+    vendingCode: '1011'
   },
   {
     id: '12',
@@ -143,7 +154,8 @@ export const games: Game[] = [
     rating: 4.0,
     players: '7.5K',
     isHot: false,
-    isPick: false
+    isPick: false,
+    vendingCode: '1012'
   },
   {
     id: '13',
@@ -155,7 +167,8 @@ export const games: Game[] = [
     rating: 4.9,
     players: '4.2K',
     isHot: true,
-    isPick: true
+    isPick: true,
+    vendingCode: '1013'
   }
 ];
 

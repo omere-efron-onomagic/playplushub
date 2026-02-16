@@ -1,4 +1,5 @@
 import { useGetGameLevelsQuery, useGetRoundLevelsQuery } from '@/store/apis/games.api';
+import { avatars } from '@/data/avatars';
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
@@ -51,6 +52,9 @@ export function LinkFourGame() {
   const [rewardHandled, setRewardHandled] = useState(false);
   const [showSoftPrompt, setShowSoftPrompt] = useState(false);
   const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
+  const [showRules, setShowRules] = useState(false);
+
+  const equippedAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
 
   const level = linkFourLevels[currentLevel];
   const needsSessionRedirect = !sessionToken;
@@ -85,6 +89,7 @@ export function LinkFourGame() {
     setShakeAnswer(false);
     setShowSuccess(false);
   }, [currentLevel]);
+
 
   useEffect(() => {
     if (!gameComplete || rewardHandled || !sessionToken) {
@@ -261,8 +266,43 @@ export function LinkFourGame() {
         <h2 className="font-heading text-base font-bold tracking-wider text-gv-gold sm:text-lg">
           LEVEL {level.level}/{totalLevels}
         </h2>
-        <div className="min-h-[44px] flex items-center text-sm text-gv-text-muted sm:min-h-0">
-          {solvedLevels.size}/{totalLevels}
+        <div className="group/avatar relative cursor-pointer" onClick={() => setShowRules((v) => !v)}>
+          <div
+            className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-transform group-hover/avatar:scale-110 group-active/avatar:scale-95"
+          >
+            <img
+              src={equippedAvatar.image}
+              alt={equippedAvatar.name}
+              className="h-full w-full rounded-full object-cover object-top scale-150"
+            />
+          </div>
+          <span className="pointer-events-none absolute -top-3 -left-10 z-10 whitespace-nowrap rounded-full border border-gv-bg bg-gv-surface px-2 py-0.5 text-[9px] font-bold text-gv-gold shadow transition-transform group-hover/avatar:scale-110">
+            how to play
+          </span>
+
+          {showRules && (
+            <>
+              <button
+                type="button"
+                className="fixed inset-0 z-40"
+                aria-label="Close rules"
+                onClick={(e) => { e.stopPropagation(); setShowRules(false); }}
+              />
+              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-gv-border bg-gv-surface p-4 shadow-xl">
+                <div className="mb-2 flex items-center gap-2">
+                  <img
+                    src={equippedAvatar.image}
+                    alt={equippedAvatar.name}
+                    className="h-8 w-8 rounded-full border border-gv-gold/40 object-cover"
+                  />
+                  <span className="font-heading text-xs font-bold text-gv-gold">{equippedAvatar.name}</span>
+                </div>
+                <p className="text-xs leading-relaxed text-gv-text">
+                  Look at the 4 pictures and find the word they all have in common. Tap letters from the bank to spell it out. Tap a placed letter to remove it. Complete all 10 levels to win!
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

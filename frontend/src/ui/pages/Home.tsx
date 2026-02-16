@@ -2,6 +2,8 @@ import { GameCard } from '@/ui/components/GameCard';
 import { categories } from '@/data/games';
 import { avatars } from '@/data/avatars';
 import { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router';
+import { useAppSelector } from '@/store/hooks';
 import { useGetGamesQuery } from '@/store/apis/games.api';
 
 const currentAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
@@ -11,10 +13,14 @@ const EDGE_ZONE = 24;
 
 export function Home() {
   const { data: games = [], isLoading } = useGetGamesQuery();
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user);
+  const userCoins = user.coins;
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(0);
   const [displayCode, setDisplayCode] = useState('');
+  const [codeError, setCodeError] = useState('');
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelTranslate, setPanelTranslate] = useState(PANEL_WIDTH);
   const [isDragging, setIsDragging] = useState(false);
@@ -24,7 +30,17 @@ export function Home() {
   const handleKeypadPress = (key: string) => {
     if (key === 'C') {
       setDisplayCode('');
+      setCodeError('');
+    } else if (key === '✓') {
+      const match = games.find((g) => g.vendingCode === displayCode);
+      if (match) {
+        setCodeError('');
+        navigate(`/game/${match.id}`);
+      } else {
+        setCodeError('Invalid code');
+      }
     } else if (displayCode.length < 4) {
+      setCodeError('');
       setDisplayCode((prev) => prev + key);
     }
   };
@@ -85,26 +101,35 @@ export function Home() {
             {displayCode || '____'}
           </div>
           <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '✓'].map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleKeypadPress(key)}
-                disabled={key === '✓'}
-                className={`flex h-8 w-full min-h-[44px] items-center justify-center rounded-md border font-mono text-xs font-medium transition-all active:scale-95 sm:h-9 sm:min-h-0 sm:text-sm ${
-                  key === 'C'
-                    ? 'border-gv-hot/40 bg-gv-hot/10 text-gv-hot hover:bg-gv-hot/20'
-                    : key === '✓'
-                      ? 'cursor-default border-gv-border/50 bg-gv-surface/50 text-gv-text-muted opacity-60'
-                      : 'border-gv-border bg-gv-surface text-gv-text hover:border-gv-gold/40 hover:bg-gv-surface/90'
-                }`}
-              >
-                {key}
-              </button>
-            ))}
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '✓'].map((key) => {
+              const isConfirm = key === '✓';
+              const confirmReady = isConfirm && displayCode.length === 4;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleKeypadPress(key)}
+                  disabled={isConfirm && !confirmReady}
+                  className={`flex h-8 w-full min-h-[44px] items-center justify-center rounded-md border font-mono text-xs font-medium transition-all active:scale-95 sm:h-9 sm:min-h-0 sm:text-sm ${
+                    key === 'C'
+                      ? 'border-gv-hot/40 bg-gv-hot/10 text-gv-hot hover:bg-gv-hot/20'
+                      : isConfirm
+                        ? confirmReady
+                          ? 'border-green-500/60 bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                          : 'cursor-default border-gv-border/50 bg-gv-surface/50 text-gv-text-muted opacity-60'
+                        : 'border-gv-border bg-gv-surface text-gv-text hover:border-gv-gold/40 hover:bg-gv-surface/90'
+                  }`}
+                >
+                  {key}
+                </button>
+              );
+            })}
           </div>
+          {codeError && (
+            <p className="text-center text-[10px] font-medium text-red-400">{codeError}</p>
+          )}
           <div className="flex items-center justify-center rounded-full border border-gv-gold/40 bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-3 py-1 shadow-lg shadow-gv-gold/10 sm:px-4 sm:py-1.5">
-            <span className="font-heading text-[10px] font-bold tracking-wider text-gv-bg sm:text-xs">CREDITS: 250</span>
+            <span className="font-heading text-[10px] font-bold tracking-wider text-gv-bg sm:text-xs">CREDITS: {userCoins}</span>
           </div>
         </div>
       </div>
@@ -113,14 +138,16 @@ export function Home() {
         <div className="absolute -inset-[5px] rounded-[20px] border border-gv-gold/40" />
         <div className="relative flex min-h-[200px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-gv-border/50 bg-gv-bg p-2 shadow-inner sm:min-h-[300px] sm:min-w-[164px] sm:p-3">
           <img
-            src={currentAvatar.image}
-            alt={currentAvatar.name}
-            className="absolute inset-0 h-full w-full object-cover"
+            src={user.isGuest ? '/avatars-duo.png' : currentAvatar.image}
+            alt={user.isGuest ? 'Choose your avatar' : currentAvatar.name}
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
           <p className="relative z-10 text-center text-[9px] font-medium uppercase tracking-widest text-gv-text-muted sm:text-[10px]">
-            my avatar
+            {user.isGuest ? 'choose avatar' : 'my avatar'}
           </p>
-          <p className="relative z-10 text-center text-[11px] font-medium text-gv-text sm:text-xs">{currentAvatar.name}</p>
+          <p className="relative z-10 text-center text-[11px] font-medium text-gv-text sm:text-xs">
+            {user.isGuest ? 'Sign up to pick' : currentAvatar.name}
+          </p>
         </div>
       </div>
     </>
@@ -340,7 +367,7 @@ export function Home() {
               <div className="absolute -inset-1 rounded-full bg-gv-gold/20 blur-md" />
               <div className="relative rounded-full border border-gv-gold/50 bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-5 py-2 shadow-lg shadow-gv-gold/20 sm:px-8 sm:py-2.5">
                 <span className="font-heading text-xs font-bold tracking-[0.15em] text-gv-bg sm:text-sm sm:tracking-[0.2em]">
-                  CREDITS: 250
+                  CREDITS: {userCoins}
                 </span>
               </div>
             </div>
