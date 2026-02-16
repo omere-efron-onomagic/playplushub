@@ -181,5 +181,21 @@
     "players": "7.5K",
     "isHot": false,
     "isPick": false
+  },
+  {
+    "gameId": "13",
+    "slug": "cinemoji",
+    "title": "Cinemoji",
+    "category": "Puzzle",
+    "coverImageUrl": "https://placehold.co/400x300/7B2CBF/ffffff?font=montserrat&text=CINEMOJI",
+    "coinCost": 3,
+    "rewardCoins": 35,
+    "totalLevels": 1,
+    "enabled": true,
+    "updatedAt": "2026-02-16T00:00:00.000Z",
+    "rating": 4.9,
+    "players": "4.2K",
+    "isHot": true,
+    "isPick": true
   }
 ]

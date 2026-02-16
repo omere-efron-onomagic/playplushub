@@ -26,6 +26,8 @@ The schema creates:
 
 - `games` table (game catalog)
 - `link_four_levels` table (Link Four level definitions)
+- `cinemoji_puzzles` table (Cinemoji puzzle content from TheGame.txt)
+- `cinemoji_stage_hints` table (Cinemoji stage hints from stages.txt)
 
 ## 4. Get Credentials
 
@@ -55,14 +57,17 @@ From the `backend/` directory, with `.env` containing Supabase credentials:
 # Dry run first
 npm run migrate:json -- --dry-run
 npm run migrate:uploads -- --dry-run
+npm run migrate:cinemoji -- --dry-run
 
 # Apply migrations
 npm run migrate:json
 npm run migrate:uploads -- --update-json
+npm run migrate:cinemoji
 ```
 
 - `migrate:json`: Copies games and levels from JSON files into Supabase.
 - `migrate:uploads`: Uploads local `/uploads` files to Storage and updates level image URLs. Use `--update-json` to also rewrite `link_four_levels.json` for dual-read fallback.
+- `migrate:cinemoji`: Copies Cinemoji puzzles and stage hints from `Cinemoji/TheGame.txt` and `Cinemoji/stages.txt` into Supabase.
 
 ## 7. Validation Checklist
 
@@ -74,6 +79,7 @@ Before cutover, verify:
 - [ ] Public `/`: game catalog displays
 - [ ] Public `/game/:gameId`: game detail loads
 - [ ] Public `/play/:gameId`: Link Four plays; level images load (including migrated ones)
+- [ ] Public `/play/13`: Cinemoji game loads; mode1 and mode2 content display
 - [ ] Backend redeploy: data and images persist
 
 ## 8. Cutover

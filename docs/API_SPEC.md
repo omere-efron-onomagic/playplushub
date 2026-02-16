@@ -450,6 +450,15 @@ Upload a single image. Multipart form field name: `image`. Allowed: JPEG, PNG, W
 
 Response (201): `{ "url": "/uploads/filename.jpg" }`
 
+## Cinemoji
+
+Cinemoji is a second playable game (gameId `13`). Content is served from Supabase or static files. See [CINEMOJI.md](CINEMOJI.md) for full API:
+
+- `GET /cinemoji/content` — mode1/mode2 stages and puzzles
+- `POST /cinemoji/mode1/submit`, `POST /cinemoji/mode2/submit` — answer validation
+- `POST /cinemoji/hint`, `POST /cinemoji/mode2/lives/continue` — hints and lives
+- `GET /cinemoji/progress`, `POST /cinemoji/progress/complete` — stage completion
+
 ## Static Assets
 
 ### `/uploads/*`

@@ -16,6 +16,8 @@
     "lint:fix": "eslint . --fix",
     "migrate:json": "tsx src/scripts/migrate-json-to-supabase.ts",
     "migrate:uploads": "tsx src/scripts/migrate-local-uploads-to-supabase.ts",
+    "migrate:cinemoji": "tsx src/scripts/migrate-cinemoji-to-supabase.ts",
+    "migrate:cinemoji-schema": "tsx src/scripts/run-cinemoji-schema.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -41,6 +43,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.3.0",
+    "pg": "^8.18.0",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
