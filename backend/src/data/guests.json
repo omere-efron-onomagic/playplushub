@@ -358,5 +358,14 @@
     "migratedTo": null,
     "signupPromptCount": 2,
     "signupRequired": false
+  },
+  {
+    "id": "dc91cd42-75ea-4736-bcaa-67969a3f1715",
+    "coins": 2,
+    "createdAt": "2026-02-16T12:21:23.415Z",
+    "updatedAt": "2026-02-16T12:36:05.692Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
   }
 ]

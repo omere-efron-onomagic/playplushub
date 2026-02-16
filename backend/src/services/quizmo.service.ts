@@ -21,6 +21,7 @@ const STAGE_PREFIX = 'stage-';
 const LEVEL_PREFIX = 'level-';
 const QUESTION_FILE = 'question.json';
 const STAGE_META_FILE = 'stage.json';
+const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
 
 
 function parseLevelIndex(levelFolderName: string): number | null {
@@ -47,6 +48,78 @@ async function readJsonFile<T>(filePath: string): Promise<T | null> {
     logger.warn('quizmo failed to parse json file', { filePath, err: error });
     return null;
   }
+}
+
+function toPublicAssetUrl(quizmoRoot: string, assetPath: string): string {
+  const relativeAssetPath = path.relative(quizmoRoot, assetPath);
+  const encoded = relativeAssetPath
+    .split(path.sep)
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  return `/quizmo-assets/${encoded}`;
+}
+
+async function resolveImageFromLevelFolders(levelParentDir: string, levelIndex: number): Promise<string | null> {
+  let levelEntries;
+  try {
+    levelEntries = await readdir(levelParentDir, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  const levelFolderPattern = new RegExp(`^Level\\s*${levelIndex}(\\b|\\s|-)`, 'i');
+  const levelRootFolders = levelEntries
+    .filter((entry) => entry.isDirectory() && levelFolderPattern.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+
+  for (const levelRootFolderName of levelRootFolders) {
+    const levelRootFolderPath = path.resolve(levelParentDir, levelRootFolderName);
+    let nestedEntries;
+    try {
+      nestedEntries = await readdir(levelRootFolderPath, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+
+    const preferredNestedPattern = new RegExp(`^Level\\s*${levelIndex}\\b`, 'i');
+    const nestedLevelFolders = nestedEntries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort((a, b) => Number(preferredNestedPattern.test(b)) - Number(preferredNestedPattern.test(a)));
+
+    for (const nestedLevelFolderName of nestedLevelFolders) {
+      const nestedLevelFolderPath = path.resolve(levelRootFolderPath, nestedLevelFolderName);
+      let nestedLevelFiles;
+      try {
+        nestedLevelFiles = await readdir(nestedLevelFolderPath, { withFileTypes: true });
+      } catch {
+        continue;
+      }
+
+      const imageFile = nestedLevelFiles.find(
+        (entry) => entry.isFile() && IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase()),
+      );
+      if (imageFile) {
+        return path.resolve(nestedLevelFolderPath, imageFile.name);
+      }
+    }
+  }
+
+  return null;
+}
+
+async function resolveLevelImagePath(
+  quizmoRoot: string,
+  stageDir: string,
+  levelIndex: number,
+): Promise<string | null> {
+  // Primary: current content layout where level images sit under stage folder (e.g. stage-1-pop-culture/Level X...).
+  const fromStageDir = await resolveImageFromLevelFolders(stageDir, levelIndex);
+  if (fromStageDir) return fromStageDir;
+
+  // Fallback: legacy layout where images were under Quizmo/stage1/Level X...
+  const stage1Dir = path.resolve(quizmoRoot, 'stage1');
+  return resolveImageFromLevelFolders(stage1Dir, levelIndex);
 }
 
 function isValidQuestion(payload: unknown): payload is {
@@ -123,10 +196,14 @@ async function loadStages(): Promise<StageCache[]> {
         });
         continue;
       }
+      const localImagePath = await resolveLevelImagePath(quizmoRoot, stageDir, level.levelIndex);
+      const resolvedImageUrl = localImagePath
+        ? toPublicAssetUrl(quizmoRoot, localImagePath)
+        : questionJson.imageUrl;
 
       questions.push({
         levelIndex: level.levelIndex,
-        imageUrl: questionJson.imageUrl,
+        imageUrl: resolvedImageUrl,
         question: questionJson.question,
         options: questionJson.options,
         correctAnswerIndex: questionJson.correctAnswerIndex,

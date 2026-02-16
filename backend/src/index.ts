@@ -59,6 +59,16 @@ app.use('/quizmo', quizmoRouter);
 app.use('/games', gamesRouter);
 app.use('/admin', adminRouter);
 app.use('/uploads', express.static(getUploadsDir()));
+const quizmoAssetsDir = [path.resolve(process.cwd(), 'Quizmo'), path.resolve(process.cwd(), 'QUIZMO')].find(
+  (candidate) => existsSync(candidate),
+);
+if (quizmoAssetsDir) {
+  app.use('/quizmo-assets', express.static(quizmoAssetsDir));
+} else {
+  logger.warn('quizmo assets directory not found at startup', {
+    candidates: [path.resolve(process.cwd(), 'Quizmo'), path.resolve(process.cwd(), 'QUIZMO')],
+  });
+}
 
 // if the route is not found, return a 404 error
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
