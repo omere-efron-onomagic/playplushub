@@ -14,7 +14,7 @@ alwaysApply: true
 - **Routing**: React Router 7
 - **Forms**: React Hook Form, Zod, @hookform/resolvers
 - **Real-time**: Socket.io client
-- **Backend**: MongoDB
+- **Backend**: Express + TypeScript, Supabase (Postgres + Storage), JSON fallback
 - **UI**: Radix UI, Motion (animations), Lucide icons
 
 ## Project Structure
@@ -46,6 +46,13 @@ frontend/
 - `/favorites` – User favorites
 - `/avatar-shop` – Avatar shop
 - `/login`, `/signup` – Auth
+- `/play/:gameId` – Game player (Link Four, Cinemoji)
+- `/admin` – Admin panel (games, Link Four levels, image upload)
+
+## Current Games
+
+1. **Link Four** (gameId: `1`) - Image-based word puzzle with grouped rounds
+2. **Cinemoji** (gameId: `13`) - Emoji-based movie title puzzle with 2 modes
 
 ## Domain Types
 

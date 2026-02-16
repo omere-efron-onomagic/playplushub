@@ -8,7 +8,7 @@ The brand is currently "PlayPlusHub" and may change later.
 
 ## Product Snapshot
 
-- Format: multi-game platform (currently one fully playable game)
+- Format: multi-game platform (currently two fully playable games: Link Four and Cinemoji)
 - Audience focus: 30+ users, mainly women
 - Use case: quick entertainment during travel or short idle moments
 - Goal: convert anonymous players to signed-in users through soft prompts
@@ -17,20 +17,22 @@ The brand is currently "PlayPlusHub" and may change later.
 
 - Frontend: React + Vite + TypeScript
 - Backend: Express + TypeScript
-- Persistence: simple JSON-backed user storage for MVP auth/wallet flows
+- Persistence: Supabase (Postgres + Storage) for game content and assets; JSON-backed auth/wallet flows
 - Data model direction: migrate to full Mongo-backed persistence in a next phase
 
 ## Implemented vs Planned
 
-- Implemented (MVP quality): UI shell, game catalog pages, login/signup, one game,
-  basic wallet reward endpoint, guest mode state handling, admin panel (games/levels/upload),
-  dynamic game catalog and Link Four levels from API, E2E regression tests (Playwright),
-  grouped rounds (5 rounds × 2 levels), no-replay completion gating, round progression,
+- Implemented (MVP quality): UI shell, game catalog pages, login/signup, two playable games
+  (Link Four with grouped rounds, Cinemoji with 2 modes and staged progression), basic wallet
+  reward endpoint, guest mode state handling, admin panel (games/levels/upload), dynamic game
+  catalog from API, Supabase-backed game content with dual-read fallback, E2E regression tests
+  (Playwright), grouped rounds (5 rounds × 2 levels), no-replay completion gating, round progression,
   admin upload-first level creation (4 images + answer, auto extra letters)
-- Partial: ad placements in UI, onboarding conversion behavior, avatar/shop/favorites/
-  trending logic, mixed backend model. Sign-up prompt cadence evaluates after each round completion.
+- Partial: ad placements in UI (including Cinemoji rewarded hint placeholder), onboarding conversion
+  behavior, avatar/shop/favorites/trending logic, mixed backend model. Sign-up prompt cadence
+  evaluates after each round completion.
 - Planned: full multi-game backend validation, missions, leaderboard, full economy
-  enforcement, anti-cheat, full Mongo migration
+  enforcement enhancements, full Mongo migration
 
 See `docs/FEATURE_STATUS.md` for the full matrix.
 
@@ -38,7 +40,9 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 
 **Round-based progression (Link Four)**: Levels are grouped into rounds (e.g. 5 rounds × 2 levels). Players spend once per round to play and receive a reward when both levels in that round are completed. Completed rounds cannot be replayed; when all rounds are done, play is blocked until new rounds are added.
 
-**Admin authoring flow**: Create rounds via the admin panel by uploading 4 images per level (drop, select, or paste) and entering only the answer; extra letters are auto-generated server-side. **Adding a new game type must include admin panel functionality** (content management and uploads for that game)—see `docs/DEVELOPER_ONBOARDING.md` and `.cursor/rules/00-product-scope.mdc`.
+**Staged progression (Cinemoji)**: 40 emoji-based movie puzzles across 2 gameplay modes with hints, lives, and mobile-friendly keyboard/drag input. Content stored in Supabase with file fallback.
+
+**Admin authoring flow**: Create Link Four rounds via the admin panel by uploading 4 images per level (drop, select, or paste) and entering only the answer; extra letters are auto-generated server-side. Cinemoji content is managed via Supabase (puzzles and hints tables) with migration scripts. **Adding a new game type must include admin panel functionality** (content management and uploads for that game)—see `docs/DEVELOPER_ONBOARDING.md`, `docs/ADDING_NEW_GAME.md`, and `.cursor/rules/00-product-scope.mdc`.
 
 ## Docs Index
 
@@ -130,20 +134,26 @@ npm run dev
 playplushub/
   backend/
     src/
-      controllers/      # auth, wallet, users, posts
+      controllers/      # auth, wallet, games, admin, cinemoji
       middleware/       # auth middleware
       routes/           # API route registration
-      services/         # JSON-backed user store
+      services/         # user store (JSON), game content (Supabase/JSON dual-read)
+      repositories/     # Supabase + JSON repositories for content
       validators/       # request validation
       models/           # mongo models (partial usage)
-      data/users.json   # MVP persistence file for auth/wallet
+      scripts/          # migration scripts (JSON->Supabase, uploads->Storage, Cinemoji)
+      data/             # JSON fallback files: users, guests, games_catalog, link_four_levels, cinemoji_progress
+    supabase-schema.sql # Schema reference (games, link_four_levels, cinemoji_puzzles, cinemoji_stage_hints)
   frontend/
     src/
-      ui/pages/         # app pages
+      ui/pages/         # app pages (Home, CinemojiGame, PlayGamePage, admin)
       ui/components/    # shared page components
       data/             # static categories; games/levels from API
-      store/            # Redux + RTK Query
+      store/            # Redux + RTK Query (gamesApi, adminApi, cinemojiApi)
       sockets/          # socket client scaffold (not active in MVP)
+  supabase/
+    migrations/         # Supabase schema migrations
+  Cinemoji/            # Static Cinemoji content files (fallback when CONTENT_STORE_DRIVER=json)
   docs/
 ```
 

@@ -25,11 +25,23 @@ When introducing a new playable game to PlayPlusHub, **admin panel functionality
    - Update `API_SPEC.md` with new endpoints
    - Update `FEATURE_STATUS.md` and `ARCHITECTURE.md` as needed
 
-## Reference Implementation
+## Reference Implementations
 
-Link Four is the reference:
+### Link Four (Image-based rounds with admin upload)
 
-- Backend: `linkFourLevelStore`, `POST /admin/games/:gameId/rounds`, rounds/levels endpoints
+- Backend: `linkFourLevelStore.service.ts`, `POST /admin/games/:gameId/rounds`, rounds/levels endpoints
 - Admin UI: `AdminLinkFourLevels.tsx` (batch upload, answer-only, auto extra letters)
 - Player UI: `LinkFourGame.tsx`, `GamePage.tsx`
 - RTK Query: `admin.api.ts`, `games.api.ts`
+- Persistence: Supabase (`link_four_levels` table) with JSON fallback via dual-read
+- Migration: `migrate-json-to-supabase.ts`, `migrate-local-uploads-to-supabase.ts`
+
+### Cinemoji (Text-based puzzles with file/DB content)
+
+- Backend: `cinemoji.service.ts`, `cinemojiSupabase.repository.ts`, `cinemojiFile.repository.ts`
+- Content: Supabase (`cinemoji_puzzles`, `cinemoji_stage_hints` tables) with static file fallback
+- Player UI: `CinemojiGame.tsx` (two modes, keyboard/mobile input, drag-to-match, stage selection)
+- RTK Query: `cinemoji.api.ts`
+- Persistence: Supabase dual-read with `Cinemoji/TheGame.txt` and `Cinemoji/stages.txt` fallback
+- Migration: `migrate-cinemoji-to-supabase.ts`
+- Admin: No custom UI; content managed via Supabase tables and migration scripts
