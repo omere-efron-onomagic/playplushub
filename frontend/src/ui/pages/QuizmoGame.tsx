@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
+import { InlineAd } from '@/ui/components/ads';
 import { toImageUrl } from '@/utils/imageUrl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
@@ -298,9 +299,8 @@ export function QuizmoGame() {
         {errorMessage && <p className="mt-3 text-sm text-red-400">{errorMessage}</p>}
       </div>
 
-      <div className="rounded-lg border border-gv-border bg-gv-surface p-3 text-center text-xs text-gv-text-muted">
-        AD PLACEHOLDER (QUIZMO IN-GAME BANNER)
-      </div>
+      {/* Inline Ad */}
+      <InlineAd placementId="quizmoInline" />
     </div>
   );
 }

@@ -12,6 +12,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
+import { InlineAd, AdMockCard } from '@/ui/components/ads';
+import { getAdPlacement, getRewardedDisplayLabel } from '@/ui/ads/adPlacements';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
@@ -327,7 +329,7 @@ export function CinemojiGame() {
         watchRewarded: true,
       }).unwrap();
       if (response.granted) {
-        setRewardedLabel(response.rewardedPlaceholder ?? 'REWARDED_VIDEO_PLACEHOLDER');
+        setRewardedLabel(getRewardedDisplayLabel(response.rewardedPlaceholder));
         setHintText(response.hint ?? '');
       }
     } catch {
@@ -346,7 +348,7 @@ export function CinemojiGame() {
         watchRewarded: true,
       }).unwrap();
       if (response.granted) {
-        setRewardedLabel(response.rewardedPlaceholder ?? 'REWARDED_VIDEO_PLACEHOLDER');
+        setRewardedLabel(getRewardedDisplayLabel(response.rewardedPlaceholder));
         setMode2Lives((value) => Math.min(3, value + (response.extraLives ?? 1)));
       }
     } catch {
@@ -568,9 +570,9 @@ export function CinemojiGame() {
           </div>
 
           {hintText && <p className="mt-3 text-sm text-gv-gold">Hint: {hintText}</p>}
-          <div className="mt-4 rounded-lg border border-gv-border bg-gv-bg/40 p-2 text-center text-xs text-gv-text-muted">
-            AD PLACEHOLDER (PERSISTENT MODE 1 BOTTOM)
-          </div>
+          
+          {/* Inline Ad */}
+          <InlineAd placementId="cinemojiInline" className="mt-4" />
         </div>
       )}
 
@@ -599,9 +601,8 @@ export function CinemojiGame() {
             <span className="text-xs text-gv-text-muted">Drag from left emoji to right emoji</span>
           </div>
 
-          <div className="mb-3 rounded-lg border border-gv-border/40 bg-gv-bg/50 p-2 text-center text-xs text-gv-text-muted">
-            AD PLACEHOLDER (PERSISTENT MODE 2)
-          </div>
+          {/* Inline Ad */}
+          <InlineAd placementId="cinemojiInline" className="mb-3" />
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -704,16 +705,16 @@ export function CinemojiGame() {
 
       {modalState === 'hintVideo' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-sm rounded-xl border border-gv-border bg-gv-surface p-5 text-center">
-            <p className="text-sm text-gv-text-muted">REWARDED VIDEO PLACEHOLDER</p>
-            <button
-              type="button"
-              onClick={() => void handleHintVideoComplete()}
-              disabled={isRequestingHint}
-              className="mt-4 rounded bg-gv-gold px-4 py-2 text-sm font-bold text-gv-bg"
-            >
-              {isRequestingHint ? 'Loading hint...' : 'Finish Video'}
-            </button>
+          <div className="w-full max-w-sm rounded-xl border border-gv-border bg-gv-surface p-5">
+            <AdMockCard
+              creative={getAdPlacement('cinemojiRewardedHintVideo')?.creative ?? getAdPlacement('cinemojiInline')!.creative}
+              className="h-64 sm:h-80"
+              variant="rewarded"
+              onComplete={isRequestingHint ? undefined : () => void handleHintVideoComplete()}
+            />
+            {isRequestingHint && (
+              <p className="mt-3 text-center text-sm text-gv-text-muted">Loading hint...</p>
+            )}
           </div>
         </div>
       )}
@@ -750,17 +751,17 @@ export function CinemojiGame() {
 
       {modalState === 'livesVideo' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-sm rounded-xl border border-gv-border bg-gv-surface p-5 text-center">
-            <p className="text-sm text-gv-text-muted">REWARDED VIDEO PLACEHOLDER</p>
-            <p className="mt-2 text-xs text-gv-text-muted">Reward policy: +1 life (up to 3 hearts).</p>
-            <button
-              type="button"
-              onClick={() => void handleLivesVideoComplete()}
-              disabled={isContinuingLives}
-              className="mt-4 rounded bg-gv-gold px-4 py-2 text-sm font-bold text-gv-bg"
-            >
-              {isContinuingLives ? 'Granting...' : 'Finish Video'}
-            </button>
+          <div className="w-full max-w-sm rounded-xl border border-gv-border bg-gv-surface p-5">
+            <AdMockCard
+              creative={getAdPlacement('cinemojiRewardedLivesVideo')?.creative ?? getAdPlacement('cinemojiInline')!.creative}
+              className="h-64 sm:h-80"
+              variant="rewarded"
+              onComplete={isContinuingLives ? undefined : () => void handleLivesVideoComplete()}
+            />
+            <p className="mt-3 text-center text-xs text-gv-text-muted">Reward policy: +1 life (up to 3 hearts).</p>
+            {isContinuingLives && (
+              <p className="mt-2 text-center text-sm text-gv-text-muted">Granting...</p>
+            )}
           </div>
         </div>
       )}

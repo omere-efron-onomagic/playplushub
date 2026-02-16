@@ -5,6 +5,7 @@ import { Outlet } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useCreateGuestMutation, useGetGuestQuery } from '@/store/apis/auth.api';
 import { setGuestIdentity, setGuestProgression } from '@/store/slices/user.slice';
+import { StickyBottomAd } from '@/ui/components/ads';
 
 function useGuestHydration() {
   const dispatch = useAppDispatch();
@@ -57,12 +58,16 @@ export function Root() {
     <SocketProvider urls={socketUrls}>
       <div className="min-h-screen bg-gv-bg">
         <Navbar />
-        <main>
+        {/* Main content with bottom padding to prevent overlap with sticky ad */}
+        <main className="pb-16 sm:pb-20">
           <Outlet />
         </main>
 
-        {/* Floating Avatar Mascot - smaller on mobile to avoid blocking content */}
-        <button className="group fixed right-3 bottom-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-all hover:scale-110 hover:shadow-gv-gold/30 sm:right-5 sm:bottom-5 sm:h-14 sm:w-14">
+        {/* Global Sticky Bottom Ad */}
+        <StickyBottomAd />
+
+        {/* Floating Avatar Mascot - positioned above sticky ad */}
+        <button className="group fixed right-3 bottom-20 z-40 flex h-12 w-12 items-center justify-center rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-all hover:scale-110 hover:shadow-gv-gold/30 sm:right-5 sm:bottom-24 sm:h-14 sm:w-14">
           <span className="text-2xl drop-shadow-md">{'\uD83C\uDFAE'}</span>
           {/* Tooltip */}
           <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-gv-surface px-3 py-1.5 text-xs text-gv-text opacity-0 shadow-lg transition-opacity group-hover:opacity-100">

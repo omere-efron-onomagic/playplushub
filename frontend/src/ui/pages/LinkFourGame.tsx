@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
+import { InlineAd } from '@/ui/components/ads';
 import { toImageUrl } from '@/utils/imageUrl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
@@ -350,6 +351,9 @@ export function LinkFourGame() {
           {'\u2714'} Correct!
         </div>
       )}
+
+      {/* Inline Ad */}
+      <InlineAd placementId="linkFourInline" className="mt-6 w-full sm:mt-8" />
     </div>
   );
 }
