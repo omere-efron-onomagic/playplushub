@@ -63,6 +63,7 @@ Goal: add additional fully-playable game loops to increase retention.
 - [x] Implement two gameplay modes with staged progression
 - [x] Add hint/rewarded placeholder and ad placeholder surfaces in-game
 - [x] Improve Cinemoji UX: keyboard/mobile input, drag-to-match, lives/hint modals, stage selection persistence
+- [x] Add QUIZMO Stage 1 (Pop Culture) with timer-based quiz flow and score-based coin rewards
 
 Exit criteria:
 

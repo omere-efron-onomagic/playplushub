@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=3",
+  "question": "Which platform is famous for short-form dance trend videos?",
+  "options": ["LinkedIn", "TikTok", "Reddit", "GitHub"],
+  "correctAnswerIndex": 1
+}

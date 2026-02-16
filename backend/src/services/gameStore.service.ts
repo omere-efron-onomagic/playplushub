@@ -25,7 +25,18 @@ export async function getAllGames(): Promise<GameCatalogEntryDto[]> {
   if (useSupabase() && getSupabaseClient()) {
     try {
       const rows = await supabaseRepo.supabaseGetAllGames();
-      return rows.filter((e) => e.enabled);
+      const supabaseEnabled = rows.filter((e) => e.enabled);
+      if (useJson(true)) {
+        const jsonEnabled = (await jsonRepo.jsonGetAllGames()).filter((e) => e.enabled);
+        const merged = [...supabaseEnabled];
+        for (const entry of jsonEnabled) {
+          if (!merged.some((item) => item.gameId === entry.gameId)) {
+            merged.push(entry);
+          }
+        }
+        return merged;
+      }
+      return supabaseEnabled;
     } catch (err) {
       logger.warn('supabase getAllGames failed, falling back', { err });
       if (useJson(true)) {
@@ -46,7 +57,14 @@ export async function getGameById(
   if (useSupabase() && getSupabaseClient()) {
     try {
       const row = await supabaseRepo.supabaseGetGameById(gameId);
-      return row?.enabled ? row : null;
+      if (row?.enabled) {
+        return row;
+      }
+      if (useJson(true)) {
+        const entries = await jsonRepo.jsonGetAllGames();
+        return entries.find((e) => e.gameId === gameId && e.enabled) ?? null;
+      }
+      return null;
     } catch (err) {
       logger.warn('supabase getGameById failed, falling back', { err, gameId });
       if (useJson(true)) {
@@ -149,4 +167,23 @@ export async function patchGame(
     });
   }
   return result;
+}
+
+/**
+ * Ensures Supabase games table contains all JSON catalog entries.
+ * Used at startup to keep dual/supabase environments in sync.
+ */
+export async function syncJsonCatalogToSupabase(): Promise<{ synced: boolean; count: number }> {
+  if (!useSupabase() || !getSupabaseClient()) {
+    return { synced: false, count: 0 };
+  }
+
+  const jsonEntries = await jsonRepo.jsonGetAllGames();
+  if (jsonEntries.length === 0) {
+    return { synced: false, count: 0 };
+  }
+
+  const count = await supabaseRepo.supabaseUpsertGames(jsonEntries);
+  logger.info('games catalog synced to supabase', { count });
+  return { synced: true, count };
 }

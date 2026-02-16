@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=5",
+  "question": "Which TV series is set in the fictional land of Westeros?",
+  "options": ["The Witcher", "Game of Thrones", "Vikings", "The Last Kingdom"],
+  "correctAnswerIndex": 1
+}

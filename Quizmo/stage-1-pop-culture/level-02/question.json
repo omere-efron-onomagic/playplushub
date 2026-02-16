@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=2",
+  "question": "Which movie features the quote 'I'll be back'?",
+  "options": ["Die Hard", "Rocky", "The Terminator", "Rambo"],
+  "correctAnswerIndex": 2
+}

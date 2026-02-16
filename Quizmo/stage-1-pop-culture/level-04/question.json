@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=4",
+  "question": "What is the superhero name of Bruce Wayne?",
+  "options": ["Superman", "Batman", "Iron Man", "Flash"],
+  "correctAnswerIndex": 1
+}

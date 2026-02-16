@@ -9,6 +9,7 @@ import { walletApi } from './apis/wallet.api';
 import { cinemojiApi } from './apis/cinemoji.api';
 import { gamesApi } from './apis/games.api';
 import { adminApi } from './apis/admin.api';
+import { quizmoApi } from './apis/quizmo.api';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     [cinemojiApi.reducerPath]: cinemojiApi.reducer,
     [gamesApi.reducerPath]: gamesApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
+    [quizmoApi.reducerPath]: quizmoApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -30,6 +32,7 @@ export const store = configureStore({
       cinemojiApi.middleware,
       gamesApi.middleware,
       adminApi.middleware,
+      quizmoApi.middleware,
     ),
 });
 

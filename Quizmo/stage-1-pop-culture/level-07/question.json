@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=7",
+  "question": "In the Marvel universe, what metal is Captain America's shield made of?",
+  "options": ["Adamantium", "Titanium", "Vibranium", "Steel"],
+  "correctAnswerIndex": 2
+}

@@ -143,3 +143,17 @@ export async function supabasePatchGame(
   }
   return res.data ? toDto(res.data as DbRow) : null;
 }
+
+export async function supabaseUpsertGames(entries: GameCatalogEntryDto[]): Promise<number> {
+  const client = getSupabaseClient();
+  if (!client || entries.length === 0) return 0;
+  const rows = entries.map(toRow);
+  const { error } = await client
+    .from(GAMES_TABLE)
+    .upsert(rows, { onConflict: 'game_id', ignoreDuplicates: false });
+  if (error) {
+    logger.error('supabase_upsert_games failed', { err: error, count: entries.length });
+    throw error;
+  }
+  return rows.length;
+}

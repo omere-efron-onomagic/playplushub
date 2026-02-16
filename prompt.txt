@@ -1,9 +1,26 @@
-please scan the folder called "pic"
-and implement the pictures there to 
-my frontend
 
-each folder is each page at the project
 
-in the mainpage surround everything with
-a vending machine, make the UI there
-better than in the picture 
+at folder linkFour there is a picture called
+"main example"
+
+this show our first game in the game
+that i want you to implement in our App
+
+the game called Link Four 
+
+your get 4 images and random chars
+
+and you need to guess the world 
+from those 4 pictures
+
+there is 10 levels 
+and correct answer for each level 
+is in the folder name
+
+please implement the game add it 
+to the UI
+
+use the pictures there to make each level
+and take the correct answer from the folders
+name 
+

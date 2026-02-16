@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=6",
+  "question": "Which artist released the album '1989'?",
+  "options": ["Taylor Swift", "Billie Eilish", "Dua Lipa", "Katy Perry"],
+  "correctAnswerIndex": 0
+}

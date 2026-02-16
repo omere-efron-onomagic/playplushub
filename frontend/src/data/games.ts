@@ -156,6 +156,18 @@ export const games: Game[] = [
     players: '4.2K',
     isHot: true,
     isPick: true
+  },
+  {
+    id: '14',
+    title: 'QUIZMO',
+    category: 'Trivia',
+    image: 'https://placehold.co/400x300/1B9AAA/ffffff?font=montserrat&text=QUIZMO',
+    coinCost: 2,
+    rewardCoins: 20,
+    rating: 4.6,
+    players: '6.1K',
+    isHot: true,
+    isPick: false
   }
 ];
 
