@@ -75,3 +75,66 @@ export function validateCompleteStageBody(req: Request, res: Response, next: Nex
 
   return next();
 }
+
+// Admin validators
+
+export function validateUpsertStageBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return reject(req, res, 'body is required');
+  }
+
+  const { stageId, title } = req.body as { stageId?: unknown; title?: unknown };
+
+  if (typeof stageId !== 'string' || !stageId.trim()) {
+    return reject(req, res, 'stageId is required');
+  }
+  if (typeof title !== 'string' || !title.trim()) {
+    return reject(req, res, 'title is required');
+  }
+
+  return next();
+}
+
+export function validateUpsertQuestionsBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return reject(req, res, 'body is required');
+  }
+
+  const { questions } = req.body as { questions?: unknown };
+
+  if (!Array.isArray(questions)) {
+    return reject(req, res, 'questions must be an array');
+  }
+
+  for (const question of questions) {
+    if (!question || typeof question !== 'object') {
+      return reject(req, res, 'each question must be an object');
+    }
+    const q = question as Record<string, unknown>;
+
+    if (!Number.isInteger(q.levelIndex) || (q.levelIndex as number) < 1) {
+      return reject(req, res, 'question.levelIndex must be a positive integer');
+    }
+    if (typeof q.imageUrl !== 'string' || !q.imageUrl.trim()) {
+      return reject(req, res, 'question.imageUrl is required');
+    }
+    if (typeof q.question !== 'string' || !q.question.trim()) {
+      return reject(req, res, 'question.question is required');
+    }
+    if (!Array.isArray(q.options) || q.options.length !== 4) {
+      return reject(req, res, 'question.options must be an array of 4 strings');
+    }
+    if (!q.options.every((opt) => typeof opt === 'string' && String(opt).trim())) {
+      return reject(req, res, 'each option must be a non-empty string');
+    }
+    if (
+      !Number.isInteger(q.correctAnswerIndex) ||
+      (q.correctAnswerIndex as number) < 0 ||
+      (q.correctAnswerIndex as number) > 3
+    ) {
+      return reject(req, res, 'question.correctAnswerIndex must be an integer between 0 and 3');
+    }
+  }
+
+  return next();
+}

@@ -1,6 +1,7 @@
 import { registerGameEditor } from './gameEditorRegistry';
 import { LinkFourEditor } from './linkfour';
 import { CinemojiEditor } from './cinemoji';
+import { QuizmoEditor } from './quizmo';
 
 /**
  * Register all game editors.
@@ -12,4 +13,7 @@ export function registerAllGameEditors(): void {
   
   // Cinemoji (gameId: '13')
   registerGameEditor('13', CinemojiEditor);
+  
+  // QUIZMO (gameId: '14')
+  registerGameEditor('14', QuizmoEditor);
 }

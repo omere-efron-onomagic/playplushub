@@ -492,6 +492,50 @@ Query params: `mode` (mode1 or mode2), `stage` (integer).
 
 Response (204): No content.
 
+### QUIZMO Admin Endpoints
+
+**Note:** QUIZMO admin endpoints require Supabase for content persistence.
+
+#### `GET /admin/quizmo/stages`
+
+List all QUIZMO stages with their questions (admin view).
+
+Response (200): `{ "stages": [ { "stageId": "stage-1-pop-culture", "title": "Pop Culture", "questions": [...] }, ... ] }`
+
+#### `GET /admin/quizmo/stages/:stageId`
+
+Get a single stage with all questions.
+
+Response (200): `{ "stageId": "stage-1-pop-culture", "title": "Pop Culture", "questions": [...] }`
+
+#### `POST /admin/quizmo/stages`
+
+Create or update a stage (upsert).
+
+Request body: `{ "stageId": "stage-1-pop-culture", "title": "Pop Culture" }`
+
+Response (200): `{ "stageId": "stage-1-pop-culture", "title": "Pop Culture" }`
+
+#### `POST /admin/quizmo/stages/:stageId/questions`
+
+Upsert questions for a stage (replaces all questions).
+
+Request body: `{ "questions": [ { "levelIndex": 1, "imageUrl": "...", "question": "...", "options": ["A", "B", "C", "D"], "correctAnswerIndex": 0 }, ... ] }`
+
+Response (200): `{ "stageId": "stage-1-pop-culture", "count": 10 }`
+
+#### `DELETE /admin/quizmo/stages/:stageId`
+
+Delete a stage and all its questions.
+
+Response (204): No content.
+
+#### `DELETE /admin/quizmo/stages/:stageId/questions/:levelIndex`
+
+Delete a single question from a stage.
+
+Response (204): No content.
+
 ## Cinemoji
 
 Cinemoji is a second playable game (gameId `13`). Content is served from Supabase or static files. See [CINEMOJI.md](CINEMOJI.md) for full API:
@@ -500,6 +544,54 @@ Cinemoji is a second playable game (gameId `13`). Content is served from Supabas
 - `POST /cinemoji/mode1/submit`, `POST /cinemoji/mode2/submit` — answer validation
 - `POST /cinemoji/hint`, `POST /cinemoji/mode2/lives/continue` — hints and lives
 - `GET /cinemoji/progress`, `POST /cinemoji/progress/complete` — stage completion
+
+## QUIZMO
+
+QUIZMO is a timed trivia game (gameId `14`). Content is served from Supabase with JSON fallback. See [QUIZMO.md](QUIZMO.md) for game rules and reward formula.
+
+### `GET /quizmo/stages`
+
+List all available quiz stages (public view).
+
+Response (200): `{ "stages": [ { "stageId": "stage-1-pop-culture", "title": "Pop Culture", "totalQuestions": 10 }, ... ] }`
+
+### `GET /quizmo/stages/:stageId/questions`
+
+Get all questions for a stage (without correct answer indices).
+
+Response (200): `{ "stageId": "stage-1-pop-culture", "questions": [ { "levelIndex": 1, "imageUrl": "...", "question": "...", "options": ["A", "B", "C", "D"] }, ... ], "timerSeconds": 10 }`
+
+### `POST /quizmo/stages/:stageId/questions/:levelIndex/submit`
+
+Submit an answer for validation (per-question).
+
+Request body: `{ "answerIndex": 0 }`
+
+Response (200): `{ "correct": true, "correctAnswerIndex": 0 }`
+
+**Note:** Returns `correctAnswerIndex` even on wrong answers for MVP simplicity. Future versions may lock this down.
+
+### `POST /quizmo/stages/:stageId/complete`
+
+Complete a stage and claim rewards. Requires auth or guest token.
+
+Request body: `{ "sessionToken": "...", "stageId": "stage-1-pop-culture", "answers": [ { "levelIndex": 1, "answerIndex": 0 }, ... ] }`
+
+Response (200):
+```json
+{
+  "stageId": "stage-1-pop-culture",
+  "correctCount": 7,
+  "totalQuestions": 10,
+  "coinsEarned": 14,
+  "coins": 114,
+  "formula": "2 coins per correct answer",
+  "signupPromptCount": 1,
+  "signupRequired": false
+}
+```
+
+Guest-specific fields (`signupPromptCount`, `signupRequired`) only appear for guest sessions.
 
 ## Static Assets
 

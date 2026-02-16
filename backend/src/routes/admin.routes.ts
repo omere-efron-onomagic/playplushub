@@ -15,6 +15,14 @@ import {
   adminUpsertHint,
   adminDeleteHint,
 } from '../controllers/cinemojiAdmin.controller.js';
+import {
+  adminListQuizmoStages,
+  adminGetQuizmoStage,
+  adminUpsertQuizmoStage,
+  adminUpsertQuizmoQuestions,
+  adminDeleteQuizmoStage,
+  adminDeleteQuizmoQuestion,
+} from '../controllers/quizmoAdmin.controller.js';
 import { uploadImage } from '../controllers/upload.controller.js';
 import {
   validateCreateGameBody,
@@ -27,6 +35,11 @@ import {
   validateBatchUpsertPuzzlesBody,
   validateUpsertHintBody,
 } from '../validators/cinemoji.validator.js';
+import {
+  validateStageIdParam,
+  validateUpsertStageBody,
+  validateUpsertQuestionsBody,
+} from '../validators/quizmo.validator.js';
 
 export const adminRouter = Router();
 
@@ -45,3 +58,11 @@ adminRouter.post('/cinemoji/puzzles/batch', validateBatchUpsertPuzzlesBody, admi
 adminRouter.delete('/cinemoji/puzzles/:index', adminDeletePuzzle);
 adminRouter.post('/cinemoji/hints', validateUpsertHintBody, adminUpsertHint);
 adminRouter.delete('/cinemoji/hints', adminDeleteHint);
+
+// QUIZMO admin endpoints
+adminRouter.get('/quizmo/stages', adminListQuizmoStages);
+adminRouter.get('/quizmo/stages/:stageId', validateStageIdParam, adminGetQuizmoStage);
+adminRouter.post('/quizmo/stages', validateUpsertStageBody, adminUpsertQuizmoStage);
+adminRouter.post('/quizmo/stages/:stageId/questions', validateStageIdParam, validateUpsertQuestionsBody, adminUpsertQuizmoQuestions);
+adminRouter.delete('/quizmo/stages/:stageId', validateStageIdParam, adminDeleteQuizmoStage);
+adminRouter.delete('/quizmo/stages/:stageId/questions/:levelIndex', validateStageIdParam, adminDeleteQuizmoQuestion);

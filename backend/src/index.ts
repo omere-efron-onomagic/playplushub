@@ -18,6 +18,7 @@ import { gamesRouter } from './routes/games.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
 import { getUploadsDir } from './services/upload.service.js';
 import { syncJsonCatalogToSupabase } from './services/gameStore.service.js';
+import { syncQuizmoJsonToSupabase } from './services/quizmo.service.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import { logger } from './logger/logger.js';
 import cors from 'cors';
@@ -100,8 +101,11 @@ async function main() {
     try {
       const syncResult = await syncJsonCatalogToSupabase();
       logger.info('startup_games_catalog_sync', syncResult);
+
+      const quizmoSyncResult = await syncQuizmoJsonToSupabase();
+      logger.info('startup_quizmo_content_sync', quizmoSyncResult);
     } catch (error) {
-      logger.warn('startup_games_catalog_sync_failed', { error });
+      logger.warn('startup_content_sync_failed', { error });
     }
   }
 

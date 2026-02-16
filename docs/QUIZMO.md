@@ -18,7 +18,21 @@
 
 ## Content source of truth
 
-- Root folder: `QUIZMO/`
+### Dual Storage (Supabase + JSON)
+
+Content is served from **Supabase** with **JSON fallback** based on `CONTENT_STORE_DRIVER`:
+- `supabase`: Supabase only
+- `dual`: Try Supabase first, fallback to JSON files
+- `json`: JSON files only
+
+### Supabase Schema
+
+- **`quizmo_stages`**: stage metadata (stage_id, title, updated_at)
+- **`quizmo_questions`**: questions with composite key (stage_id, level_index)
+
+### JSON Seed Source
+
+- Root folder: `QUIZMO/` or `Quizmo/`
 - Stage folder: `QUIZMO/stage-1-pop-culture/`
 - Stage metadata: `stage.json`
 - One folder per level:
@@ -30,7 +44,9 @@ Each `question.json` includes:
 - `options` (exactly 4)
 - `correctAnswerIndex` (0..3)
 
-Backend parses these files and serves public stage/question endpoints.
+### Startup Sync
+
+When `CONTENT_STORE_DRIVER` is `supabase` or `dual`, the backend syncs JSON seed content to Supabase at startup.
 
 ## API contract
 
@@ -61,3 +77,24 @@ Completion response includes:
 - Stage completion verifies session token ownership
 - One-time claim enforced via session claim lock
 - Reward transaction logged in economy audit store
+
+## Admin Panel
+
+QUIZMO content is managed via `/admin/games/14/content`:
+
+- **Stage Management**: Create/update stages (stageId, title)
+- **Question Management**: Upsert/delete questions per stage
+- **Editor Component**: `QuizmoEditor` (registered for gameId `14`)
+- **Form Validation**: React Hook Form + Zod schemas
+- **UX Standards**: Inline errors, save feedback, unsaved state indicators
+
+### Admin API Endpoints
+
+- `GET /admin/quizmo/stages` — list all stages with questions
+- `GET /admin/quizmo/stages/:stageId` — get single stage
+- `POST /admin/quizmo/stages` — upsert stage metadata
+- `POST /admin/quizmo/stages/:stageId/questions` — upsert questions (replaces all)
+- `DELETE /admin/quizmo/stages/:stageId` — delete stage and questions
+- `DELETE /admin/quizmo/stages/:stageId/questions/:levelIndex` — delete single question
+
+All admin endpoints require Supabase (`CONTENT_STORE_DRIVER` must be `supabase` or `dual`).

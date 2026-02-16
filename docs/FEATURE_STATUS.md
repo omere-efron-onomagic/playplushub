@@ -32,7 +32,7 @@ Status labels:
 | No replay of completed rounds | Implemented | Server blocks start for completed rounds; all-rounds-complete gates further play |
 | Per-round rewards | Implemented | Server-authoritative; reward computed from game catalog when both levels in round completed |
 | Cinemoji (2 modes, staged progression, hints, lives) | Partial | Playable with keyboard/mobile input, drag matching, modals, and progress persistence; ad integration remains placeholder-only |
-| QUIZMO (Stage 1 Pop Culture quiz) | Implemented | 10 timed questions (10s each), API-driven content per level folder, backend-validated answers, and score-based coin awarding |
+| QUIZMO (Stage 1 Pop Culture quiz) | Implemented | 10 timed questions (10s each), dual Supabase/JSON content storage, backend-validated answers, score-based coin awarding, and admin content management |
 | Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth and guest users) |
 | No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
 | XP progression (+10 baseline) | Planned | Product rule defined in docs for MVP |
@@ -51,7 +51,7 @@ Status labels:
 | Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |
 | Backend persistence approach (JSON + Supabase) | Implemented | Auth/wallet: JSON; game catalog and uploads: JSON or Supabase (configurable) |
 | Admin panel | Implemented | Game-scoped content management; registry-based editor architecture; open access (MVP); new game types must include admin editor |
-| Admin game editors | Implemented | Link Four (rounds/levels) and Cinemoji (puzzles/hints) with form validation, inline errors, and save feedback |
+| Admin game editors | Implemented | Link Four (rounds/levels), Cinemoji (puzzles/hints), and QUIZMO (stages/questions) with form validation, inline errors, and save feedback |
 | Admin upload-first workflow | Implemented | Batch image upload integrated into editors; separate asset page for bulk operations |
 | Game catalog (JSON / Supabase) | Implemented | JSON or Supabase Postgres via `CONTENT_STORE_DRIVER`; dual-read fallback; economy reads from catalog |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |

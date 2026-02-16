@@ -78,10 +78,24 @@ export type CinemojiHint = {
   hintText: string;
 };
 
+export type QuizmoQuestion = {
+  levelIndex: number;
+  imageUrl: string;
+  question: string;
+  options: [string, string, string, string];
+  correctAnswerIndex: number;
+};
+
+export type QuizmoStage = {
+  stageId: string;
+  title: string;
+  questions: QuizmoQuestion[];
+};
+
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: adminBaseQuery,
-  tagTypes: ['AdminGames', 'AdminLevels', 'GameLevels', 'GameRounds', 'CinemojiPuzzles', 'CinemojiHints'],
+  tagTypes: ['AdminGames', 'AdminLevels', 'GameLevels', 'GameRounds', 'CinemojiPuzzles', 'CinemojiHints', 'QuizmoStages'],
   endpoints: (builder) => ({
     getAdminGames: builder.query<ApiGame[], void>({
       query: () => '/admin/games',
@@ -175,6 +189,46 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ['CinemojiHints'],
     }),
+    // QUIZMO admin endpoints
+    getQuizmoStages: builder.query<QuizmoStage[], void>({
+      query: () => '/admin/quizmo/stages',
+      transformResponse: (res: { stages: QuizmoStage[] }) => res.stages ?? [],
+      providesTags: ['QuizmoStages'],
+    }),
+    getQuizmoStage: builder.query<QuizmoStage, string>({
+      query: (stageId) => `/admin/quizmo/stages/${stageId}`,
+      providesTags: ['QuizmoStages'],
+    }),
+    upsertQuizmoStage: builder.mutation<void, { stageId: string; title: string }>({
+      query: ({ stageId, title }) => ({
+        url: '/admin/quizmo/stages',
+        method: 'POST',
+        body: { stageId, title },
+      }),
+      invalidatesTags: ['QuizmoStages'],
+    }),
+    upsertQuizmoQuestions: builder.mutation<void, { stageId: string; questions: QuizmoQuestion[] }>({
+      query: ({ stageId, questions }) => ({
+        url: `/admin/quizmo/stages/${stageId}/questions`,
+        method: 'POST',
+        body: { questions },
+      }),
+      invalidatesTags: ['QuizmoStages'],
+    }),
+    deleteQuizmoStage: builder.mutation<void, string>({
+      query: (stageId) => ({
+        url: `/admin/quizmo/stages/${stageId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['QuizmoStages'],
+    }),
+    deleteQuizmoQuestion: builder.mutation<void, { stageId: string; levelIndex: number }>({
+      query: ({ stageId, levelIndex }) => ({
+        url: `/admin/quizmo/stages/${stageId}/questions/${levelIndex}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['QuizmoStages'],
+    }),
   }),
 });
 
@@ -190,4 +244,10 @@ export const {
   useDeleteCinemojiPuzzleMutation,
   useUpsertCinemojiHintMutation,
   useDeleteCinemojiHintMutation,
+  useGetQuizmoStagesQuery,
+  useGetQuizmoStageQuery,
+  useUpsertQuizmoStageMutation,
+  useUpsertQuizmoQuestionsMutation,
+  useDeleteQuizmoStageMutation,
+  useDeleteQuizmoQuestionMutation,
 } = adminApi;

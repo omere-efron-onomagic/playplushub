@@ -21,11 +21,14 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-gv-gold/20 bg-gv-bg/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:px-6 sm:py-3">
         {/* Logo - shrink on mobile */}
-        <Link
-          to="/"
-          className="shrink-0 font-heading text-base font-bold tracking-wider text-gv-gold sm:text-xl"
-        >
-          GAME VAULT
+        <Link to="/" className="shrink-0" aria-label="PlayPlusHub Home">
+          <img
+            src="/logo.jpeg"
+            alt="PlayPlusHub"
+            className="h-8 w-auto sm:h-10"
+            width={180}
+            height={40}
+          />
         </Link>
 
         {/* Nav Links - hidden on small mobile, visible from sm */}
