@@ -20,13 +20,13 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-gv-gold/20 bg-gv-bg/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:px-6 sm:py-3">
-        {/* Logo - abbreviated on mobile to avoid covering adjacent content */}
+        {/* Logo */}
         <Link
           to="/"
-          className="shrink-0 font-heading text-base font-bold tracking-wider text-gv-gold sm:text-xl"
+          className="shrink-0 flex items-center rounded-lg border border-gv-gold/50 bg-gv-bg px-2.5 py-1 shadow-md sm:px-3.5 sm:py-1.5"
         >
-          <span className="sm:hidden">GV</span>
-          <span className="hidden sm:inline">GAME VAULT</span>
+          <span className="font-heading text-sm font-black tracking-wide text-white sm:text-base">PLAYPLUS</span>
+          <span className="font-heading text-sm font-black tracking-wide text-gv-gold sm:text-base">HUB</span>
         </Link>
 
         {/* Nav Links - progressive visibility by breakpoint (disappear one by one on shrink) */}

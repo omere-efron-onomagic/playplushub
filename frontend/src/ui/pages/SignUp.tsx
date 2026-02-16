@@ -11,7 +11,10 @@ export function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [avatar, setAvatar] = useState<'boy' | 'girl' | null>(null);
+  const [avatar, setAvatar] = useState<'boy' | 'girl' | null>(() => {
+    const saved = localStorage.getItem('guest-avatar-choice');
+    return saved === 'boy' || saved === 'girl' ? saved : null;
+  });
   const [errorMessage, setErrorMessage] = useState('');
   const [register, { isLoading }] = useRegisterMutation();
   const [migrateGuest] = useMigrateGuestMutation();

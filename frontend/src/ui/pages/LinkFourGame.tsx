@@ -3,6 +3,7 @@ import { avatars } from '@/data/avatars';
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
+import { GuestRewardPopup } from '@/ui/components/GuestRewardPopup';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
 import { toImageUrl } from '@/utils/imageUrl';
@@ -53,6 +54,7 @@ export function LinkFourGame() {
   const [showSoftPrompt, setShowSoftPrompt] = useState(false);
   const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
   const [showRules, setShowRules] = useState(false);
+  const [showGuestReward, setShowGuestReward] = useState(false);
 
   const equippedAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
 
@@ -115,7 +117,12 @@ export function LinkFourGame() {
             }),
           );
           setGuestSignupRequired(response.signupRequired ?? false);
-          setShowSoftPrompt(!(response.signupRequired ?? false));
+          const isFirstRound = (user.signupPromptCount ?? 0) === 0;
+          if (isFirstRound) {
+            setShowGuestReward(true);
+          } else {
+            setShowSoftPrompt(!(response.signupRequired ?? false));
+          }
         } else {
           dispatch(setCoins(response.coins));
         }
@@ -246,7 +253,16 @@ export function LinkFourGame() {
             </Link>
           )}
         </div>
-        {user.isGuest && showSoftPrompt && !guestSignupRequired && (
+        {user.isGuest && showGuestReward && (
+          <GuestRewardPopup
+            gameId={gameId ?? '1'}
+            onContinuePlay={() => {
+              setShowGuestReward(false);
+              navigate(`/game/${gameId ?? '1'}`);
+            }}
+          />
+        )}
+        {user.isGuest && showSoftPrompt && !guestSignupRequired && !showGuestReward && (
           <GuestSignupPrompt onDismiss={() => setShowSoftPrompt(false)} />
         )}
       </div>
@@ -268,7 +284,7 @@ export function LinkFourGame() {
         </h2>
         <div className="group/avatar relative cursor-pointer" onClick={() => setShowRules((v) => !v)}>
           <div
-            className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-transform group-hover/avatar:scale-110 group-active/avatar:scale-95"
+            className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-all duration-200 group-hover/avatar:scale-110 group-hover/avatar:border-gv-gold group-hover/avatar:shadow-[0_0_18px_rgba(212,165,32,0.5)] group-active/avatar:scale-95"
           >
             <img
               src={equippedAvatar.image}
