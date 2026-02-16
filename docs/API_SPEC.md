@@ -233,9 +233,13 @@ Request body:
 
 ```json
 {
-  "gameId": "1"
+  "gameId": "1",
+  "roundId": "round-1"
 }
 ```
+
+- `roundId` is **required** for round-based games (games with `totalRounds`). Omit for non-round games.
+- Start is rejected if the round was already completed by this user/guest (no replay).
 
 Response (200):
 
@@ -250,15 +254,18 @@ Response (200):
 
 Possible errors:
 
-- `400` invalid gameId
+- `400` invalid gameId, or missing `roundId` for round-based games
 - `401` authorization or guest token required, or invalid/expired token
 - `404` user or guest not found
-- `422` insufficient funds (code: `INSUFFICIENT_FUNDS`, includes `coinCost`, `coins`)
+- `422` insufficient funds (code: `INSUFFICIENT_FUNDS`, includes `coinCost`, `coins`), or round already completed (code: `ROUND_ALREADY_COMPLETED`)
 - `500` server error
 
 ### `POST /wallet/session/claim`
 
 Claim reward after game completion. Auth required: Bearer token or `X-Guest-Token`. Enforces one-time claim per session.
+
+- For round-based games, claim succeeds only when both levels in the round are completed (`levelsCompleted === totalLevels && won`). Reward is applied once per round; the round is marked complete and cannot be replayed.
+- Sign-up prompt cadence (guests) increments after each round completion, not only when all rounds are done.
 
 Request body:
 
@@ -297,6 +304,159 @@ Possible errors:
 
 Returns `410 Gone` with message directing clients to use session/start and session/claim instead.
 
+## Games (Public)
+
+### `GET /games`
+
+Returns all enabled games. No auth required.
+
+Response (200):
+
+```json
+{
+  "games": [
+    {
+      "gameId": "1",
+      "slug": "4-pics-1-word",
+      "title": "4 Pics 1 Word",
+      "category": "Puzzle",
+      "coverImageUrl": "https://...",
+      "coinCost": 2,
+      "rewardCoins": 20,
+      "totalLevels": 10,
+      "totalRounds": 5,
+      "levelsPerRound": 2,
+      "enabled": true,
+      "updatedAt": "2026-02-16T00:00:00.000Z",
+      "rating": 4.5,
+      "players": "12.3K",
+      "isHot": true,
+      "isPick": false
+    }
+  ]
+}
+```
+
+### `GET /games/:gameId`
+
+Returns a single game by id. No auth required. Returns 404 if not found or disabled. Round-based games include `totalRounds` and `levelsPerRound`.
+
+### `GET /games/:gameId/rounds`
+
+Returns rounds for a game (round-based games). No auth required.
+
+Response (200):
+
+```json
+{
+  "rounds": [
+    { "roundId": "round-1", "levels": [] },
+    { "roundId": "round-2", "levels": [] }
+  ]
+}
+```
+
+### `GET /games/:gameId/rounds/:roundId/levels`
+
+Returns levels for a specific round. No auth required. Returns 404 if round not found.
+
+Response (200):
+
+```json
+{
+  "levels": [
+    {
+      "gameId": "1",
+      "roundId": "round-1",
+      "level": 1,
+      "answer": "WATER",
+      "images": ["url1", "url2", "url3", "url4"],
+      "extraLetters": "OEYMMRB",
+      "enabled": true
+    }
+  ]
+}
+```
+
+### `GET /games/:gameId/progress`
+
+Returns completed round IDs for the authenticated user or guest. Auth required: Bearer token or `X-Guest-Token`.
+
+Response (200):
+
+```json
+{
+  "completedRoundIds": ["round-1", "round-2"]
+}
+```
+
+### `GET /games/:gameId/levels`
+
+Returns Link Four levels for the game (flat, all rounds). No auth required.
+
+Response (200):
+
+```json
+{
+  "levels": [
+    {
+      "gameId": "1",
+      "roundId": "round-1",
+      "level": 1,
+      "answer": "WATER",
+      "images": ["url1", "url2", "url3", "url4"],
+      "extraLetters": "OEYMMRB",
+      "enabled": true
+    }
+  ]
+}
+```
+
+## Admin (Protected)
+
+All admin endpoints require `X-Admin-Secret` header matching `ADMIN_SECRET` env (min 8 chars).
+If `ADMIN_SECRET` is unset or too short, admin panel returns 503.
+
+### `GET /admin/games`
+
+Returns all games including disabled.
+
+### `POST /admin/games`
+
+Create a new game.
+
+Request body: `gameId`, `slug`, `title`, `category`, `coverImageUrl`, `coinCost`, `rewardCoins`, optional `totalLevels`, `enabled`, `rating`, `players`, `isHot`, `isPick`.
+
+Returns 409 if `gameId` already exists.
+
+### `PATCH /admin/games/:gameId`
+
+Update game metadata. Partial body allowed.
+
+### `POST /admin/games/:gameId/levels`
+
+Upsert levels for the game. Replaces existing levels for that game.
+
+Request body: `{ "levels": [ { "roundId", "level", "answer", "images", "extraLetters", "enabled?" } ] }`
+
+### `POST /admin/games/:gameId/rounds`
+
+Create a round with levels (upload-first flow). Extra letters are auto-generated from the answer.
+
+Request body: `{ "roundId": "round-6", "levels": [ { "answer": "WORD", "images": ["url1","url2","url3","url4"] } ] }`
+
+### `POST /admin/uploads/images`
+
+Upload a single image. Multipart form field name: `image`. Allowed: JPEG, PNG, WebP, max 5MB.
+
+Response (201): `{ "url": "/uploads/filename.jpg" }`
+
+## Static Assets
+
+### `/uploads/*`
+
+Served statically from backend `uploads/` directory. Used for admin-uploaded game images.
+
 ## Legacy/Non-Core Endpoints
 
 The following routes exist in code but are not core to the current PlayPlusHub
@@ -314,7 +474,7 @@ primary game economy API surface.
 
 ## Suggested Future API Domains
 
-- `/games`: metadata, playable level definitions
+- `/games`: metadata, playable level definitions — Implemented
 - `/progress`: per-user level/XP progression
 - `/economy`: spend, reward, transactions, balances
 - `/avatars`: inventory, purchase, equip

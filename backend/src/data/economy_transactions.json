@@ -259,5 +259,70 @@
     "sessionId": "ee142d3a-15e3-4f2d-ae88-f4af9d8f905c",
     "guestId": "7c174b12-9235-4abb-9307-ebbe697209eb",
     "createdAt": "2026-02-15T22:48:13.984Z"
+  },
+  {
+    "txId": "0b7021dd-f81d-4c25-b7bf-c270f05c29b1",
+    "userId": "7c174b12-9235-4abb-9307-ebbe697209eb",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 46,
+    "balanceAfter": 44,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "62a24cf9-788b-4a4c-97b4-b6e5d353fba6",
+    "guestId": "7c174b12-9235-4abb-9307-ebbe697209eb",
+    "createdAt": "2026-02-16T07:35:59.414Z"
+  },
+  {
+    "txId": "9de73440-69a0-4904-a408-12681ccdc02e",
+    "userId": "7c174b12-9235-4abb-9307-ebbe697209eb",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 44,
+    "balanceAfter": 42,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "b0749518-40cf-48a0-9ee2-c8d90ae65830",
+    "guestId": "7c174b12-9235-4abb-9307-ebbe697209eb",
+    "createdAt": "2026-02-16T07:53:46.730Z"
+  },
+  {
+    "txId": "6da96e84-8b35-4fc7-8ca6-6a9b10f14f7b",
+    "userId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 10,
+    "balanceAfter": 8,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "3ce6d11b-39d3-4d87-a721-9bd2ed07e506",
+    "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "createdAt": "2026-02-16T07:54:38.993Z"
+  },
+  {
+    "txId": "4c6d4b39-4a84-443b-9baf-e5c62b4b15ed",
+    "userId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 8,
+    "balanceAfter": 6,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "124afaac-afc6-4e45-b4e1-a14a91735b4a",
+    "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "createdAt": "2026-02-16T07:55:21.056Z"
+  },
+  {
+    "txId": "f07a95f9-3960-42a9-b3f2-f9052c094223",
+    "userId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 6,
+    "balanceAfter": 4,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "0a3f83a5-3ac4-48b3-b891-22747ca942e8",
+    "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "createdAt": "2026-02-16T07:58:53.501Z"
   }
 ]

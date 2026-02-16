@@ -23,15 +23,22 @@ The brand is currently "PlayPlusHub" and may change later.
 ## Implemented vs Planned
 
 - Implemented (MVP quality): UI shell, game catalog pages, login/signup, one game,
-  basic wallet reward endpoint, guest mode state handling, E2E regression tests (Playwright)
+  basic wallet reward endpoint, guest mode state handling, admin panel (games/levels/upload),
+  dynamic game catalog and Link Four levels from API, E2E regression tests (Playwright),
+  grouped rounds (5 rounds × 2 levels), no-replay completion gating, round progression,
+  admin upload-first level creation (4 images + answer, auto extra letters)
 - Partial: ad placements in UI, onboarding conversion behavior, avatar/shop/favorites/
-  trending logic, mixed backend model
+  trending logic, mixed backend model. Sign-up prompt cadence evaluates after each round completion.
 - Planned: full multi-game backend validation, missions, leaderboard, full economy
   enforcement, anti-cheat, full Mongo migration
 
 See `docs/FEATURE_STATUS.md` for the full matrix.
 
 **Logging**: Backend uses Winston for JSON structured logs. Default level is `debug`; set `LOG_LEVEL` to control verbosity. Passwords and tokens are redacted in logs.
+
+**Round-based progression (Link Four)**: Levels are grouped into rounds (e.g. 5 rounds × 2 levels). Players spend once per round to play and receive a reward when both levels in that round are completed. Completed rounds cannot be replayed; when all rounds are done, play is blocked until new rounds are added.
+
+**Admin authoring flow**: Create rounds via the admin panel by uploading 4 images per level and entering only the answer; extra letters are auto-generated server-side.
 
 ## Docs Index
 
@@ -43,6 +50,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/ROADMAP_MVP.md` - prioritized roadmap and milestones
 - `docs/USER_ECONOMNY.MD` - legacy filename retained; points to updated economy doc
 - `docs/DEVELOPER_ONBOARDING.md` - shared Cursor workflow, rules, skills, worktrees, and team best practices
+- `docs/TEST_SCENARIOS.md` - backend unit tests and integration/E2E test scenarios
 
 ## Local Setup
 
@@ -61,6 +69,7 @@ Backend (`backend/.env`):
 - `FRONTEND_URL` (comma-separated allowed origins)
 - `MONGODB_URI` (optional in current MVP; server can run JSON-backed auth flows)
 - `AUTH_SECRET` (recommended for non-default token signing)
+- `ADMIN_SECRET` (optional; min 8 chars for admin panel at `/admin`; image upload, game/level CRUD)
 - `LOG_LEVEL` (optional; default `debug` for verbose logs; use `info`, `warn`, or `error` to reduce output)
 
 Frontend (`frontend/.env.development`):
@@ -111,7 +120,7 @@ playplushub/
     src/
       ui/pages/         # app pages
       ui/components/    # shared page components
-      data/             # static games, avatars, level data
+      data/             # static categories; games/levels from API
       store/            # Redux + RTK Query
       sockets/          # socket client scaffold (not active in MVP)
   docs/

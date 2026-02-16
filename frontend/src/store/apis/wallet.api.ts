@@ -12,7 +12,7 @@ type RewardCoinsResponse = {
   coins: number;
 };
 
-type StartSessionPayload = { gameId: string };
+type StartSessionPayload = { gameId: string; roundId?: string };
 
 type StartSessionResponse = {
   sessionId: string;

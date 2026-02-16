@@ -19,8 +19,11 @@ export type GameCatalogEntry = {
   gameId: string;
   coinCost: number;
   rewardCoins: number;
-  /** For level-based games (e.g. Link Four). Total levels to complete for full reward. */
+  /** For level-based games. Total levels to complete for full reward. */
   totalLevels?: number;
+  /** For round-based games. Levels per round. */
+  levelsPerRound?: number;
+  totalRounds?: number;
 };
 
 export type GameSessionPayload = {
@@ -28,6 +31,8 @@ export type GameSessionPayload = {
   userId: string;
   gameId: string;
   exp: number;
+  /** For round-based games. Required when game has totalRounds. */
+  roundId?: string;
   /** When true, userId holds the guest ID; claim requires X-Guest-Token. */
   isGuest?: boolean;
 };

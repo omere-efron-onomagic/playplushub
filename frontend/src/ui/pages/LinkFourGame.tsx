@@ -1,9 +1,10 @@
-import { linkFourLevels } from '@/data/linkFourLevels';
+import { useGetGameLevelsQuery, useGetRoundLevelsQuery } from '@/store/apis/games.api';
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
+import { toImageUrl } from '@/utils/imageUrl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
@@ -16,7 +17,7 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-type PlayLocationState = { sessionToken?: string; sessionId?: string } | null;
+type PlayLocationState = { sessionToken?: string; sessionId?: string; roundId?: string } | null;
 
 export function LinkFourGame() {
   const dispatch = useAppDispatch();
@@ -27,6 +28,16 @@ export function LinkFourGame() {
   const { gameId } = useParams<{ gameId: string }>();
   const playState = location.state as PlayLocationState;
   const sessionToken = playState?.sessionToken;
+  const roundId = playState?.roundId;
+  const byRound = useGetRoundLevelsQuery(
+    { gameId: gameId ?? '1', roundId: roundId ?? '' },
+    { skip: !gameId || !roundId },
+  );
+  const byFlat = useGetGameLevelsQuery(gameId ?? '1', {
+    skip: !gameId || !!roundId,
+  });
+  const linkFourLevels = roundId ? (byRound.data ?? []) : (byFlat.data ?? []);
+  const levelsLoading = roundId ? byRound.isLoading : byFlat.isLoading;
   const totalLevels = linkFourLevels.length;
   const [currentLevel, setCurrentLevel] = useState(0);
   const [selectedLetters, setSelectedLetters] = useState<
@@ -43,9 +54,11 @@ export function LinkFourGame() {
 
   const level = linkFourLevels[currentLevel];
   const needsSessionRedirect = !sessionToken;
+  const hasLevels = linkFourLevels.length > 0;
 
   // Build shuffled letter bank for current level (hooks before any returns)
   const letterBank = useMemo(() => {
+    if (!level) return [];
     const answerLetters = level.answer.split('');
     const extra = level.extraLetters.split('');
     return shuffleArray([...answerLetters, ...extra]);
@@ -58,6 +71,13 @@ export function LinkFourGame() {
       navigate(`/game/${gameId ?? '1'}`, { replace: true });
     }
   }, [needsSessionRedirect, navigate, gameId]);
+
+  const needsRoundId = roundId && linkFourLevels.length === 0 && !levelsLoading;
+  useEffect(() => {
+    if (needsRoundId) {
+      navigate(`/game/${gameId ?? '1'}`, { replace: true });
+    }
+  }, [needsRoundId, navigate, gameId]);
 
   useEffect(() => {
     setSelectedLetters([]);
@@ -115,6 +135,7 @@ export function LinkFourGame() {
 
   const handleLetterClick = useCallback(
     (letter: string, bankIndex: number) => {
+      if (!level) return;
       if (usedBankSlots.has(bankIndex)) return;
       if (selectedLetters.length >= level.answer.length) return;
 
@@ -147,7 +168,7 @@ export function LinkFourGame() {
         }
       }
     },
-    [usedBankSlots, selectedLetters, level.answer, currentLevel]
+    [usedBankSlots, selectedLetters, level, currentLevel]
   );
 
   const handleRemoveLetter = useCallback(
@@ -171,6 +192,15 @@ export function LinkFourGame() {
   if (needsSessionRedirect) {
     return null;
   }
+  if (levelsLoading || !hasLevels || needsRoundId || !level) {
+    return (
+      <div className="flex min-h-[calc(100vh-60px)] items-center justify-center">
+        <p className="font-heading text-gv-text-muted">
+          {levelsLoading ? 'Loading levels...' : 'No levels available'}
+        </p>
+      </div>
+    );
+  }
 
   if (gameComplete) {
     const isGuestAtThreshold = user.isGuest && guestSignupRequired === true;
@@ -182,7 +212,7 @@ export function LinkFourGame() {
             YOU WIN!
           </h1>
           <p className="mt-2 text-base text-gv-text-muted sm:mt-3 sm:text-lg">
-            All 10 levels completed!
+            All {totalLevels} levels completed!
           </p>
           <div className="mt-2 font-heading text-xl font-bold text-gv-gold sm:text-2xl">
             +{earnedCoins} Coins Earned
@@ -196,7 +226,7 @@ export function LinkFourGame() {
                 Sign up to continue playing
               </Link>
               <Link
-                to="/"
+                to={`/game/${gameId ?? '1'}`}
                 className="text-sm text-gv-text-muted underline transition-colors hover:text-gv-gold"
               >
                 Back to machine
@@ -204,7 +234,7 @@ export function LinkFourGame() {
             </div>
           ) : (
             <Link
-              to="/"
+              to={`/game/${gameId ?? '1'}`}
               className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-6 py-3 font-heading text-sm font-bold tracking-[0.2em] text-gv-bg shadow-lg shadow-gv-gold/20 transition-all hover:scale-105 active:scale-[0.98] touch-manipulation sm:mt-8 sm:px-8"
             >
               BACK TO MACHINE
@@ -223,16 +253,16 @@ export function LinkFourGame() {
       {/* Header - touch-friendly back */}
       <div className="mb-3 flex w-full items-center justify-between sm:mb-4">
         <Link
-          to="/game/1"
+          to={`/game/${gameId ?? '1'}`}
           className="flex min-h-[44px] min-w-[44px] items-center gap-1 py-2 text-sm text-gv-text-muted transition-colors hover:text-gv-gold touch-manipulation sm:min-h-0 sm:min-w-0"
         >
           {'\u2190'} Back
         </Link>
         <h2 className="font-heading text-base font-bold tracking-wider text-gv-gold sm:text-lg">
-          LEVEL {level.level}/10
+          LEVEL {level.level}/{totalLevels}
         </h2>
         <div className="min-h-[44px] flex items-center text-sm text-gv-text-muted sm:min-h-0">
-          {solvedLevels.size}/10
+          {solvedLevels.size}/{totalLevels}
         </div>
       </div>
 
@@ -260,7 +290,7 @@ export function LinkFourGame() {
             className="aspect-square overflow-hidden rounded-lg border border-gv-border sm:rounded-xl"
           >
             <img
-              src={img}
+              src={toImageUrl(img)}
               alt={`Clue ${i + 1}`}
               className="h-full w-full object-cover"
             />

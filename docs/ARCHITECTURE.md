@@ -39,7 +39,8 @@ unification.
 
 ### Current Data Behavior
 
-- Game catalog and many page sections are static data-driven.
+- Game catalog and Link Four levels are fetched from `GET /games`, `GET /games/:gameId/levels`, `GET /games/:gameId/rounds`, and `GET /games/:gameId/rounds/:roundId/levels`.
+- Round-based games (e.g. Link Four) organize levels into groups; players complete one round at a time; progression is fetched via `GET /games/:gameId/progress`.
 - Auth/wallet state is synced through API + Redux.
 - Guest profile behavior exists but requires fuller persistence hardening.
 
@@ -55,13 +56,16 @@ unification.
 
 - Auth and wallet profile data: JSON-backed storage (`backend/src/data/users.json`)
 - Economy: `economy_transactions.json` (append-only audit), `claimed_sessions.json` (replay protection)
-- Game catalog: server-authoritative in `backend/src/services/economy/gameCatalog.service.ts`
+- Game catalog: `games_catalog.json`; Link Four levels: `link_four_levels.json`; economy reads via `gameCatalog.service.ts`
+- Round progression: `round_progression.json` (per-actor completed rounds; migration-safe defaults when missing)
+- Uploaded images: local filesystem in `backend/uploads/` (served at `/uploads/`)
 - Legacy/scaffold endpoints: some routes still rely on Mongo-backed models
 
 ### API Domain Groups
 
 - `auth`: register/login/session check, guest lifecycle, guest-to-account migration
 - `wallet`: session start (spend before play), session claim (server-computed reward)
+- `games`: public read of catalog and levels; admin CRUD and upload behind `X-Admin-Secret`
 - `users` and `posts`: available in code, treated as legacy/non-core for product
 
 ### Guest Persistence
@@ -77,7 +81,7 @@ unification.
 2. Auth token (if available) is attached as Bearer header.
 3. Guest token (if available) is attached as `X-Guest-Token` header.
 4. Backend validates token for protected routes.
-5. Wallet session flow (auth and guest): Client calls `POST /wallet/session/start` before play (with Bearer or X-Guest-Token); server deducts coin cost, returns signed session token. After game completion, client calls `POST /wallet/session/claim` with token and outcome; server verifies one-time claim and computes reward from authoritative game catalog.
+5. Wallet session flow (auth and guest): Client calls `POST /wallet/session/start` before play (with Bearer or X-Guest-Token); for round-based games, `roundId` is required. Server rejects start if the round is already completed. After game completion (both levels in round), client calls `POST /wallet/session/claim`; server verifies one-time claim, marks round complete, and applies reward.
 6. Economy transactions (spend/reward) are logged append-only in `economy_transactions.json`; guest transactions include `guestId`.
 7. Wallet/auth updates are persisted in JSON-backed user store.
 8. Guest progression (spend, reward, cadence) is persisted via wallet session flow in JSON-backed guest store.
@@ -94,9 +98,10 @@ unification.
 ### Guest Prompt Cadence Flow
 
 1. Each successful guest reward (`POST /wallet/session/claim` with earned coins) increments `signupPromptCount` by 1.
-2. When `signupPromptCount >= 5`, backend sets `signupRequired=true`.
-3. Frontend shows a soft sign-up prompt after each win (dismissible) when below threshold.
-4. When `signupRequired` is true, frontend gates play/replay (SignupRequiredGate) and blocks
+2. Sign-up prompt cadence is evaluated **after each completed round claim**, not only after finishing all groups.
+3. When `signupPromptCount >= 5`, backend sets `signupRequired=true`.
+4. Frontend shows a soft sign-up prompt after each win (dismissible) when below threshold.
+5. When `signupRequired` is true, frontend gates play/replay (SignupRequiredGate) and blocks
    game entry until the user signs up or logs in.
 
 ### Guest-to-Account Migration Flow
@@ -121,6 +126,7 @@ unification.
 Implemented (session-based economy):
 
 - Server deducts coin cost at `POST /wallet/session/start`; no play without sufficient funds.
+- For round-based games: one charge per round; reward once when both levels in the round are completed; no replay of completed rounds; when all rounds are complete, further play is blocked until new rounds are added.
 - Server computes rewards from authoritative game catalog and validated outcome at `POST /wallet/session/claim`.
 - Client sends session token and outcome (levelsCompleted, totalLevels, won), not authoritative currency values.
 - One-time claim per session; duplicate claims return 409.

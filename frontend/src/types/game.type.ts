@@ -17,4 +17,6 @@ export type Game = {
   players: string;
   isHot: boolean;
   isPick: boolean;
+  totalRounds?: number;
+  levelsPerRound?: number;
 };

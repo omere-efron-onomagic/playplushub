@@ -16,6 +16,7 @@ export function createGameSessionToken(
   actorId: string,
   gameId: string,
   isGuest = false,
+  roundId?: string,
 ): { sessionId: string; token: string } {
   const sessionId = randomUUID();
   const payload: GameSessionPayload = {
@@ -23,6 +24,7 @@ export function createGameSessionToken(
     userId: actorId,
     gameId,
     exp: Date.now() + SESSION_TTL_MS,
+    roundId,
     isGuest: isGuest ? true : undefined,
   };
   const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');

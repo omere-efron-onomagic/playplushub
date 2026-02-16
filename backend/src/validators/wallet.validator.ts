@@ -23,10 +23,13 @@ export function validateSessionStartBody(req: Request, res: Response, next: Next
     return res.status(400).json({ message: 'body is required' });
   }
 
-  const { gameId } = req.body as { gameId?: unknown };
+  const { gameId, roundId } = req.body as { gameId?: unknown; roundId?: unknown };
 
   if (typeof gameId !== 'string' || !gameId.trim()) {
     return res.status(400).json({ message: 'gameId is required' });
+  }
+  if (roundId !== undefined && (typeof roundId !== 'string' || !roundId.trim())) {
+    return res.status(400).json({ message: 'roundId must be a non-empty string when provided' });
   }
 
   return next();
