@@ -56,5 +56,13 @@ export type HintBody = {
 };
 
 export type ContinueLivesBody = {
+  mode: 'mode2';
+  stage: number;
+  roundIndex: number;
   watchRewarded: boolean;
+};
+
+export type StageCompleteBody = {
+  mode: CinemojiMode;
+  stage: number;
 };

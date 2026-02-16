@@ -100,9 +100,40 @@ export function validateContinueLivesBody(req: Request, res: Response, next: Nex
     return reject(req, res, 'body is required');
   }
 
-  const { watchRewarded } = req.body as { watchRewarded?: unknown };
+  const { mode, stage, roundIndex, watchRewarded } = req.body as {
+    mode?: unknown;
+    stage?: unknown;
+    roundIndex?: unknown;
+    watchRewarded?: unknown;
+  };
+  if (mode !== 'mode2') {
+    return reject(req, res, 'mode must be mode2');
+  }
+  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > 8) {
+    return reject(req, res, 'stage must be an integer between 1 and 8');
+  }
+  if (!Number.isInteger(roundIndex) || (roundIndex as number) < 1 || (roundIndex as number) > 5) {
+    return reject(req, res, 'roundIndex must be an integer between 1 and 5');
+  }
   if (typeof watchRewarded !== 'boolean') {
     return reject(req, res, 'watchRewarded must be boolean');
   }
+  return next();
+}
+
+export function validateStageCompleteBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return reject(req, res, 'body is required');
+  }
+
+  const { mode, stage } = req.body as { mode?: unknown; stage?: unknown };
+  if (mode !== 'mode1' && mode !== 'mode2') {
+    return reject(req, res, 'mode must be mode1 or mode2');
+  }
+  const maxStage = mode === 'mode1' ? 4 : 8;
+  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > maxStage) {
+    return reject(req, res, `stage must be an integer between 1 and ${maxStage}`);
+  }
+
   return next();
 }

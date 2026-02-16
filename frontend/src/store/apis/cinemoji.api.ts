@@ -55,7 +55,20 @@ type HintPayload = {
 };
 
 type ContinueLivesPayload = {
+  mode: 'mode2';
+  stage: number;
+  roundIndex: number;
   watchRewarded: boolean;
+};
+
+type StageProgress = {
+  mode1CompletedStages: number[];
+  mode2CompletedStages: number[];
+};
+
+type CompleteStagePayload = {
+  mode: 'mode1' | 'mode2';
+  stage: number;
 };
 
 export const cinemojiApi = createApi({
@@ -89,6 +102,12 @@ export const cinemojiApi = createApi({
     >({
       query: (body) => ({ url: '/cinemoji/mode2/lives/continue', method: 'POST', body }),
     }),
+    getCinemojiProgress: builder.query<StageProgress, void>({
+      query: () => '/cinemoji/progress',
+    }),
+    completeCinemojiStage: builder.mutation<StageProgress, CompleteStagePayload>({
+      query: (body) => ({ url: '/cinemoji/progress/complete', method: 'POST', body }),
+    }),
   }),
 });
 
@@ -98,4 +117,6 @@ export const {
   useSubmitMode2MatchMutation,
   useRequestHintMutation,
   useContinueMode2LivesMutation,
+  useGetCinemojiProgressQuery,
+  useCompleteCinemojiStageMutation,
 } = cinemojiApi;

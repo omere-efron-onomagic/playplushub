@@ -5,11 +5,13 @@ import {
   normalizeCinemojiGuess,
   reloadCinemojiConfig,
 } from '../services/cinemoji.service.js';
+import { getCinemojiProgress, markCinemojiStageCompleted } from '../services/cinemojiProgress.service.js';
 import type {
   ContinueLivesBody,
   HintBody,
   Mode1SubmitBody,
   Mode2SubmitBody,
+  StageCompleteBody,
 } from '../types/cinemoji.types.js';
 
 export async function getCinemojiContent(_req: Request, res: Response) {
@@ -136,7 +138,15 @@ export async function getStageHint(req: Request, res: Response) {
 
 export function continueMode2Lives(req: Request, res: Response) {
   try {
-    const { watchRewarded } = req.body as ContinueLivesBody;
+    const { watchRewarded, stage, roundIndex } = req.body as ContinueLivesBody;
+    logger.info('cinemoji continue lives requested', {
+      requestId: req.requestId,
+      userId: req.authUserId,
+      guestId: req.guestId,
+      stage,
+      roundIndex,
+      watchRewarded,
+    });
     if (!watchRewarded) {
       return res.status(200).json({
         granted: false,
@@ -152,6 +162,59 @@ export function continueMode2Lives(req: Request, res: Response) {
     });
   } catch (error) {
     logger.error('cinemoji continue lives failed', { err: error, requestId: req.requestId });
+    return res.status(500).json({ message: 'server error' });
+  }
+}
+
+export async function getCinemojiStageProgress(req: Request, res: Response) {
+  try {
+    const actorId = req.authUserId ?? req.guestId;
+    const isGuest = Boolean(req.guestId);
+    if (!actorId) {
+      return res.status(401).json({ message: 'unauthorized' });
+    }
+
+    const progress = await getCinemojiProgress(actorId, isGuest);
+    return res.status(200).json(progress);
+  } catch (error) {
+    logger.error('cinemoji progress fetch failed', {
+      err: error,
+      requestId: req.requestId,
+      userId: req.authUserId,
+      guestId: req.guestId,
+    });
+    return res.status(500).json({ message: 'server error' });
+  }
+}
+
+export async function completeCinemojiStage(req: Request, res: Response) {
+  try {
+    const actorId = req.authUserId ?? req.guestId;
+    const isGuest = Boolean(req.guestId);
+    if (!actorId) {
+      return res.status(401).json({ message: 'unauthorized' });
+    }
+
+    const { mode, stage } = req.body as StageCompleteBody;
+    const progress = await markCinemojiStageCompleted(actorId, isGuest, mode, stage);
+
+    logger.info('cinemoji stage completed', {
+      requestId: req.requestId,
+      userId: req.authUserId,
+      guestId: req.guestId,
+      mode,
+      stage,
+      progress,
+    });
+
+    return res.status(200).json(progress);
+  } catch (error) {
+    logger.error('cinemoji stage completion failed', {
+      err: error,
+      requestId: req.requestId,
+      userId: req.authUserId,
+      guestId: req.guestId,
+    });
     return res.status(500).json({ message: 'server error' });
   }
 }

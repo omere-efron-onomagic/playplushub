@@ -62,6 +62,7 @@ Goal: add additional fully-playable game loops to increase retention.
 - [x] Add Cinemoji as a second playable game in the main catalog
 - [x] Implement two gameplay modes with staged progression
 - [x] Add hint/rewarded placeholder and ad placeholder surfaces in-game
+- [x] Improve Cinemoji UX: keyboard/mobile input, drag-to-match, lives/hint modals, stage selection persistence
 
 Exit criteria:
 
