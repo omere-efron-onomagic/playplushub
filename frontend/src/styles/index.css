@@ -129,6 +129,35 @@
   animation: shake 0.4s ease-in-out;
 }
 
+/* Firework particles */
+@keyframes firework-rise {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.3); }
+}
+@keyframes firework-spread {
+  0% { opacity: 1; transform: translate(0, 0) scale(0.5); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: var(--fw-translate) scale(0); }
+}
+@keyframes level-count {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.animate-firework-spread {
+  animation: firework-spread 1s ease-out forwards;
+}
+.animate-level-count {
+  animation: level-count 0.6s ease-in-out;
+}
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

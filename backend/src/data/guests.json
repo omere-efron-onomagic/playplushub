@@ -342,10 +342,28 @@
     "signupRequired": false
   },
   {
-    "id": "522c7302-21cc-4722-b9ef-83711e30c95a",
-    "coins": 6,
-    "createdAt": "2026-02-16T11:28:15.783Z",
-    "updatedAt": "2026-02-16T12:02:57.289Z",
+    "id": "a381762c-cbef-4746-81cc-3ddc6e5a9baa",
+    "coins": 0,
+    "createdAt": "2026-02-16T11:18:39.879Z",
+    "updatedAt": "2026-02-16T12:01:05.473Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "c5f78e22-12c6-4b33-915e-dbd7aff6c2bc",
+    "coins": 10,
+    "createdAt": "2026-02-16T11:58:21.806Z",
+    "updatedAt": "2026-02-16T11:58:21.806Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "e752d785-4577-4e5f-bdfd-a9f699dea655",
+    "coins": 2,
+    "createdAt": "2026-02-16T12:01:31.671Z",
+    "updatedAt": "2026-02-16T12:13:44.675Z",
     "migratedTo": null,
     "signupPromptCount": 0,
     "signupRequired": false

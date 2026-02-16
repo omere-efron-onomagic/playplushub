@@ -10,10 +10,12 @@ import {
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCoins, setGuestProgression } from '@/store/slices/user.slice';
+import { GuestRewardPopup } from '@/ui/components/GuestRewardPopup';
 import { GuestSignupPrompt } from '@/ui/components/GuestSignupPrompt';
 import { SignupRequiredGate } from '@/ui/components/SignupRequiredGate';
 import { InlineAd, AdMockCard } from '@/ui/components/ads';
 import { getAdPlacement, getRewardedDisplayLabel } from '@/ui/ads/adPlacements';
+import { avatars } from '@/data/avatars';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
@@ -94,6 +96,9 @@ export function CinemojiGame() {
   const [earnedCoins, setEarnedCoins] = useState(0);
   const [showSoftPrompt, setShowSoftPrompt] = useState(false);
   const [guestSignupRequired, setGuestSignupRequired] = useState<boolean | null>(null);
+  const [showGuestReward, setShowGuestReward] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  const equippedAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
   const [progress, setProgress] = useState<StageProgress>({
     mode1CompletedStages: [],
     mode2CompletedStages: [],
@@ -193,7 +198,12 @@ export function CinemojiGame() {
           }),
         );
         setGuestSignupRequired(rewardResponse.signupRequired ?? false);
-        setShowSoftPrompt(!(rewardResponse.signupRequired ?? false));
+        const isFirstRound = (user.signupPromptCount ?? 0) === 0;
+        if (isFirstRound) {
+          setShowGuestReward(true);
+        } else {
+          setShowSoftPrompt(!(rewardResponse.signupRequired ?? false));
+        }
       } else {
         dispatch(setCoins(rewardResponse.coins));
       }
@@ -395,7 +405,16 @@ export function CinemojiGame() {
             Back to Cinemoji Entry
           </Link>
         )}
-        {user.isGuest && showSoftPrompt && !guestSignupRequired && (
+        {user.isGuest && showGuestReward && (
+          <GuestRewardPopup
+            gameId={gameId ?? '13'}
+            onContinuePlay={() => {
+              setShowGuestReward(false);
+              navigate(`/game/${gameId ?? '13'}`);
+            }}
+          />
+        )}
+        {user.isGuest && showSoftPrompt && !guestSignupRequired && !showGuestReward && (
           <div className="mt-6 w-full max-w-md">
             <GuestSignupPrompt onDismiss={() => setShowSoftPrompt(false)} />
           </div>
@@ -411,7 +430,44 @@ export function CinemojiGame() {
           {'\u2190'} Back
         </Link>
         <h1 className="font-heading text-xl font-bold text-gv-gold">CINEMOJI</h1>
-        <span className="text-xs text-gv-text-muted">Modes + stages</span>
+        <div className="group/avatar relative cursor-pointer" onClick={() => setShowRules((v) => !v)}>
+          <div
+            className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-gv-gold/40 bg-gradient-to-br from-gv-gold-dark to-gv-gold shadow-lg shadow-gv-gold/20 transition-all duration-200 group-hover/avatar:scale-110 group-hover/avatar:border-gv-gold group-hover/avatar:shadow-[0_0_18px_rgba(212,165,32,0.5)] group-active/avatar:scale-95"
+          >
+            <img
+              src={equippedAvatar.image}
+              alt={equippedAvatar.name}
+              className="h-full w-full rounded-full object-cover object-top scale-150"
+            />
+          </div>
+          <span className="pointer-events-none absolute -top-3 -left-10 z-10 whitespace-nowrap rounded-full border border-gv-bg bg-gv-surface px-2 py-0.5 text-[9px] font-bold text-gv-gold shadow transition-transform group-hover/avatar:scale-110">
+            how to play
+          </span>
+
+          {showRules && (
+            <>
+              <button
+                type="button"
+                className="fixed inset-0 z-40"
+                aria-label="Close rules"
+                onClick={(e) => { e.stopPropagation(); setShowRules(false); }}
+              />
+              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-gv-border bg-gv-surface p-4 shadow-xl">
+                <div className="mb-2 flex items-center gap-2">
+                  <img
+                    src={equippedAvatar.image}
+                    alt={equippedAvatar.name}
+                    className="h-8 w-8 rounded-full border border-gv-gold/40 object-cover"
+                  />
+                  <span className="font-heading text-xs font-bold text-gv-gold">{equippedAvatar.name}</span>
+                </div>
+                <p className="text-xs leading-relaxed text-gv-text">
+                  Guess the movie from emoji clues! In Mode 1, type the movie name. In Mode 2, match emoji pairs to movies. Complete all stages to win!
+                </p>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {!selectedMode && (

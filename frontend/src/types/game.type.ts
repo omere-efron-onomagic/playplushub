@@ -19,4 +19,5 @@ export type Game = {
   isPick: boolean;
   totalRounds?: number;
   levelsPerRound?: number;
+  vendingCode?: string;
 };

@@ -4,10 +4,10 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { logout } from '@/store/slices/user.slice';
 
 const navLinks = [
-  { to: '/', label: 'Machine', icon: null },
-  { to: '/favorites', label: 'Favorites', icon: '\u2661' },
-  { to: '/trending', label: 'Trending', icon: '\u2606' },
-  { to: '/avatar-shop', label: 'Avatar Shop', icon: '\uD83D\uDCE6' }
+  { to: '/', label: 'Machine', icon: null, showNav: 'hidden sm:flex', showMenu: 'sm:hidden' },
+  { to: '/favorites', label: 'Favorites', icon: '\u2661', showNav: 'hidden md:flex', showMenu: 'md:hidden' },
+  { to: '/trending', label: 'Trending', icon: '\u2606', showNav: 'hidden lg:flex', showMenu: 'lg:hidden' },
+  { to: '/avatar-shop', label: 'Items', icon: '\uD83D\uDCE6', showNav: 'hidden xl:flex', showMenu: 'xl:hidden' }
 ];
 
 export function Navbar() {
@@ -31,9 +31,9 @@ export function Navbar() {
           />
         </Link>
 
-        {/* Nav Links - hidden on small mobile, visible from sm */}
-        <div className="hidden flex-1 justify-center overflow-x-auto py-1 sm:flex">
-          <div className="flex items-center gap-1">
+        {/* Nav Links - progressive visibility by breakpoint (disappear one by one on shrink) */}
+        <div className="hidden min-w-0 flex-1 justify-center overflow-x-auto py-1 sm:flex">
+          <div className="flex min-w-0 items-center gap-1">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
               return (
@@ -41,7 +41,7 @@ export function Navbar() {
                   key={link.to}
                   to={link.to}
                   data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all sm:flex sm:items-center sm:gap-1.5 sm:px-4 sm:text-sm ${
+                  className={`${link.showNav} items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                     isActive
                       ? 'border border-gv-gold/60 bg-gv-gold/10 text-gv-gold'
                       : 'text-gv-text-muted hover:text-gv-text'
@@ -99,11 +99,11 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button (shown when nav links hidden) */}
+          {/* Menu button - visible until all nav links are shown (xl) */}
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-gv-border bg-gv-surface text-gv-text sm:hidden"
+            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-gv-border bg-gv-surface text-gv-text xl:hidden"
             aria-label="Menu"
           >
             {mobileOpen ? '\u2715' : '\u2630'}
@@ -111,9 +111,9 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* Dropdown menu - shows only the links hidden at the current breakpoint */}
       {mobileOpen && (
-        <div className="border-t border-gv-border bg-gv-bg px-3 py-4 sm:hidden">
+        <div className="border-t border-gv-border bg-gv-bg px-3 py-4 xl:hidden">
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
@@ -122,7 +122,7 @@ export function Navbar() {
                   key={link.to}
                   to={link.to}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`${link.showMenu} min-h-[44px] items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors flex ${
                     isActive
                       ? 'bg-gv-gold/10 text-gv-gold'
                       : 'text-gv-text hover:bg-gv-surface'
@@ -133,7 +133,8 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <div className="mt-2 flex gap-2 border-t border-gv-border pt-3">
+            {/* Auth buttons - only in dropdown below sm where desktop auth is hidden */}
+            <div className="mt-2 flex gap-2 border-t border-gv-border pt-3 sm:hidden">
               {user.isGuest ? (
                 <>
                   <Link
