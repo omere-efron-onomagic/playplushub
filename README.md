@@ -53,6 +53,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/ADDING_NEW_GAME.md` - checklist for adding a new game type (admin panel required)
 - `docs/TEST_SCENARIOS.md` - backend unit tests and integration/E2E test scenarios
 - `docs/DEPLOYMENT_CICD.md` - GitHub Actions + Vercel/Render deployment runbook
+- `docs/SUPABASE_SETUP.md` - Supabase Postgres + Storage setup (production game data and images)
 
 ## Local Setup
 
@@ -73,8 +74,12 @@ Backend (`backend/.env`):
 - `AUTH_SECRET` (recommended for non-default token signing)
 - `ADMIN_SECRET` (optional; min 8 chars for admin panel at `/admin`; image upload, game/level CRUD)
 - `LOG_LEVEL` (optional; default `debug` for verbose logs; use `info`, `warn`, or `error` to reduce output)
-- `DATA_DIR` (optional; overrides JSON persistence directory, useful for persistent disks in production)
-- `UPLOADS_DIR` (optional; overrides uploaded images directory, useful for persistent disks in production)
+- `DATA_DIR` (optional; overrides JSON persistence directory)
+- `UPLOADS_DIR` (optional; overrides uploaded images directory)
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (optional; for Supabase Postgres + Storage)
+- `CONTENT_STORE_DRIVER` (optional; `json` | `supabase` | `dual`; default `json`)
+
+See `docs/SUPABASE_SETUP.md` for production storage migration.
 
 Frontend (`frontend/.env.development`):
 

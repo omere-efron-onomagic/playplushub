@@ -28,17 +28,24 @@ This runbook configures automatic deployment on push to `main` with:
    - Build command: `npm ci`
    - Start command: `npm run start`
    - Health check path: `/health`
-3. Add a persistent disk.
+3. Add a persistent disk (optional if using Supabase for content).
 4. Use these backend env vars:
    - `FRONTEND_URL` = your Vercel production URL
    - `AUTH_SECRET` = strong random secret
    - `ADMIN_SECRET` = optional (MVP: admin is open; set for future auth)
    - `LOG_LEVEL` = `info` (recommended in production)
    - `MONGODB_URI` = optional
-   - `DATA_DIR` = `<persistent-mount>/data`
-   - `UPLOADS_DIR` = `<persistent-mount>/uploads`
+   - `DATA_DIR` = `<persistent-mount>/data` (JSON fallback)
+   - `UPLOADS_DIR` = `<persistent-mount>/uploads` (local upload fallback)
 
-`DATA_DIR` and `UPLOADS_DIR` make JSON/user-progress files and uploaded assets survive redeploys/restarts.
+For production game data and image storage, see [SUPABASE_SETUP.md](SUPABASE_SETUP.md). When configured, add:
+
+   - `SUPABASE_URL` = Supabase project URL
+   - `SUPABASE_SERVICE_ROLE_KEY` = service role key
+   - `SUPABASE_STORAGE_BUCKET` = `game-assets`
+   - `CONTENT_STORE_DRIVER` = `dual` or `supabase`
+
+`DATA_DIR` and `UPLOADS_DIR` remain used for JSON/user-progress and dual-read fallback until cutover.
 
 ### Vercel (frontend)
 
@@ -69,7 +76,7 @@ After first production deploy:
    - game catalog loads
    - auth works
    - wallet/session flow works
-3. Upload one image in `/admin/upload` and verify it remains available after a backend redeploy.
+3. Upload one image in `/admin/upload` and verify it remains available after a backend redeploy. With Supabase Storage, images persist across redeploys without a disk.
 
 ## 4) Troubleshooting
 
@@ -86,8 +93,8 @@ After first production deploy:
 
 ### Data resets after deploy
 
-- Check Render persistent disk is attached.
-- Verify `DATA_DIR` and `UPLOADS_DIR` point inside that mount path.
+- If using Supabase: verify `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `CONTENT_STORE_DRIVER` are set.
+- If using JSON/disk: check Render persistent disk is attached; verify `DATA_DIR` and `UPLOADS_DIR` point inside that mount path.
 
 ### CI checks not enforced
 

@@ -363,5 +363,18 @@
     "sessionId": "49062d51-f0a1-4274-a8c5-c4c55acfaff8",
     "guestId": "a70070a7-079a-4f8d-9a3a-337d490f647b",
     "createdAt": "2026-02-16T08:41:59.683Z"
+  },
+  {
+    "txId": "6727a42d-1219-44db-8fc4-b433ee3ef252",
+    "userId": "a70070a7-079a-4f8d-9a3a-337d490f647b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 8,
+    "balanceAfter": 6,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "e9ca49cc-9fe7-4bb5-8ffb-1ba333a0623a",
+    "guestId": "a70070a7-079a-4f8d-9a3a-337d490f647b",
+    "createdAt": "2026-02-16T10:32:32.265Z"
   }
 ]

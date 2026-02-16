@@ -117,10 +117,10 @@
     "level": 11,
     "answer": "WATER",
     "images": [
-      "/uploads/download__1_-1771231296856.jpg",
-      "/uploads/download__2_-1771231296856.jpg",
-      "/uploads/download-1771231296858.jpg",
-      "/uploads/istockphoto-1133350536-612x612-1771231296860.jpg"
+      "https://rwustlsaujrkfgsonrmv.supabase.co/storage/v1/object/public/game-assets/images/download__1_-1771231296856-1771237924139-azy6xj.jpg",
+      "https://rwustlsaujrkfgsonrmv.supabase.co/storage/v1/object/public/game-assets/images/download__2_-1771231296856-1771237925104-seoc3o.jpg",
+      "https://rwustlsaujrkfgsonrmv.supabase.co/storage/v1/object/public/game-assets/images/download-1771231296858-1771237925425-yhczmc.jpg",
+      "https://rwustlsaujrkfgsonrmv.supabase.co/storage/v1/object/public/game-assets/images/istockphoto-1133350536-612x612-1771231296860-1771237925814-3rejyb.jpg"
     ],
     "extraLetters": "IKYDBJGS",
     "enabled": true

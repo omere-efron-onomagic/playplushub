@@ -4,6 +4,10 @@ import path from 'node:path';
 import 'dotenv/config';
 import { connectToMongoDB, startServer } from './utils.js';
 import { dataDir } from './config/storagePaths.js';
+import {
+  getContentStoreDriver,
+  isSupabaseConfigured,
+} from './config/supabase.js';
 import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
@@ -81,6 +85,11 @@ async function main() {
     dataDir,
     exists: existsSync(dataDir),
     catalogExists: existsSync(catalogPath),
+  });
+  const contentDriver = getContentStoreDriver();
+  logger.info('startup_content_store', {
+    driver: contentDriver,
+    supabaseConfigured: isSupabaseConfigured(),
   });
 
   if (uri) {

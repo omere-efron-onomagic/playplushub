@@ -47,10 +47,10 @@ Status labels:
 | Guest persistence across sessions | Implemented | Guest token stored client-side; progression persisted server-side in JSON store |
 | Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
 | Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |
-| Backend persistence approach (JSON) | Implemented | Current MVP source of truth for auth/wallet/game catalog |
+| Backend persistence approach (JSON + Supabase) | Implemented | Auth/wallet: JSON; game catalog and uploads: JSON or Supabase (configurable) |
 | Admin panel | Implemented | Open access (MVP); games list, level management, batch image upload; new game types must include admin functionality |
 | Admin upload-first level creation | Implemented | Upload 4 images + answer only; extra letters auto-generated; batch upload via drop/select/paste 4 images per level |
-| Game catalog (JSON) | Implemented | `games_catalog.json` + `link_four_levels.json`; economy reads from catalog |
+| Game catalog (JSON / Supabase) | Implemented | JSON or Supabase Postgres via `CONTENT_STORE_DRIVER`; dual-read fallback; economy reads from catalog |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |
 
 ## Growth and Monetization

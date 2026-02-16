@@ -334,9 +334,9 @@
   },
   {
     "id": "a70070a7-079a-4f8d-9a3a-337d490f647b",
-    "coins": 8,
+    "coins": 6,
     "createdAt": "2026-02-16T08:41:56.960Z",
-    "updatedAt": "2026-02-16T08:41:59.681Z",
+    "updatedAt": "2026-02-16T10:32:32.260Z",
     "migratedTo": null,
     "signupPromptCount": 0,
     "signupRequired": false

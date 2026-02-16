@@ -65,9 +65,9 @@ unification.
 
 - Auth and wallet profile data: JSON-backed storage (`users.json` under `DATA_DIR`, defaults to `backend/src/data`)
 - Economy: `economy_transactions.json` (append-only audit), `claimed_sessions.json` (replay protection)
-- Game catalog: `games_catalog.json`; Link Four levels: `link_four_levels.json`; economy reads via `gameCatalog.service.ts`
+- Game catalog and Link Four levels: Supabase Postgres when `CONTENT_STORE_DRIVER` is `supabase` or `dual`; otherwise JSON (`games_catalog.json`, `link_four_levels.json`). Dual mode reads from Supabase first with JSON fallback; writes go to Supabase.
 - Round progression: `round_progression.json` (per-actor completed rounds; migration-safe defaults when missing)
-- Uploaded images: local filesystem under `UPLOADS_DIR` (defaults to `backend/uploads`, served at `/uploads/`)
+- Uploaded images: Supabase Storage when configured; otherwise local filesystem under `UPLOADS_DIR` (defaults to `backend/uploads`, served at `/uploads/`)
 - Legacy/scaffold endpoints: some routes still rely on Mongo-backed models
 
 ### API Domain Groups
