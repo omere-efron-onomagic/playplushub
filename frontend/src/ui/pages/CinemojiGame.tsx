@@ -6,7 +6,6 @@ import {
   useRequestHintMutation,
   useSubmitMode1GuessMutation,
   useSubmitMode2MatchMutation,
-  type CinemojiMode2Round,
 } from '@/store/apis/cinemoji.api';
 import { useClaimGameSessionRewardMutation } from '@/store/apis/wallet.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -175,7 +174,7 @@ export function CinemojiGame() {
       const [newProgress, rewardResponse] = await Promise.all([
         completeStage({ mode, stage }).unwrap(),
         claimReward({
-          sessionToken,
+          sessionToken: sessionToken!,
           outcome: { levelsCompleted: 1, totalLevels: 1, won: true },
         }).unwrap(),
       ]);
