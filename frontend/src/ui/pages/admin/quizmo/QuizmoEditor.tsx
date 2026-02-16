@@ -10,6 +10,8 @@ import {
 import type { GameEditorProps } from '../gameEditorRegistry';
 import { quizmoStageSchema, type QuizmoStageForm } from './QuizmoEditor.schema';
 
+const OPTION_INDEXES = [0, 1, 2, 3] as const;
+
 /**
  * QUIZMO content editor - creates/edits stages and questions.
  */
@@ -232,7 +234,7 @@ export function QuizmoEditor(_props: GameEditorProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {[0, 1, 2, 3].map((optIndex) => (
+                {OPTION_INDEXES.map((optIndex) => (
                   <div key={optIndex}>
                     <label className="block text-xs text-gv-text-muted mb-1">Option {optIndex + 1}</label>
                     <input
