@@ -68,7 +68,7 @@ const AVATAR_OPTIONS = [
 
 type PopupStep = 'reward' | 'choose-avatar' | 'evolve' | 'auth-choice' | 'guest-choice';
 
-export function GuestRewardPopup({ gameId, onContinuePlay }: Props) {
+export function GuestRewardPopup({ onContinuePlay }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState<PopupStep>('reward');
 
