@@ -1,0 +1,59 @@
+---
+description: Core project rules and conventions for the Hackathon gaming platform
+alwaysApply: true
+---
+
+# Project Overview
+
+**Hackathon Gaming Platform** – A web app with games, avatars, user auth, and a vending-machine themed main page.
+
+## Tech Stack
+
+- **Frontend**: React 19, Vite 7, TypeScript, Tailwind CSS 4
+- **State**: Redux Toolkit, React-Redux
+- **Routing**: React Router 7
+- **Forms**: React Hook Form, Zod, @hookform/resolvers
+- **Real-time**: Socket.io client
+- **Backend**: MongoDB
+- **UI**: Radix UI, Motion (animations), Lucide icons
+
+## Project Structure
+
+```
+frontend/
+  src/
+    ui/pages/       # Route pages (Home, Trending, Favorites, AvatarShop, Login, SignUp)
+    ui/components/  # Reusable components (Navbar, GameCard)
+    types/          # TypeScript types (game.type, avatar.type)
+    data/           # Static/mock data (games.ts, avatars.ts)
+    router/         # React Router config
+    styles/         # Global CSS
+```
+
+## Key Conventions
+
+1. **Components**: Use functional components with hooks
+2. **Styling**: Tailwind CSS; use `cn()` (clsx + tailwind-merge) for conditional classes
+3. **Path alias**: Use `@/` for imports (e.g. `@/ui/components/Navbar`)
+4. **Types**: Define shared types in `src/types/` and import where needed
+5. **Forms**: React Hook Form + Zod for validation
+6. **Main page**: Vending machine theme – wrap content in a vending-machine style layout
+
+## Routes
+
+- `/` – Home (vending machine UI)
+- `/trending` – Trending games
+- `/favorites` – User favorites
+- `/avatar-shop` – Avatar shop
+- `/login`, `/signup` – Auth
+
+## Domain Types
+
+- **Game**: id, title, category, image, coinCost, rating, players, badge
+- **GameCategory**: Puzzle, Simulation, Adventure, Racing, Trivia, Action
+- **BadgeType**: 'hot' | 'pick' | null
+
+## Code Quality
+
+- Run `npm run typecheck` before committing
+- Use ESLint and Prettier (configured in frontend)

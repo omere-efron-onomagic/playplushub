@@ -1,12 +1,62 @@
 import { GameCard } from '@/ui/components/GameCard';
 import { games, categories } from '@/data/games';
-import { useState } from 'react';
+import { avatars } from '@/data/avatars';
+import { useState, useRef, useCallback } from 'react';
+
+const currentAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
+
+const PANEL_WIDTH = 300;
+const EDGE_ZONE = 24;
 
 export function Home() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(0);
+  const [displayCode, setDisplayCode] = useState('');
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [panelTranslate, setPanelTranslate] = useState(PANEL_WIDTH);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartRef = useRef<{ x: number; startTranslate: number } | null>(null);
   const gamesPerPage = 6;
+
+  const handleKeypadPress = (key: string) => {
+    if (key === 'C') {
+      setDisplayCode('');
+    } else if (displayCode.length < 4) {
+      setDisplayCode((prev) => prev + key);
+    }
+  };
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 400;
+      const inEdgeZone = touch.clientX > screenWidth - EDGE_ZONE;
+      const onPanel = isPanelOpen && touch.clientX > screenWidth - 280; // panel width
+      if (inEdgeZone || onPanel) {
+        touchStartRef.current = { x: touch.clientX, startTranslate: panelTranslate };
+        setIsDragging(true);
+      }
+    },
+    [isPanelOpen, panelTranslate]
+  );
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const newTranslate = Math.max(0, Math.min(PANEL_WIDTH, touchStartRef.current.startTranslate + deltaX));
+    setPanelTranslate(newTranslate);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStartRef.current) return;
+    const threshold = PANEL_WIDTH / 2;
+    setIsPanelOpen(panelTranslate < threshold);
+    setPanelTranslate(panelTranslate < threshold ? 0 : PANEL_WIDTH);
+    touchStartRef.current = null;
+    setIsDragging(false);
+  }, [panelTranslate]);
 
   const filtered = games.filter((game) => {
     const matchesSearch = game.title.toLowerCase().includes(search.toLowerCase());
@@ -20,8 +70,105 @@ export function Home() {
     (currentPage + 1) * gamesPerPage
   );
 
+  const RightPanelContent = () => (
+    <>
+      <div className="relative w-full max-w-[12rem] md:max-w-none">
+        <div className="absolute -inset-[2px] rounded-[18px] border-2 border-gv-gold/60" />
+        <div className="absolute -inset-[5px] rounded-[20px] border border-gv-gold/40" />
+        <div className="relative flex flex-col gap-2 rounded-2xl border border-gv-border/50 bg-gradient-to-b from-gv-surface/80 to-gv-bg p-2 shadow-inner sm:gap-3 sm:p-3">
+          <p className="text-center text-[10px] font-medium uppercase tracking-widest text-gv-text-muted">
+            select code
+          </p>
+          <div className="rounded-lg border border-gv-border bg-gv-bg px-2 py-1.5 font-mono text-base font-bold tracking-[0.2em] text-gv-gold shadow-inner sm:px-3 sm:py-2 sm:text-lg sm:tracking-[0.3em]">
+            {displayCode || '____'}
+          </div>
+          <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '✓'].map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleKeypadPress(key)}
+                disabled={key === '✓'}
+                className={`flex h-8 w-full min-h-[44px] items-center justify-center rounded-md border font-mono text-xs font-medium transition-all active:scale-95 sm:h-9 sm:min-h-0 sm:text-sm ${
+                  key === 'C'
+                    ? 'border-gv-hot/40 bg-gv-hot/10 text-gv-hot hover:bg-gv-hot/20'
+                    : key === '✓'
+                      ? 'cursor-default border-gv-border/50 bg-gv-surface/50 text-gv-text-muted opacity-60'
+                      : 'border-gv-border bg-gv-surface text-gv-text hover:border-gv-gold/40 hover:bg-gv-surface/90'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center justify-center rounded-full border border-gv-gold/40 bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-3 py-1 shadow-lg shadow-gv-gold/10 sm:px-4 sm:py-1.5">
+            <span className="font-heading text-[10px] font-bold tracking-wider text-gv-bg sm:text-xs">CREDITS: 250</span>
+          </div>
+        </div>
+      </div>
+      <div className="relative w-full max-w-[12rem] md:max-w-none">
+        <div className="absolute -inset-[2px] rounded-[18px] border-2 border-gv-gold/60" />
+        <div className="absolute -inset-[5px] rounded-[20px] border border-gv-gold/40" />
+        <div className="relative flex min-h-[200px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-gv-border/50 bg-gv-bg p-2 shadow-inner sm:min-h-[300px] sm:min-w-[164px] sm:p-3">
+          <img
+            src={currentAvatar.image}
+            alt={currentAvatar.name}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <p className="relative z-10 text-center text-[9px] font-medium uppercase tracking-widest text-gv-text-muted sm:text-[10px]">
+            my avatar
+          </p>
+          <p className="relative z-10 text-center text-[11px] font-medium text-gv-text sm:text-xs">{currentAvatar.name}</p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-8">
+    <div
+      className="relative min-h-screen"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+    >
+      {/* Mobile: edge trigger - tap to open panel */}
+      {!isPanelOpen && panelTranslate >= PANEL_WIDTH && (
+        <button
+          type="button"
+          onClick={() => {
+            setIsPanelOpen(true);
+            setPanelTranslate(0);
+          }}
+          className="fixed right-0 top-1/2 z-30 flex h-16 w-8 -translate-y-1/2 items-center justify-center rounded-l-lg border border-r-0 border-gv-gold/50 bg-gv-surface/95 shadow-lg md:hidden"
+          aria-label="Open keypad and avatar"
+        >
+          <span className="text-gv-gold text-lg">‹</span>
+        </button>
+      )}
+
+      {/* Mobile: backdrop when panel open */}
+      {(isPanelOpen || panelTranslate < PANEL_WIDTH) && (
+        <button
+          type="button"
+          onClick={() => {
+            setIsPanelOpen(false);
+            setPanelTranslate(PANEL_WIDTH);
+          }}
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          aria-label="Close panel"
+        />
+      )}
+
+      {/* Mobile: sliding panel - pull from right to reveal */}
+      <div
+        className={`fixed right-0 top-0 z-50 flex h-full w-[min(85vw,280px)] flex-col items-center gap-4 overflow-y-auto border-l border-gv-border bg-gv-bg p-4 pt-16 shadow-xl md:hidden ${isDragging ? '' : 'transition-transform duration-200 ease-out'}`}
+        style={{ transform: `translateX(${panelTranslate}px)` }}
+      >
+        <RightPanelContent />
+      </div>
+
+      <div className="mx-auto max-w-6xl overflow-x-hidden px-3 py-4 sm:px-4 sm:py-8">
       {/* Ad Space - smaller on mobile */}
       <div className="mb-4 flex h-14 items-center justify-center rounded-xl border border-gv-border bg-gv-surface/50 sm:mb-8 sm:h-20">
         <span className="text-xs tracking-[0.2em] text-gv-text-muted sm:text-sm sm:tracking-[0.3em]">AD SPACE</span>
@@ -86,40 +233,37 @@ export function Home() {
 
       {/* ===== VENDING MACHINE ===== */}
       <div className="relative">
-        {/* Animated outer glow */}
-        <div className="animate-pulse-slow absolute -inset-[2px] rounded-[20px] bg-gradient-to-b from-gv-cyan/30 via-gv-cyan/10 to-gv-cyan/30 blur-md sm:-inset-[3px] sm:rounded-[28px]" />
-        {/* Inner glow ring */}
-        <div className="absolute -inset-px rounded-[18px] bg-gradient-to-b from-gv-cyan/25 via-transparent to-gv-cyan/25 sm:rounded-[26px]" />
+        {/* Yellow strips frame around machine */}
+        <div className="absolute -inset-[2px] rounded-[18px] border-2 border-gv-gold/60 sm:-inset-[3px] sm:rounded-[26px]" />
+        <div className="absolute -inset-[6px] rounded-[22px] border border-gv-gold/40 sm:-inset-[10px] sm:rounded-[30px]" />
 
         {/* Machine Body */}
-        <div className="relative overflow-hidden rounded-2xl border border-gv-cyan/30 bg-gv-bg sm:rounded-3xl">
+        <div className="relative overflow-hidden rounded-2xl border border-gv-border bg-gv-bg sm:rounded-3xl">
           {/* Top LED strip */}
-          <div className="h-1 w-full bg-gradient-to-r from-transparent via-gv-cyan/60 to-transparent" />
-
-          {/* Side rails (left & right metallic strips) */}
-          <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-gv-cyan/10 via-gv-surface to-gv-cyan/10 sm:w-2" />
-          <div className="absolute top-0 right-0 h-full w-1 bg-gradient-to-b from-gv-cyan/10 via-gv-surface to-gv-cyan/10 sm:w-2" />
+          <div className="h-1 w-full bg-gradient-to-r from-transparent via-gv-gold/40 to-transparent" />
 
           {/* Machine top decorative bar */}
           <div className="relative mx-2 mt-2 flex items-center justify-between px-2 sm:mx-4 sm:mt-3 sm:px-4">
             <div className="flex gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-gv-cyan/50 shadow-[0_0_4px_rgba(6,182,212,0.5)]" />
               <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
-              <div className="h-1.5 w-1.5 rounded-full bg-gv-cyan/50 shadow-[0_0_4px_rgba(6,182,212,0.5)]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
             </div>
             <div className="h-px flex-1 mx-4 bg-gradient-to-r from-transparent via-gv-border to-transparent" />
             <div className="flex gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-gv-cyan/50 shadow-[0_0_4px_rgba(6,182,212,0.5)]" />
               <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
-              <div className="h-1.5 w-1.5 rounded-full bg-gv-cyan/50 shadow-[0_0_4px_rgba(6,182,212,0.5)]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-gv-gold/50 shadow-[0_0_4px_rgba(212,165,32,0.5)]" />
             </div>
           </div>
 
-          {/* Glass Display Area */}
-          <div className="relative mx-2 mt-2 mb-3 rounded-xl border border-gv-border/60 bg-gradient-to-b from-gv-surface/30 to-gv-bg p-3 sm:mx-5 sm:mt-3 sm:mb-4 sm:rounded-2xl sm:p-5">
-            {/* Glass reflection overlay */}
-            <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent sm:rounded-2xl" />
-            <div className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-xl bg-gradient-to-bl from-white/[0.02] to-transparent sm:rounded-2xl" />
+          {/* Main Content + Right Panel */}
+          <div className="mx-2 mt-2 mb-3 flex flex-col gap-4 sm:mx-5 sm:mt-3 sm:mb-4 md:flex-row">
+            {/* Glass Display Area - Games */}
+            <div className="relative min-w-0 flex-1 rounded-xl border border-gv-border/60 bg-gradient-to-b from-gv-surface/30 to-gv-bg p-3 sm:rounded-2xl sm:p-5">
+              {/* Glass reflection overlay */}
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/[0.03] via-transparent to-transparent sm:rounded-2xl" />
+              <div className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-xl bg-gradient-to-bl from-white/[0.02] to-transparent sm:rounded-2xl" />
 
             {/* Game Grid */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -136,6 +280,12 @@ export function Home() {
                 </p>
               </div>
             )}
+            </div>
+
+            {/* Right Panel - Vending Machine Interface (hidden on mobile, shown in sliding overlay) */}
+            <div className="hidden w-full flex-shrink-0 flex-col items-center gap-4 md:flex md:w-fit md:items-stretch md:self-start">
+              <RightPanelContent />
+            </div>
           </div>
 
           {/* Separator line */}
@@ -187,14 +337,13 @@ export function Home() {
             </div>
           </div>
 
-          {/* Bottom LED strip */}
-          <div className="h-1 w-full bg-gradient-to-r from-transparent via-gv-cyan/60 to-transparent" />
         </div>
       </div>
 
       {/* Bottom Ad Space */}
       <div className="mt-6 flex h-16 items-center justify-center rounded-xl border border-gv-border bg-gv-surface/50 sm:mt-10 sm:h-24">
         <span className="text-xs tracking-[0.2em] text-gv-text-muted sm:text-sm sm:tracking-[0.3em]">AD SPACE</span>
+      </div>
       </div>
     </div>
   );
