@@ -17,6 +17,7 @@
     "migrate:json": "tsx src/scripts/migrate-json-to-supabase.ts",
     "migrate:uploads": "tsx src/scripts/migrate-local-uploads-to-supabase.ts",
     "migrate:cinemoji": "tsx src/scripts/migrate-cinemoji-to-supabase.ts",
+    "migrate:linkfour-images": "tsx src/scripts/upload-linkfour-images-to-supabase.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
