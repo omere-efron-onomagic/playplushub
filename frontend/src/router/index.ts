@@ -7,6 +7,11 @@ import { Login } from '@/ui/pages/Login';
 import { NotFound } from '@/ui/pages/NotFound';
 import { SignUp } from '@/ui/pages/SignUp';
 import { Trending } from '@/ui/pages/Trending';
+import { AdminGate } from '@/ui/pages/admin/AdminGate';
+import { AdminGamesList } from '@/ui/pages/admin/AdminGamesList';
+import { AdminLinkFourLevels } from '@/ui/pages/admin/AdminLinkFourLevels';
+import { AdminImageUpload } from '@/ui/pages/admin/AdminImageUpload';
+import { AdminRedirect } from '@/ui/pages/admin/AdminRedirect';
 import { Root } from '@/ui/Root';
 import { createBrowserRouter } from 'react-router';
 
@@ -22,7 +27,17 @@ export const router = createBrowserRouter([
       { path: 'game/:gameId', Component: GamePage },
       { path: 'play/:gameId', Component: PlayGamePage },
       { path: 'login', Component: Login },
-      { path: 'signup', Component: SignUp }
+      { path: 'signup', Component: SignUp },
+      {
+        path: 'admin',
+        Component: AdminGate,
+        children: [
+          { index: true, Component: AdminRedirect },
+          { path: 'games', Component: AdminGamesList },
+          { path: 'levels', Component: AdminLinkFourLevels },
+          { path: 'upload', Component: AdminImageUpload },
+        ],
+      },
     ]
   },
   {

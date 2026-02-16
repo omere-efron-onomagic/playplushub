@@ -19,7 +19,7 @@ test('guest can start session from game page, play, and see reward/win UX', asyn
   await expect(playButton).toBeEnabled();
   await playButton.click();
   await expect(page).toHaveURL(/\/play\/1/, { timeout: 5000 });
-  await expect(page.getByText(/level 1\/10|level \d+\/10/i)).toBeVisible();
+  await expect(page.getByText(/level \d+\/\d+/i)).toBeVisible();
   await solveWater(page);
   await solveLight(page);
   await expect(page.getByTestId('link-four-win')).toBeVisible({ timeout: 10000 });

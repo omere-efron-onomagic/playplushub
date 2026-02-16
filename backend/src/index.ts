@@ -1,27 +1,26 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import 'dotenv/config';
 import { connectToMongoDB, startServer } from './utils.js';
+import { dataDir } from './config/storagePaths.js';
+import {
+  getContentStoreDriver,
+  isSupabaseConfigured,
+} from './config/supabase.js';
 import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { walletRouter } from './routes/wallet.routes.js';
 import { cinemojiRouter } from './routes/cinemoji.routes.js';
+import { gamesRouter } from './routes/games.routes.js';
+import { adminRouter } from './routes/admin.routes.js';
+import { getUploadsDir } from './services/upload.service.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import { logger } from './logger/logger.js';
 import cors from 'cors';
 import helmet from 'helmet';
 
-function getAllowedOrigins(): string[] {
-  const fromEnv = (process.env.FRONTEND_URL ?? '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-  const localDefaults = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
-  return Array.from(new Set([...fromEnv, ...localDefaults]));
-}
-
-const allowedOrigins = getAllowedOrigins();
 // create a new express application
 const app = express();
 
@@ -31,25 +30,8 @@ app.use(helmet());
 // cors is a middleware that allows the express application to accept requests from the frontend specifically
 // the origin is the URL of the frontend
 // credentials: true means that the browser will send the credentials (cookies, authentication tokens, etc.) to the backend
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow non-browser tools (curl/postman) that do not send origin.
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  }),
-);
+// MVP: allow all origins. Re-enable strict origin check when adding auth.
+app.use(cors({ origin: true, credentials: true }));
 
 // express.json() is a middleware that parses the request body and makes it available in req.body
 app.use(express.json());
@@ -71,12 +53,18 @@ app.use('/posts', postsRouter);
 app.use('/auth', authRouter);
 app.use('/wallet', walletRouter);
 app.use('/cinemoji', cinemojiRouter);
+app.use('/games', gamesRouter);
+app.use('/admin', adminRouter);
+app.use('/uploads', express.static(getUploadsDir()));
 
 // if the route is not found, return a 404 error
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
-// error handler (must be last)
+// error handler (must be last). Set CORS so 500 responses are not blocked by browser.
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   logger.error('unhandled_error', {
     message: err.message,
     stack: err.stack,
@@ -93,6 +81,19 @@ const uri = process.env.MONGODB_URI;
 
 // main function to start the server
 async function main() {
+  // Log data dir for Render 500 debugging
+  const catalogPath = path.join(dataDir, 'games_catalog.json');
+  logger.info('startup_data_dir', {
+    dataDir,
+    exists: existsSync(dataDir),
+    catalogExists: existsSync(catalogPath),
+  });
+  const contentDriver = getContentStoreDriver();
+  logger.info('startup_content_store', {
+    driver: contentDriver,
+    supabaseConfigured: isSupabaseConfigured(),
+  });
+
   if (uri) {
     try {
       await connectToMongoDB(uri);

@@ -16,8 +16,8 @@ Status labels:
 
 | Feature | Status | Notes |
 |---|---|---|
-| Vending-machine themed hub UI | Partial | Polished visuals exist, but economy data is not fully wired |
-| Multi-game catalog | Partial | Catalog supports multiple entries; two games are now fully playable |
+| Vending-machine themed hub UI | Implemented | Polished visuals; game catalog and levels fetched from API |
+| Multi-game catalog | Implemented | Dynamic catalog from `GET /games`; Link Four and Cinemoji playable with levels/content from API |
 | Responsive navigation/pages | Implemented | Core routing and pages are present |
 | Onboarding scenarios (social + organic) | Partial | Flow exists conceptually; conversion logic not fully enforced |
 | Soft sign-up prompts | Implemented | Shown after each guest win before threshold |
@@ -28,14 +28,16 @@ Status labels:
 | Feature | Status | Notes |
 |---|---|---|
 | One playable game loop | Implemented | Link-four style game is playable end-to-end |
+| Grouped rounds (5 rounds × 2 levels) | Implemented | Link Four organized into rounds; one charge and one reward per round |
+| No replay of completed rounds | Implemented | Server blocks start for completed rounds; all-rounds-complete gates further play |
+| Per-round rewards | Implemented | Server-authoritative; reward computed from game catalog when both levels in round completed |
 | Cinemoji (2 modes, staged progression, hints, lives) | Partial | Playable with keyboard/mobile input, drag matching, modals, and progress persistence; ad integration remains placeholder-only |
-| Per-level rewards | Implemented | Server-authoritative; reward computed from game catalog and validated outcome |
 | Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth and guest users) |
 | No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
 | XP progression (+10 baseline) | Planned | Product rule defined in docs for MVP |
 | Avatar accessories purchase/equip | Partial | UI exists; purchase/equip persistence is not complete |
-| Favorites | Partial | Static demo behavior, not user-persisted |
-| Trending | Partial | Static IDs, not analytics-driven |
+| Favorites | Partial | Uses API catalog; not user-persisted |
+| Trending | Partial | Uses API catalog; IDs static, not analytics-driven |
 
 ## Auth, Persistence, Backend
 
@@ -46,7 +48,10 @@ Status labels:
 | Guest persistence across sessions | Implemented | Guest token stored client-side; progression persisted server-side in JSON store |
 | Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
 | Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |
-| Backend persistence approach (JSON) | Implemented | Current MVP source of truth for auth/wallet users |
+| Backend persistence approach (JSON + Supabase) | Implemented | Auth/wallet: JSON; game catalog and uploads: JSON or Supabase (configurable) |
+| Admin panel | Implemented | Open access (MVP); games list, level management, batch image upload; new game types must include admin functionality |
+| Admin upload-first level creation | Implemented | Upload 4 images + answer only; extra letters auto-generated; batch upload via drop/select/paste 4 images per level |
+| Game catalog (JSON / Supabase) | Implemented | JSON or Supabase Postgres via `CONTENT_STORE_DRIVER`; dual-read fallback; economy reads from catalog |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |
 
 ## Growth and Monetization

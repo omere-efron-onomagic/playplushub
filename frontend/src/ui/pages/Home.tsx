@@ -1,7 +1,8 @@
 import { GameCard } from '@/ui/components/GameCard';
-import { games, categories } from '@/data/games';
+import { categories } from '@/data/games';
 import { avatars } from '@/data/avatars';
 import { useState, useRef, useCallback } from 'react';
+import { useGetGamesQuery } from '@/store/apis/games.api';
 
 const currentAvatar = avatars.find((a) => a.equipped) ?? avatars[0];
 
@@ -9,6 +10,7 @@ const PANEL_WIDTH = 300;
 const EDGE_ZONE = 24;
 
 export function Home() {
+  const { data: games = [], isLoading } = useGetGamesQuery();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(0);
@@ -272,8 +274,15 @@ export function Home() {
               ))}
             </div>
 
-            {/* Empty State */}
-            {paginatedGames.length === 0 && (
+            {/* Loading / Empty State */}
+            {isLoading && (
+              <div className="flex h-48 items-center justify-center">
+                <p className="font-heading text-sm tracking-wider text-gv-text-muted">
+                  Loading...
+                </p>
+              </div>
+            )}
+            {!isLoading && paginatedGames.length === 0 && (
               <div className="flex h-48 items-center justify-center">
                 <p className="font-heading text-sm tracking-wider text-gv-text-muted">
                   No games found

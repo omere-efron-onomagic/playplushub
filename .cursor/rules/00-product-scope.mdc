@@ -18,3 +18,4 @@ Rules:
 3. Do not represent `Planned` features as production-ready behavior.
 4. Preserve current API contracts when possible to reduce frontend churn.
 5. If auth, wallet, progression, or API behavior changes, update docs in the same task.
+6. **Adding a new game type to the app must include admin panel functionality**—content management (create/edit levels, upload assets) for that game must be available in `/admin`. See [ADDING_NEW_GAME.md](mdc:docs/ADDING_NEW_GAME.md) and Link Four as the reference: `AdminLinkFourLevels`, rounds endpoint, upload endpoint.

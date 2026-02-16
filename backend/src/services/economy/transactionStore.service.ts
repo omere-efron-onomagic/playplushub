@@ -1,13 +1,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import type { EconomyTransaction } from '../../types/economy.types.js';
 import { logger } from '../../logger/logger.js';
+import { resolveDataFilePath } from '../../config/storagePaths.js';
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const txFilePath = path.resolve(currentDir, '../../data/economy_transactions.json');
+const txFilePath = resolveDataFilePath('economy_transactions.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

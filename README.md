@@ -23,15 +23,22 @@ The brand is currently "PlayPlusHub" and may change later.
 ## Implemented vs Planned
 
 - Implemented (MVP quality): UI shell, game catalog pages, login/signup, one game,
-  basic wallet reward endpoint, guest mode state handling, E2E regression tests (Playwright)
+  basic wallet reward endpoint, guest mode state handling, admin panel (games/levels/upload),
+  dynamic game catalog and Link Four levels from API, E2E regression tests (Playwright),
+  grouped rounds (5 rounds × 2 levels), no-replay completion gating, round progression,
+  admin upload-first level creation (4 images + answer, auto extra letters)
 - Partial: ad placements in UI, onboarding conversion behavior, avatar/shop/favorites/
-  trending logic, mixed backend model
+  trending logic, mixed backend model. Sign-up prompt cadence evaluates after each round completion.
 - Planned: full multi-game backend validation, missions, leaderboard, full economy
   enforcement, anti-cheat, full Mongo migration
 
 See `docs/FEATURE_STATUS.md` for the full matrix.
 
 **Logging**: Backend uses Winston for JSON structured logs. Default level is `debug`; set `LOG_LEVEL` to control verbosity. Passwords and tokens are redacted in logs.
+
+**Round-based progression (Link Four)**: Levels are grouped into rounds (e.g. 5 rounds × 2 levels). Players spend once per round to play and receive a reward when both levels in that round are completed. Completed rounds cannot be replayed; when all rounds are done, play is blocked until new rounds are added.
+
+**Admin authoring flow**: Create rounds via the admin panel by uploading 4 images per level (drop, select, or paste) and entering only the answer; extra letters are auto-generated server-side. **Adding a new game type must include admin panel functionality** (content management and uploads for that game)—see `docs/DEVELOPER_ONBOARDING.md` and `.cursor/rules/00-product-scope.mdc`.
 
 ## Docs Index
 
@@ -43,6 +50,10 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/ROADMAP_MVP.md` - prioritized roadmap and milestones
 - `docs/USER_ECONOMNY.MD` - legacy filename retained; points to updated economy doc
 - `docs/DEVELOPER_ONBOARDING.md` - shared Cursor workflow, rules, skills, worktrees, and team best practices
+- `docs/ADDING_NEW_GAME.md` - checklist for adding a new game type (admin panel required)
+- `docs/TEST_SCENARIOS.md` - backend unit tests and integration/E2E test scenarios
+- `docs/DEPLOYMENT_CICD.md` - GitHub Actions + Vercel/Render deployment runbook
+- `docs/SUPABASE_SETUP.md` - Supabase Postgres + Storage setup (production game data and images)
 
 ## Local Setup
 
@@ -61,11 +72,18 @@ Backend (`backend/.env`):
 - `FRONTEND_URL` (comma-separated allowed origins)
 - `MONGODB_URI` (optional in current MVP; server can run JSON-backed auth flows)
 - `AUTH_SECRET` (recommended for non-default token signing)
+- `ADMIN_SECRET` (optional; min 8 chars for admin panel at `/admin`; image upload, game/level CRUD)
 - `LOG_LEVEL` (optional; default `debug` for verbose logs; use `info`, `warn`, or `error` to reduce output)
+- `DATA_DIR` (optional; overrides JSON persistence directory)
+- `UPLOADS_DIR` (optional; overrides uploaded images directory)
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (optional; for Supabase Postgres + Storage)
+- `CONTENT_STORE_DRIVER` (optional; `json` | `supabase` | `dual`; default `json`)
+
+See `docs/SUPABASE_SETUP.md` for production storage migration.
 
 Frontend (`frontend/.env.development`):
 
-- `VITE_API_URL` (example: `http://localhost:3000`)
+- `VITE_API_URL` — leave empty for dev (API and uploads go through Vite proxy for same-origin); or `http://localhost:3000` for direct backend
 
 ## E2E Testing
 
@@ -77,6 +95,18 @@ npm run test:e2e
 ```
 
 See `frontend/README.md` for full E2E commands and troubleshooting.
+
+## CI/CD (main branch)
+
+- GitHub Actions workflow: `.github/workflows/ci.yml`
+- On PR/push to `main`, it runs:
+  - `backend`: `npm run typecheck`
+  - `frontend`: `npm run typecheck`
+- Deployment on merge/push to `main` is handled by:
+  - Vercel (frontend)
+  - Render (backend)
+
+Full setup: `docs/DEPLOYMENT_CICD.md`.
 
 ## Run (if you are starting locally)
 
@@ -111,7 +141,7 @@ playplushub/
     src/
       ui/pages/         # app pages
       ui/components/    # shared page components
-      data/             # static games, avatars, level data
+      data/             # static categories; games/levels from API
       store/            # Redux + RTK Query
       sockets/          # socket client scaffold (not active in MVP)
   docs/

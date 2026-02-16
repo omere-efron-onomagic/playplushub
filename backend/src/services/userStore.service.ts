@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { logger } from '../logger/logger.js';
+import { resolveDataFilePath } from '../config/storagePaths.js';
 
 export type StoredUser = {
   id: string;
@@ -20,9 +20,7 @@ type CreateStoredUserInput = {
   passwordHash: string;
 };
 
-const currentFile = fileURLToPath(import.meta.url);
-const currentDir = path.dirname(currentFile);
-const usersFilePath = path.resolve(currentDir, '../data/users.json');
+const usersFilePath = resolveDataFilePath('users.json');
 
 let writeQueue: Promise<void> = Promise.resolve();
 

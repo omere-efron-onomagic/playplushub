@@ -1,15 +1,13 @@
 import { GameCard } from '@/ui/components/GameCard';
-import { games } from '@/data/games';
+import { useGetGamesQuery } from '@/store/apis/games.api';
 
-// Match the design: Trending = 4 Pics 1 Word, Mystery Box, Neon Racer
 const trendingIds = ['1', '3', '5'];
-const trendingGames = games.filter((g) => trendingIds.includes(g.id));
-
-// Match the design: Developer's Choice = Cooking Panic!, Neon Racer, Arena Clash
 const devChoiceIds = ['2', '5', '7'];
-const devChoiceGames = games.filter((g) => devChoiceIds.includes(g.id));
 
 export function Trending() {
+  const { data: games = [], isLoading } = useGetGamesQuery();
+  const trendingGames = games.filter((g) => trendingIds.includes(g.id));
+  const devChoiceGames = games.filter((g) => devChoiceIds.includes(g.id));
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Trending Now */}
@@ -19,9 +17,13 @@ export function Trending() {
           TRENDING NOW
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {trendingGames.map((game) => (
-            <GameCard key={game.id} game={game} />
-          ))}
+          {isLoading ? (
+            <p className="text-gv-text-muted">Loading...</p>
+          ) : (
+            trendingGames.map((game) => (
+              <GameCard key={game.id} game={game} />
+            ))
+          )}
         </div>
       </section>
 
@@ -37,9 +39,13 @@ export function Trending() {
           DEVELOPER&apos;S CHOICE
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {devChoiceGames.map((game) => (
-            <GameCard key={game.id} game={game} />
-          ))}
+          {isLoading ? (
+            <p className="text-gv-text-muted">Loading...</p>
+          ) : (
+            devChoiceGames.map((game) => (
+              <GameCard key={game.id} game={game} />
+            ))
+          )}
         </div>
       </section>
     </div>

@@ -13,6 +13,11 @@ import {
   appendTransaction,
   computeRewardFromOutcome,
 } from '../services/economy/index.js';
+import { getGameById } from '../services/gameStore.service.js';
+import {
+  hasCompletedRound,
+  markRoundComplete,
+} from '../services/progressionStore.service.js';
 import { logger } from '../logger/logger.js';
 
 /** Deprecated: use POST /wallet/session/start and POST /wallet/session/claim instead. */
@@ -43,12 +48,36 @@ export async function startSession(req: Request, res: Response) {
       return res.status(401).json({ message: 'unauthorized' });
     }
 
-    const { gameId } = req.body as { gameId: string };
+    const { gameId, roundId } = req.body as { gameId: string; roundId?: string };
 
-    const entry = getGameCatalogEntry(gameId);
+    const gameEntry = await getGameById(gameId);
+    const entry = await getGameCatalogEntry(gameId);
     if (!entry) {
       logger.warn('session start: unknown gameId', { gameId, requestId: req.requestId });
       return res.status(400).json({ message: 'invalid gameId' });
+    }
+    if (gameEntry?.totalRounds && (!roundId || !roundId.trim())) {
+      return res.status(400).json({ message: 'roundId is required for this game' });
+    }
+    if (roundId) {
+      const alreadyCompleted = await hasCompletedRound(
+        actorId,
+        isGuest ? 'guest' : 'user',
+        gameId,
+        roundId,
+      );
+      if (alreadyCompleted) {
+        logger.info('session start: round already completed', {
+          actorId,
+          gameId,
+          roundId,
+          requestId: req.requestId,
+        });
+        return res.status(422).json({
+          message: 'round already completed',
+          code: 'ROUND_ALREADY_COMPLETED',
+        });
+      }
     }
 
     if (isGuest) {
@@ -75,7 +104,7 @@ export async function startSession(req: Request, res: Response) {
       if (!updated) {
         return res.status(404).json({ message: 'guest not found' });
       }
-      const { sessionId, token } = createGameSessionToken(guestId, gameId, true);
+      const { sessionId, token } = createGameSessionToken(guestId, gameId, true, roundId);
       await appendTransaction({
         userId: guestId,
         kind: 'spend',
@@ -125,7 +154,7 @@ export async function startSession(req: Request, res: Response) {
     if (!updated) {
       return res.status(404).json({ message: 'user not found' });
     }
-    const { sessionId, token } = createGameSessionToken(uid, gameId);
+    const { sessionId, token } = createGameSessionToken(uid, gameId, false, roundId);
     await appendTransaction({
       userId: uid,
       kind: 'spend',
@@ -214,7 +243,11 @@ export async function claimSession(req: Request, res: Response) {
       return res.status(409).json({ message: 'reward already claimed for this session', code: 'DUPLICATE_CLAIM' });
     }
 
-    const { earnedCoins, valid } = computeRewardFromOutcome(payload.gameId, outcome);
+    const { earnedCoins, valid } = await computeRewardFromOutcome(
+      payload.gameId,
+      outcome,
+      payload.roundId,
+    );
     if (!valid) {
       logger.warn('claim: invalid outcome', {
         sessionId: payload.sessionId,
@@ -222,6 +255,15 @@ export async function claimSession(req: Request, res: Response) {
         requestId: req.requestId,
       });
       return res.status(422).json({ message: 'invalid gameplay outcome', code: 'INVALID_OUTCOME' });
+    }
+
+    if (payload.roundId && earnedCoins > 0) {
+      await markRoundComplete(
+        actorId,
+        isGuest ? 'guest' : 'user',
+        payload.gameId,
+        payload.roundId,
+      );
     }
 
     if (earnedCoins === 0) {
