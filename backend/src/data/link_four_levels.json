@@ -117,12 +117,12 @@
     "level": 11,
     "answer": "WATER",
     "images": [
-      "http://localhost:3000/uploads/download__1_-1771228709894.jpg",
-      "http://localhost:3000/uploads/download__2_-1771228712055.jpg",
-      "http://localhost:3000/uploads/download-1771228714675.jpg",
-      "http://localhost:3000/uploads/istockphoto-1133350536-612x612-1771228717218.jpg"
+      "/uploads/download__1_-1771231296856.jpg",
+      "/uploads/download__2_-1771231296856.jpg",
+      "/uploads/download-1771231296858.jpg",
+      "/uploads/istockphoto-1133350536-612x612-1771231296860.jpg"
     ],
-    "extraLetters": "ISJVYCGO",
+    "extraLetters": "IKYDBJGS",
     "enabled": true
   }
 ]

@@ -38,7 +38,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 
 **Round-based progression (Link Four)**: Levels are grouped into rounds (e.g. 5 rounds × 2 levels). Players spend once per round to play and receive a reward when both levels in that round are completed. Completed rounds cannot be replayed; when all rounds are done, play is blocked until new rounds are added.
 
-**Admin authoring flow**: Create rounds via the admin panel by uploading 4 images per level and entering only the answer; extra letters are auto-generated server-side.
+**Admin authoring flow**: Create rounds via the admin panel by uploading 4 images per level (drop, select, or paste) and entering only the answer; extra letters are auto-generated server-side. **Adding a new game type must include admin panel functionality** (content management and uploads for that game)—see `docs/DEVELOPER_ONBOARDING.md` and `.cursor/rules/00-product-scope.mdc`.
 
 ## Docs Index
 
@@ -50,6 +50,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 - `docs/ROADMAP_MVP.md` - prioritized roadmap and milestones
 - `docs/USER_ECONOMNY.MD` - legacy filename retained; points to updated economy doc
 - `docs/DEVELOPER_ONBOARDING.md` - shared Cursor workflow, rules, skills, worktrees, and team best practices
+- `docs/ADDING_NEW_GAME.md` - checklist for adding a new game type (admin panel required)
 - `docs/TEST_SCENARIOS.md` - backend unit tests and integration/E2E test scenarios
 
 ## Local Setup
@@ -74,7 +75,7 @@ Backend (`backend/.env`):
 
 Frontend (`frontend/.env.development`):
 
-- `VITE_API_URL` (example: `http://localhost:3000`)
+- `VITE_API_URL` — leave empty for dev (API and uploads go through Vite proxy for same-origin); or `http://localhost:3000` for direct backend
 
 ## E2E Testing
 

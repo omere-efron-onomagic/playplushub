@@ -44,6 +44,15 @@ unification.
 - Auth/wallet state is synced through API + Redux.
 - Guest profile behavior exists but requires fuller persistence hardening.
 
+### Admin Panel (Frontend)
+
+- Routes: `/admin` (gate), `/admin/games`, `/admin/levels`, `/admin/upload`
+- Admin secret stored in Redux (`admin.slice`); sent as `x-admin-secret` for all admin API calls
+- **AdminLinkFourLevels**: create rounds with batch upload—drop/select/paste 4 images per level; enter answer only; extra letters auto-generated server-side. Individual image slots remain for fine-tuning
+- **AdminGamesList**: view/edit game metadata
+- **AdminImageUpload**: standalone image upload for asset management
+- New game types must include corresponding admin pages and backend endpoints (see product scope rule)
+
 ## Backend Architecture
 
 ### Core Stack
@@ -77,7 +86,7 @@ unification.
 
 ## Runtime Flow (Current)
 
-1. Frontend calls backend via `VITE_API_URL`.
+1. Frontend calls backend via `VITE_API_URL`. In dev with `VITE_API_URL` empty, Vite proxies `/uploads`, `/admin/`, `/games`, etc. to the backend for same-origin image loading.
 2. Auth token (if available) is attached as Bearer header.
 3. Guest token (if available) is attached as `X-Guest-Token` header.
 4. Backend validates token for protected routes.

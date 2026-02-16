@@ -24,3 +24,4 @@ description: Use after implementation changes to keep roadmap, status, API, and 
 - [ ] `docs/API_SPEC.md` matches runtime behavior.
 - [ ] `docs/ARCHITECTURE.md` reflects data flow.
 - [ ] `README.md` links and setup notes remain correct.
+- [ ] If adding a new game type: admin panel functionality (levels, uploads, content management) is included and documented; product scope rule 6 applies.

@@ -26,7 +26,7 @@ function ImageSlot({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="URL or upload"
+        placeholder="URL or paste"
         className="flex-1 rounded border border-gv-border bg-gv-bg px-2 py-1 text-sm text-gv-text"
         disabled={disabled}
       />
@@ -35,7 +35,7 @@ function ImageSlot({
         onClick={() => inputRef.current?.click()}
         className="shrink-0 rounded border border-gv-gold px-2 py-1 text-xs text-gv-gold"
       >
-        Upload
+        Replace
       </button>
       <input
         ref={inputRef}
@@ -45,8 +45,101 @@ function ImageSlot({
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) onUpload(f);
+          e.target.value = '';
         }}
       />
+    </div>
+  );
+}
+
+function DropZone({
+  onFiles,
+  disabled,
+  hasAny,
+}: {
+  onFiles: (files: File[]) => Promise<void>;
+  disabled?: boolean;
+  hasAny?: boolean;
+}) {
+  const [drag, setDrag] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const run = async (files: File[]) => {
+    if (!files.length || disabled || uploading) return;
+    setUploading(true);
+    try {
+      await onFiles(files.slice(0, 4));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDrag(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      /^image\/(jpeg|png|webp)$/i.test(f.type)
+    );
+    void run(files);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    void run(files);
+    e.target.value = '';
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData?.items ?? []);
+    const files = items
+      .filter((item) => item.kind === 'file' && /^image\/(jpeg|png|webp)$/i.test(item.type))
+      .map((item) => item.getAsFile())
+      .filter((f): f is File => !!f);
+    if (files.length) {
+      e.preventDefault();
+      void run(files);
+    }
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onDragOver={(e) => {
+        e.preventDefault();
+        if (!disabled && !uploading) setDrag(true);
+      }}
+      onDragLeave={() => setDrag(false)}
+      onDrop={handleDrop}
+      onPaste={handlePaste}
+      onClick={() => !disabled && !uploading && inputRef.current?.click()}
+      onKeyDown={(e) => e.key === 'Enter' && !disabled && !uploading && inputRef.current?.click()}
+      className={`cursor-pointer rounded-lg border-2 border-dashed px-4 py-3 text-center text-sm transition-colors ${
+        drag
+          ? 'border-gv-gold bg-gv-gold/10'
+          : hasAny
+            ? 'border-gv-gold/50 bg-gv-gold/5 hover:border-gv-gold/70'
+            : 'border-gv-border bg-gv-bg/50 hover:border-gv-gold/50 hover:bg-gv-gold/5'
+      } ${disabled || uploading ? 'pointer-events-none opacity-60' : ''}`}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        className="hidden"
+        onChange={handleChange}
+      />
+      {uploading ? (
+        <span className="text-gv-text-muted">Uploading…</span>
+      ) : (
+        <span className="text-gv-text-muted">
+          {hasAny
+            ? 'Drop or paste 4 images to replace • click to add more'
+            : 'Drop 4 images here, or click to select, or paste'}
+        </span>
+      )}
     </div>
   );
 }
@@ -73,13 +166,41 @@ export function AdminLinkFourLevels() {
     });
   };
 
+  const toUrl = (res: { url: string }) => {
+    const u = res.url;
+    return u.startsWith('http') ? u : `${(VITE_API_URL ?? '').replace(/\/$/, '')}${u}`;
+  };
+
   const handleUpload = async (levelIdx: number, imgIdx: number, file: File) => {
     try {
       const formData = new FormData();
       formData.append('image', file);
       const res = await uploadImage(formData).unwrap();
-      const url = res.url.startsWith('http') ? res.url : `${(VITE_API_URL ?? '').replace(/\/$/, '')}${res.url}`;
-      setLevelImage(levelIdx, imgIdx, url);
+      setLevelImage(levelIdx, imgIdx, toUrl(res));
+    } catch {
+      // Error shown via mutation state
+    }
+  };
+
+  const handleUploadFour = async (levelIdx: number, files: File[]) => {
+    try {
+      const results = await Promise.all(
+        files.slice(0, 4).map(async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          const res = await uploadImage(formData).unwrap();
+          return toUrl(res);
+        })
+      );
+      setLevels((prev) => {
+        const next = [...prev];
+        const imgs = [...(next[levelIdx]?.images ?? ['', '', '', ''])] as [string, string, string, string];
+        results.forEach((url, i) => {
+          imgs[i] = url;
+        });
+        next[levelIdx] = { ...next[levelIdx]!, images: imgs };
+        return next;
+      });
     } catch {
       // Error shown via mutation state
     }
@@ -118,7 +239,7 @@ export function AdminLinkFourLevels() {
         </h1>
       </div>
       <p className="mb-4 text-sm text-gv-text-muted">
-        Upload 4 images per level, enter the answer. Extra letters are generated automatically.
+        Drop or select 4 images per level, enter the answer. Extra letters are generated automatically.
       </p>
       <div className="mb-6">
         <label className="block text-xs text-gv-text-muted mb-1">Game</label>
@@ -163,7 +284,13 @@ export function AdminLinkFourLevels() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gv-text-muted">4 Images</label>
+              <label className="block text-xs text-gv-text-muted mb-1">4 Images</label>
+              <DropZone
+                onFiles={(files) => handleUploadFour(levelIdx, files)}
+                disabled={isSaving}
+                hasAny={level.images.some((u) => u.trim())}
+              />
+              <p className="mt-2 text-xs text-gv-text-muted">Or edit individually:</p>
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="mt-1">
                   <ImageSlot

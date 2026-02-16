@@ -325,9 +325,18 @@
   },
   {
     "id": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
-    "coins": 4,
+    "coins": 0,
     "createdAt": "2026-02-16T07:54:34.510Z",
-    "updatedAt": "2026-02-16T07:58:53.500Z",
+    "updatedAt": "2026-02-16T08:39:47.696Z",
+    "migratedTo": null,
+    "signupPromptCount": 0,
+    "signupRequired": false
+  },
+  {
+    "id": "a70070a7-079a-4f8d-9a3a-337d490f647b",
+    "coins": 8,
+    "createdAt": "2026-02-16T08:41:56.960Z",
+    "updatedAt": "2026-02-16T08:41:59.681Z",
     "migratedTo": null,
     "signupPromptCount": 0,
     "signupRequired": false

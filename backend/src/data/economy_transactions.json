@@ -324,5 +324,44 @@
     "sessionId": "0a3f83a5-3ac4-48b3-b891-22747ca942e8",
     "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
     "createdAt": "2026-02-16T07:58:53.501Z"
+  },
+  {
+    "txId": "5abaa6dc-932a-4138-a305-b240c5cfd00f",
+    "userId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 4,
+    "balanceAfter": 2,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "a55dbc1e-2200-4df8-aed1-ff2ec5581c1c",
+    "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "createdAt": "2026-02-16T08:32:54.596Z"
+  },
+  {
+    "txId": "fd5f1b02-7a47-4314-a3c6-b307be7f2d47",
+    "userId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 2,
+    "balanceAfter": 0,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "be9b8780-1f13-4bc8-852a-6f7e0940287c",
+    "guestId": "74d0f27c-20a8-4389-9f93-8e49dd0cd62b",
+    "createdAt": "2026-02-16T08:39:47.698Z"
+  },
+  {
+    "txId": "dab404fe-d813-42e2-9d88-94b672b13650",
+    "userId": "a70070a7-079a-4f8d-9a3a-337d490f647b",
+    "kind": "spend",
+    "amount": 2,
+    "balanceBefore": 10,
+    "balanceAfter": 8,
+    "reason": "game_entry",
+    "gameId": "1",
+    "sessionId": "49062d51-f0a1-4274-a8c5-c4c55acfaff8",
+    "guestId": "a70070a7-079a-4f8d-9a3a-337d490f647b",
+    "createdAt": "2026-02-16T08:41:59.683Z"
   }
 ]

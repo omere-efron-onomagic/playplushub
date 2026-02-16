@@ -8,8 +8,8 @@ This guide defines the shared Cursor + Git workflow for all collaborators.
    - `cd backend && npm i`
    - `cd ../frontend && npm i`
 2. Configure env files:
-   - `backend/.env` with `PORT`, `FRONTEND_URL`, optional `MONGODB_URI`, `AUTH_SECRET`
-   - `frontend/.env.development` with `VITE_API_URL`
+   - `backend/.env` with `PORT`, `FRONTEND_URL`, optional `MONGODB_URI`, `AUTH_SECRET`, `ADMIN_SECRET` (min 8 chars for admin panel)
+   - `frontend/.env.development`: set `VITE_API_URL=` (empty) for dev—API and uploads go through Vite proxy for same-origin; or set `http://localhost:3000` for direct backend calls
 3. Open the repository root (`playplushub/`) in Cursor.
 
 ## 2) Shared Cursor Setup in This Repo
@@ -31,6 +31,15 @@ Rules are committed and apply to everyone in the project.
 - `25-backend-logging.mdc`: backend logging (use `logger`, not `console`; structured levels; redaction)
 - `30-docs-sync.mdc`: implementation-to-doc consistency
 - `40-template-leftovers.mdc`: safe handling of scaffold modules
+
+### New Game Addition Requirement
+
+When adding a new game type to the app, you must include admin panel functionality. See [ADDING_NEW_GAME.md](mdc:docs/ADDING_NEW_GAME.md) for the full checklist. Summary:
+
+- Add an admin page (e.g. `AdminLinkFourLevels`) for content management
+- Wire backend endpoints for that game (levels, rounds, assets)
+- Reuse or extend `POST /admin/uploads/images` for asset uploads
+- Reference: `frontend/src/ui/pages/admin/AdminLinkFourLevels.tsx`, `admin.api.ts`, `POST /admin/games/:gameId/rounds`
 
 ### Skills
 
@@ -71,6 +80,10 @@ Do not place personal preferences in project rules.
 Use the Context7 MCP (via project rule `05-context7.mdc`) for up-to-date docs when implementing or configuring external libraries. The AI will call `resolve-library-id` and `query-docs` automatically for lib/API work.
 
 Alternatively, use `@Docs` in chat when you need a specific doc reference.
+
+### Dev Proxy and Image Loading
+
+When `VITE_API_URL` is empty in `.env.development`, Vite proxies `/uploads`, `/admin/`, `/games`, `/auth`, `/wallet`, etc. to the backend. This enables same-origin loading of admin-uploaded images in the game. If images do not load in dev, ensure the proxy config (`vite.config.ts`) and `toImageUrl` utility handle relative paths correctly.
 
 ## 4) Worktrees Workflow (Recommended)
 
