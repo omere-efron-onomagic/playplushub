@@ -1,5 +1,5 @@
 import { GameCard } from '@/ui/components/GameCard';
-import { categories, games as fallbackGames } from '@/data/games';
+import { categories } from '@/data/games';
 import { avatars } from '@/data/avatars';
 import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router';
@@ -12,12 +12,9 @@ const PANEL_WIDTH = 300;
 const EDGE_ZONE = 24;
 
 export function Home() {
-  const { data: apiGames = [], isLoading } = useGetGamesQuery();
-  // Ensure local catalog entries (e.g. newly added games) still appear if backend catalog is behind.
-  const games = [...apiGames, ...fallbackGames.filter((item) => !apiGames.some((g) => g.id === item.id))];
+  const { data: games = [], isLoading } = useGetGamesQuery();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.user);
-  const userCoins = user.coins;
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(0);
@@ -130,9 +127,6 @@ export function Home() {
           {codeError && (
             <p className="text-center text-[10px] font-medium text-red-400">{codeError}</p>
           )}
-          <div className="flex items-center justify-center rounded-full border border-gv-gold/40 bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-3 py-1 shadow-lg shadow-gv-gold/10 sm:px-4 sm:py-1.5">
-            <span className="font-heading text-[10px] font-bold tracking-wider text-gv-bg sm:text-xs">CREDITS: {userCoins}</span>
-          </div>
         </div>
       </div>
       <div className="relative w-full max-w-[12rem] md:max-w-none">
@@ -329,7 +323,7 @@ export function Home() {
           {/* Separator line */}
           <div className="mx-4 h-px bg-gradient-to-r from-transparent via-gv-border to-transparent sm:mx-8" />
 
-          {/* Machine Bottom - Pagination & Credits */}
+          {/* Machine Bottom - Pagination */}
           <div className="flex flex-col items-center gap-3 px-4 pt-4 pb-5 sm:gap-4 sm:px-8 sm:pt-5 sm:pb-6">
             {/* Pagination - larger touch targets on mobile */}
             {totalPages > 1 && (
@@ -364,15 +358,6 @@ export function Home() {
               </div>
             )}
 
-            {/* Credits Display */}
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-full bg-gv-gold/20 blur-md" />
-              <div className="relative rounded-full border border-gv-gold/50 bg-gradient-to-r from-gv-gold-dark via-gv-gold to-gv-gold-dark px-5 py-2 shadow-lg shadow-gv-gold/20 sm:px-8 sm:py-2.5">
-                <span className="font-heading text-xs font-bold tracking-[0.15em] text-gv-bg sm:text-sm sm:tracking-[0.2em]">
-                  CREDITS: {userCoins}
-                </span>
-              </div>
-            </div>
           </div>
 
         </div>

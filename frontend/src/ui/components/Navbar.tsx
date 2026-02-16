@@ -20,15 +20,13 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-gv-gold/20 bg-gv-bg/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:px-6 sm:py-3">
-        {/* Logo - shrink on mobile */}
-        <Link to="/" className="shrink-0" aria-label="PlayPlusHub Home">
-          <img
-            src="/logo.jpeg"
-            alt="PlayPlusHub"
-            className="h-8 w-auto sm:h-10"
-            width={180}
-            height={40}
-          />
+        {/* Logo */}
+        <Link
+          to="/"
+          className="shrink-0 flex items-center rounded-lg border border-gv-gold/50 bg-gv-bg px-2.5 py-1 shadow-md sm:px-3.5 sm:py-1.5"
+        >
+          <span className="font-heading text-sm font-black tracking-wide text-white sm:text-base">PLAYPLUS</span>
+          <span className="font-heading text-sm font-black tracking-wide text-gv-gold sm:text-base">HUB</span>
         </Link>
 
         {/* Nav Links - progressive visibility by breakpoint (disappear one by one on shrink) */}
@@ -55,15 +53,8 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Right: coins + desktop auth / mobile menu button */}
+        {/* Right: desktop auth / mobile menu button */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-1 rounded-full border border-gv-gold/40 bg-gv-gold/10 px-2.5 py-1.5 sm:gap-1.5 sm:px-4">
-            <span className="text-xs sm:text-sm">{'\uD83E\uDE99'}</span>
-            <span className="font-heading text-xs font-bold text-gv-gold sm:text-sm" data-testid="navbar-coins">
-              {user.coins}
-            </span>
-          </div>
-
           <div className="hidden sm:flex sm:items-center sm:gap-3">
             {user.isGuest ? (
               <>
