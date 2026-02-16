@@ -1,6 +1,10 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const backendRoot = process.cwd();
+/** Use file location for reliable paths on Render (process.cwd() can differ at runtime). */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const backendSrc = path.resolve(__dirname, '..');
+const backendRoot = path.resolve(backendSrc, '..');
 
 function resolveDirFromEnv(envValue: string | undefined, fallback: string): string {
   const value = envValue?.trim();
@@ -10,7 +14,7 @@ function resolveDirFromEnv(envValue: string | undefined, fallback: string): stri
   return path.isAbsolute(value) ? value : path.resolve(backendRoot, value);
 }
 
-const defaultDataDir = path.resolve(backendRoot, 'src/data');
+const defaultDataDir = path.join(backendSrc, 'data');
 const defaultUploadsDir = path.resolve(backendRoot, 'uploads');
 
 export const dataDir = resolveDirFromEnv(process.env.DATA_DIR, defaultDataDir);

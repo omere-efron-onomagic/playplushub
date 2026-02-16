@@ -14,11 +14,13 @@ export function AdminGamesList() {
   }
 
   if (error) {
+    const errMsg =
+      'status' in error && error.status === 'FETCH_ERROR'
+        ? 'Failed to reach backend. Check VITE_API_URL and that the backend is running.'
+        : 'Failed to load games.';
     return (
       <div className="p-6">
-        <p className="text-red-400">
-          Failed to load games. Check your admin secret.
-        </p>
+        <p className="text-red-400">{errMsg}</p>
       </div>
     );
   }

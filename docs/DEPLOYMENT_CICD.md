@@ -78,10 +78,11 @@ After first production deploy:
 - Ensure backend `FRONTEND_URL` exactly matches the Vercel production origin.
 - If using preview URLs, include them in `FRONTEND_URL` as comma-separated origins.
 
-### Frontend cannot reach backend
+### Frontend cannot reach backend (e.g. admin "Failed to load games")
 
-- Verify `VITE_API_URL` in Vercel points to the correct Render URL.
+- Verify `VITE_API_URL` in Vercel points to the correct Render URL (e.g. `https://your-app.onrender.com`).
 - Redeploy frontend after env var change.
+- Ensure backend `FRONTEND_URL` includes your Vercel origin (CORS).
 
 ### Data resets after deploy
 

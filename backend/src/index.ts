@@ -1,6 +1,9 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import 'dotenv/config';
 import { connectToMongoDB, startServer } from './utils.js';
+import { dataDir } from './config/storagePaths.js';
 import { usersRouter } from './routes/users.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
@@ -20,7 +23,9 @@ function getAllowedOrigins(): string[] {
     .filter(Boolean);
 
   const localDefaults = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
-  return Array.from(new Set([...fromEnv, ...localDefaults]));
+  // MVP: include Vercel prod URL so CORS works even if FRONTEND_URL is misconfigured
+  const prodDefaults = ['https://playplushub.vercel.app', 'https://www.playplushub.vercel.app'];
+  return Array.from(new Set([...fromEnv, ...localDefaults, ...prodDefaults]));
 }
 
 const allowedOrigins = getAllowedOrigins();
@@ -43,6 +48,11 @@ app.use(
       }
 
       if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      // MVP: allow any Vercel deployment (*.vercel.app)
+      if (origin.endsWith('.vercel.app')) {
         callback(null, true);
         return;
       }
@@ -97,6 +107,14 @@ const uri = process.env.MONGODB_URI;
 
 // main function to start the server
 async function main() {
+  // Log data dir for Render 500 debugging
+  const catalogPath = path.join(dataDir, 'games_catalog.json');
+  logger.info('startup_data_dir', {
+    dataDir,
+    exists: existsSync(dataDir),
+    catalogExists: existsSync(catalogPath),
+  });
+
   if (uri) {
     try {
       await connectToMongoDB(uri);
