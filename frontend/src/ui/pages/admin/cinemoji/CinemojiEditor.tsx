@@ -19,7 +19,7 @@ type EditorMode = 'puzzle' | 'hint';
 /**
  * Cinemoji content editor - creates/edits puzzles and stage hints.
  */
-export function CinemojiEditor({ gameId }: GameEditorProps) {
+export function CinemojiEditor(_props: GameEditorProps) {
   const [mode, setMode] = useState<EditorMode>('puzzle');
   
   const [

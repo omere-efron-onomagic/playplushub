@@ -56,7 +56,7 @@ export function LinkFourEditor({ gameId }: GameEditorProps) {
       formData.append('image', file);
       const res = await uploadImage(formData).unwrap();
       const url = toUrl(res);
-      setValue(`levels.${levelIdx}.images.${imgIdx}`, url, {
+      setValue(`levels.${levelIdx}.images.${imgIdx}` as any, url, {
         shouldValidate: true,
         shouldDirty: true,
       });
@@ -78,7 +78,7 @@ export function LinkFourEditor({ gameId }: GameEditorProps) {
         })
       );
       results.forEach((url, i) => {
-        setValue(`levels.${levelIdx}.images.${i}`, url, {
+        setValue(`levels.${levelIdx}.images.${i}` as any, url, {
           shouldValidate: true,
           shouldDirty: true,
         });
@@ -217,7 +217,7 @@ export function LinkFourEditor({ gameId }: GameEditorProps) {
                       index={i}
                       value={field.images[i] ?? ''}
                       onChange={(v) =>
-                        setValue(`levels.${levelIdx}.images.${i}`, v, {
+                        setValue(`levels.${levelIdx}.images.${i}` as any, v, {
                           shouldValidate: true,
                           shouldDirty: true,
                         })

@@ -10,7 +10,6 @@ import { Trending } from '@/ui/pages/Trending';
 import { AdminGate } from '@/ui/pages/admin/AdminGate';
 import { AdminGamesList } from '@/ui/pages/admin/AdminGamesList';
 import { AdminGameContentPage } from '@/ui/pages/admin/AdminGameContentPage';
-import { AdminLinkFourLevels } from '@/ui/pages/admin/AdminLinkFourLevels';
 import { AdminImageUpload } from '@/ui/pages/admin/AdminImageUpload';
 import { AdminRedirect } from '@/ui/pages/admin/AdminRedirect';
 import { AdminLegacyLevelsRedirect } from '@/ui/pages/admin/AdminLegacyLevelsRedirect';
