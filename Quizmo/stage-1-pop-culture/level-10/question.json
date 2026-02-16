@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=10",
+  "question": "Which game franchise features the character Lara Croft?",
+  "options": ["Uncharted", "Tomb Raider", "Assassin's Creed", "Resident Evil"],
+  "correctAnswerIndex": 1
+}

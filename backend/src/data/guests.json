@@ -340,5 +340,23 @@
     "migratedTo": null,
     "signupPromptCount": 0,
     "signupRequired": false
+  },
+  {
+    "id": "109c3196-0b13-4684-9f75-4033eb002c8f",
+    "coins": 2,
+    "createdAt": "2026-02-16T11:25:52.913Z",
+    "updatedAt": "2026-02-16T11:53:06.124Z",
+    "migratedTo": null,
+    "signupPromptCount": 1,
+    "signupRequired": false
+  },
+  {
+    "id": "0c74dcd8-485b-4bb2-a848-20c42ea3d9d7",
+    "coins": 16,
+    "createdAt": "2026-02-16T11:54:47.809Z",
+    "updatedAt": "2026-02-16T12:04:23.652Z",
+    "migratedTo": null,
+    "signupPromptCount": 2,
+    "signupRequired": false
   }
 ]

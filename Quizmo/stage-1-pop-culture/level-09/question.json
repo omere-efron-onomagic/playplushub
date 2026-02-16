@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=9",
+  "question": "What is the name of the coffee shop in 'Friends'?",
+  "options": ["Central Park", "Central Perk", "City Perk", "Cafe Monica"],
+  "correctAnswerIndex": 1
+}

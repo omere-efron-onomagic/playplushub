@@ -6,13 +6,6 @@ Product alignment:
 - Feature status target: <Planned -> Partial | Partial -> Implemented>
 - User value: <why this matters now>
 
-Scope:
-- Allowed paths:
-  - <backend paths>
-  - <frontend paths>
-  - <docs paths>
-- Non-goals:
-  - <explicit exclusions>
 
 Requirements:
 - Functional:

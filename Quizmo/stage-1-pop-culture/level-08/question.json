@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=8",
+  "question": "Which movie won Best Picture at the Oscars in 2020?",
+  "options": ["1917", "Joker", "Parasite", "Ford v Ferrari"],
+  "correctAnswerIndex": 2
+}

@@ -1,5 +1,5 @@
 import { GameCard } from '@/ui/components/GameCard';
-import { categories } from '@/data/games';
+import { categories, games as fallbackGames } from '@/data/games';
 import { avatars } from '@/data/avatars';
 import { useState, useRef, useCallback } from 'react';
 import { useGetGamesQuery } from '@/store/apis/games.api';
@@ -10,7 +10,9 @@ const PANEL_WIDTH = 300;
 const EDGE_ZONE = 24;
 
 export function Home() {
-  const { data: games = [], isLoading } = useGetGamesQuery();
+  const { data: apiGames = [], isLoading } = useGetGamesQuery();
+  // Ensure local catalog entries (e.g. newly added games) still appear if backend catalog is behind.
+  const games = [...apiGames, ...fallbackGames.filter((item) => !apiGames.some((g) => g.id === item.id))];
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(0);

@@ -1,0 +1,6 @@
+{
+  "imageUrl": "https://loremflickr.com/600/340/suit?lock=1",
+  "question": "Which singer is known as the 'Queen of Pop'?",
+  "options": ["Beyonce", "Madonna", "Adele", "Rihanna"],
+  "correctAnswerIndex": 1
+}

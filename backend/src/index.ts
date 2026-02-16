@@ -13,9 +13,11 @@ import { postsRouter } from './routes/posts.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { walletRouter } from './routes/wallet.routes.js';
 import { cinemojiRouter } from './routes/cinemoji.routes.js';
+import { quizmoRouter } from './routes/quizmo.routes.js';
 import { gamesRouter } from './routes/games.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
 import { getUploadsDir } from './services/upload.service.js';
+import { syncJsonCatalogToSupabase } from './services/gameStore.service.js';
 import { requestLogger } from './middleware/request-logger.middleware.js';
 import { logger } from './logger/logger.js';
 import cors from 'cors';
@@ -53,6 +55,7 @@ app.use('/posts', postsRouter);
 app.use('/auth', authRouter);
 app.use('/wallet', walletRouter);
 app.use('/cinemoji', cinemojiRouter);
+app.use('/quizmo', quizmoRouter);
 app.use('/games', gamesRouter);
 app.use('/admin', adminRouter);
 app.use('/uploads', express.static(getUploadsDir()));
@@ -93,6 +96,14 @@ async function main() {
     driver: contentDriver,
     supabaseConfigured: isSupabaseConfigured(),
   });
+  if (contentDriver === 'supabase' || contentDriver === 'dual') {
+    try {
+      const syncResult = await syncJsonCatalogToSupabase();
+      logger.info('startup_games_catalog_sync', syncResult);
+    } catch (error) {
+      logger.warn('startup_games_catalog_sync_failed', { error });
+    }
+  }
 
   if (uri) {
     try {

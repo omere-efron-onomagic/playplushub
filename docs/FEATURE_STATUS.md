@@ -32,6 +32,7 @@ Status labels:
 | No replay of completed rounds | Implemented | Server blocks start for completed rounds; all-rounds-complete gates further play |
 | Per-round rewards | Implemented | Server-authoritative; reward computed from game catalog when both levels in round completed |
 | Cinemoji (2 modes, staged progression, hints, lives) | Partial | Playable with keyboard/mobile input, drag matching, modals, and progress persistence; ad integration remains placeholder-only |
+| QUIZMO (Stage 1 Pop Culture quiz) | Implemented | 10 timed questions (10s each), API-driven content per level folder, backend-validated answers, and score-based coin awarding |
 | Coin spend to start game | Implemented | `POST /wallet/session/start` deducts cost before play (auth and guest users) |
 | No-negative coin rule | Implemented | Enforced on spend; balance never goes negative |
 | XP progression (+10 baseline) | Planned | Product rule defined in docs for MVP |

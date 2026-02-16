@@ -197,5 +197,21 @@
     "players": "4.2K",
     "isHot": true,
     "isPick": true
+  },
+  {
+    "gameId": "14",
+    "slug": "quizmo",
+    "title": "QUIZMO",
+    "category": "Trivia",
+    "coverImageUrl": "https://placehold.co/400x300/1B9AAA/ffffff?font=montserrat&text=QUIZMO",
+    "coinCost": 2,
+    "rewardCoins": 20,
+    "totalLevels": 10,
+    "enabled": true,
+    "updatedAt": "2026-02-16T00:00:00.000Z",
+    "rating": 4.6,
+    "players": "6.1K",
+    "isHot": true,
+    "isPick": false
   }
 ]
