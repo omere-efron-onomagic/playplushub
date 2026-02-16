@@ -3,3 +3,4 @@ linkFolder/
 */node_modules
 backend/uploads/
 .vercel
+.env
