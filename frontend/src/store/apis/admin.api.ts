@@ -1,18 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { VITE_API_URL } from '@/consts/consts';
-import type { RootState } from '@/store';
 
-const adminBaseQuery = fetchBaseQuery({
-  baseUrl: VITE_API_URL,
-  prepareHeaders: (headers, { getState }) => {
-    const secret = (getState() as RootState).admin?.secret ?? '';
-    if (secret) {
-      headers.set('x-admin-secret', secret);
-    }
-    return headers;
-  },
-});
+/** MVP: no admin secret required. */
+const adminBaseQuery = fetchBaseQuery({ baseUrl: VITE_API_URL });
 
 export type ApiGame = {
   gameId: string;

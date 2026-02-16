@@ -32,7 +32,7 @@ This runbook configures automatic deployment on push to `main` with:
 4. Use these backend env vars:
    - `FRONTEND_URL` = your Vercel production URL
    - `AUTH_SECRET` = strong random secret
-   - `ADMIN_SECRET` = admin panel secret (min 8 chars)
+   - `ADMIN_SECRET` = optional (MVP: admin is open; set for future auth)
    - `LOG_LEVEL` = `info` (recommended in production)
    - `MONGODB_URI` = optional
    - `DATA_DIR` = `<persistent-mount>/data`
@@ -92,3 +92,14 @@ After first production deploy:
 
 - Confirm branch protection on `main` requires status checks.
 - Ensure check names match exactly: `Backend checks`, `Frontend checks`.
+
+## 5) Cursor Project Setup for CI/CD Work
+
+When making CI/CD changes with Cursor Agent:
+
+1. Keep this file, `.github/workflows/ci.yml`, and `README.md` aligned in the same task.
+2. Follow `.cursor/rules/35-ci-cd-delivery.mdc` for CI/deployment guardrails.
+3. Verify workflow script commands match package scripts in:
+   - `backend/package.json`
+   - `frontend/package.json`
+4. Never commit `.env` changes or secret values while adjusting deployment setup.

@@ -46,8 +46,8 @@ unification.
 
 ### Admin Panel (Frontend)
 
-- Routes: `/admin` (gate), `/admin/games`, `/admin/levels`, `/admin/upload`
-- Admin secret stored in Redux (`admin.slice`); sent as `x-admin-secret` for all admin API calls
+- Routes: `/admin`, `/admin/games`, `/admin/levels`, `/admin/upload`
+- **MVP:** Admin panel is open (no secret gate)
 - **AdminLinkFourLevels**: create rounds with batch upload—drop/select/paste 4 images per level; enter answer only; extra letters auto-generated server-side. Individual image slots remain for fine-tuning
 - **AdminGamesList**: view/edit game metadata
 - **AdminImageUpload**: standalone image upload for asset management
@@ -74,7 +74,7 @@ unification.
 
 - `auth`: register/login/session check, guest lifecycle, guest-to-account migration
 - `wallet`: session start (spend before play), session claim (server-computed reward)
-- `games`: public read of catalog and levels; admin CRUD and upload behind `X-Admin-Secret`
+- `games`: public read of catalog and levels; admin CRUD and upload (open in MVP)
 - `users` and `posts`: available in code, treated as legacy/non-core for product
 
 ### Guest Persistence

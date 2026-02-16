@@ -8,7 +8,7 @@ This guide defines the shared Cursor + Git workflow for all collaborators.
    - `cd backend && npm i`
    - `cd ../frontend && npm i`
 2. Configure env files:
-   - `backend/.env` with `PORT`, `FRONTEND_URL`, optional `MONGODB_URI`, `AUTH_SECRET`, `ADMIN_SECRET` (min 8 chars for admin panel)
+   - `backend/.env` with `PORT`, `FRONTEND_URL`, optional `MONGODB_URI`, `AUTH_SECRET` (ADMIN_SECRET optional; MVP admin is open)
    - `frontend/.env.development`: set `VITE_API_URL=` (empty) for dev—API and uploads go through Vite proxy for same-origin; or set `http://localhost:3000` for direct backend calls
 3. Open the repository root (`playplushub/`) in Cursor.
 
@@ -30,6 +30,7 @@ Rules are committed and apply to everyone in the project.
 - `20-backend-express-economy.mdc`: backend contract and economy guardrails
 - `25-backend-logging.mdc`: backend logging (use `logger`, not `console`; structured levels; redaction)
 - `30-docs-sync.mdc`: implementation-to-doc consistency
+- `35-ci-cd-delivery.mdc`: CI workflow/deployment change guardrails and docs sync requirements
 - `40-template-leftovers.mdc`: safe handling of scaffold modules
 
 ### New Game Addition Requirement
@@ -197,6 +198,21 @@ Keep team MCP usage conventions documented in PR descriptions when relevant.
 - Treat economy logic as server-authoritative.
 - Use the project logger (`backend/src/logger/logger.ts`) for all backend output; never `console.*`.
 - Update docs in the same PR when behavior changes.
+- For CI/CD changes, keep `.github/workflows/ci.yml`, `docs/DEPLOYMENT_CICD.md`, and `README.md` aligned in one task.
+
+## 6.1) CI/CD Setup and Ownership
+
+Source of truth for deployment process:
+
+- `docs/DEPLOYMENT_CICD.md`
+- `.github/workflows/ci.yml`
+
+Team expectations:
+
+1. Merge to `main` only through PRs with required status checks enabled.
+2. Keep check names stable (`Backend checks`, `Frontend checks`) unless branch protection is updated at the same time.
+3. Do not commit `.env` or secrets when changing deployment or environment setup.
+4. Validate CI script names against `backend/package.json` and `frontend/package.json` before opening PR.
 
 ## 7) Definition of Done (Per Task)
 

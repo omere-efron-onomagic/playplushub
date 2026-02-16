@@ -1,0 +1,14 @@
+---
+description: "CI/CD workflow and deployment change guardrails"
+globs: .github/workflows/*.yml,docs/DEPLOYMENT_CICD.md,README.md,backend/src/config/storagePaths.ts,backend/src/services/**/*.ts
+---
+# CI/CD Delivery Standards
+
+Use these rules when changing CI workflows, deployment setup, or production persistence paths.
+
+1. Keep CI checks in `.github/workflows/ci.yml` aligned with real scripts in `backend/package.json` and `frontend/package.json`.
+2. Prefer MVP-fast checks by default; only expand checks when repo baseline issues are resolved.
+3. If CI behavior changes, update `docs/DEPLOYMENT_CICD.md` and any related `README.md` setup notes in the same task.
+4. Never commit secrets or environment values (`.env`, tokens, API keys) to git.
+5. Production storage path changes must remain configurable via env vars (`DATA_DIR`, `UPLOADS_DIR`) and must not break local defaults.
+6. Keep deployment docs practical: include one-time setup, verification, and rollback/troubleshooting steps.

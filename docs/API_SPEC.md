@@ -414,8 +414,7 @@ Response (200):
 
 ## Admin (Protected)
 
-All admin endpoints require `X-Admin-Secret` header matching `ADMIN_SECRET` env (min 8 chars).
-If `ADMIN_SECRET` is unset or too short, admin panel returns 503.
+**MVP:** Admin endpoints are open (no auth). `X-Admin-Secret` and `ADMIN_SECRET` are not used.
 
 ### `GET /admin/games`
 
