@@ -9,9 +9,11 @@ import { SignUp } from '@/ui/pages/SignUp';
 import { Trending } from '@/ui/pages/Trending';
 import { AdminGate } from '@/ui/pages/admin/AdminGate';
 import { AdminGamesList } from '@/ui/pages/admin/AdminGamesList';
+import { AdminGameContentPage } from '@/ui/pages/admin/AdminGameContentPage';
 import { AdminLinkFourLevels } from '@/ui/pages/admin/AdminLinkFourLevels';
 import { AdminImageUpload } from '@/ui/pages/admin/AdminImageUpload';
 import { AdminRedirect } from '@/ui/pages/admin/AdminRedirect';
+import { AdminLegacyLevelsRedirect } from '@/ui/pages/admin/AdminLegacyLevelsRedirect';
 import { Root } from '@/ui/Root';
 import { createBrowserRouter } from 'react-router';
 
@@ -34,7 +36,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: AdminRedirect },
           { path: 'games', Component: AdminGamesList },
-          { path: 'levels', Component: AdminLinkFourLevels },
+          { path: 'games/:gameId/content', Component: AdminGameContentPage },
+          { path: 'levels', Component: AdminLegacyLevelsRedirect },
           { path: 'upload', Component: AdminImageUpload },
         ],
       },

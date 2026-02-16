@@ -1,0 +1,122 @@
+---
+description: "Admin panel architecture and game editor registry patterns"
+alwaysApply: true
+---
+
+# Admin Panel Architecture
+
+PlayPlusHub uses a **game editor registry** pattern for scalable, game-specific content management.
+
+## Architecture Pattern
+
+```
+/admin/games → Game Catalog List
+    ↓ (click "Manage Content")
+/admin/games/:gameId/content → Generic Content Page
+    ↓ (loads from registry)
+GameEditorRegistry → Specific Editor Component
+    ↓
+LinkFourEditor | CinemojiEditor | [YourGameEditor]
+```
+
+## Adding a New Game Editor
+
+### 1. Create Editor Component
+
+**Location**: `frontend/src/ui/pages/admin/<gameName>/`
+
+**Required**:
+- Implement `GameEditorProps` interface: `{ gameId: string }`
+- Use React Hook Form + Zod for validation
+- Follow UX standards (see below)
+
+**Example structure**:
+```
+frontend/src/ui/pages/admin/
+  mygame/
+    MyGameEditor.tsx         # Main editor component
+    MyGameEditor.schema.ts   # Zod validation schemas
+    [additional components]  # Form pieces, if needed
+    index.ts                 # Exports
+```
+
+### 2. Register Editor
+
+**File**: `frontend/src/ui/pages/admin/registerEditors.ts`
+
+```typescript
+import { MyGameEditor } from './mygame';
+
+export function registerAllGameEditors(): void {
+  registerGameEditor('1', LinkFourEditor);
+  registerGameEditor('13', CinemojiEditor);
+  registerGameEditor('YOUR_GAME_ID', MyGameEditor); // Add here
+}
+```
+
+### 3. Add Backend Endpoints
+
+**Required files**:
+- `backend/src/controllers/<gameName>Admin.controller.ts` - Admin CRUD handlers
+- `backend/src/services/<gameName>Admin.service.ts` - Business logic
+- `backend/src/validators/<gameName>.validator.ts` - Request validation
+- Wire routes in `backend/src/routes/admin.routes.ts`
+
+### 4. Add RTK Query Endpoints
+
+**File**: `frontend/src/store/apis/admin.api.ts`
+
+- Add types for your game's content structure
+- Add cache tags for invalidation
+- Add mutation/query endpoints
+- Export hooks
+
+## UX Standards (All Editors Must Follow)
+
+1. **Form Validation**
+   - Use React Hook Form with Zod resolver
+   - Show inline field-level errors (red border + error text)
+   - Disable submit until form is valid
+
+2. **Save Feedback**
+   - Success: Green toast/banner message
+   - Error: Red toast/banner with actionable message
+   - Loading: Disable form + show loading state on button
+
+3. **Data Preservation**
+   - Non-destructive submit: preserve form state on failure
+   - Only reset form on successful save
+   - Show "Unsaved changes" indicator when `isDirty`
+
+4. **Navigation**
+   - Include "← Back to Games" link
+   - Clear page title with game name
+
+## Reference Implementations
+
+### Link Four Editor
+- **Path**: `frontend/src/ui/pages/admin/linkfour/LinkFourEditor.tsx`
+- **Pattern**: Round creation with batch image upload
+- **Features**: Drop zone, individual slots, auto-generated extras
+- **Backend**: `POST /admin/games/:gameId/rounds`
+
+### Cinemoji Editor
+- **Path**: `frontend/src/ui/pages/admin/cinemoji/CinemojiEditor.tsx`
+- **Pattern**: Tab-based UI (Puzzles / Hints)
+- **Features**: Emoji input, category dropdown, mode switching
+- **Backend**: `POST /admin/cinemoji/puzzles`, `POST /admin/cinemoji/hints`
+
+## Legacy Routes
+
+- `/admin/levels` → Redirects to `/admin/games/1/content` (Link Four)
+- Keep for backward compatibility; all new features use game-scoped routes
+
+## Common Pitfalls
+
+1. ❌ Don't create generic `/admin/levels` style pages
+2. ❌ Don't forget to register your editor in `registerEditors.ts`
+3. ❌ Don't skip validation - always use Zod schemas
+4. ❌ Don't reset form on submit - wait for success
+5. ✅ Do implement all UX standards
+6. ✅ Do add proper cache invalidation tags
+7. ✅ Do update docs when adding new game types

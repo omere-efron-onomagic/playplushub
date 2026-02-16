@@ -18,4 +18,8 @@ Rules:
 3. Do not represent `Planned` features as production-ready behavior.
 4. Preserve current API contracts when possible to reduce frontend churn.
 5. If auth, wallet, progression, or API behavior changes, update docs in the same task.
-6. **Adding a new game type to the app must include admin panel functionality**—content management (create/edit levels, upload assets) for that game must be available in `/admin` or via migration scripts and Supabase tables. See [ADDING_NEW_GAME.md](mdc:docs/ADDING_NEW_GAME.md) for references: Link Four (`AdminLinkFourLevels`, rounds endpoint, upload endpoint) and Cinemoji (Supabase tables + migration scripts).
+6. **Adding a new game type to the app must include admin panel functionality**—content management (create/edit levels, upload assets) for that game must be available via a registered editor component. See [ADDING_NEW_GAME.md](mdc:docs/ADDING_NEW_GAME.md) for the game editor registry pattern. References:
+   - **Link Four** (`gameId: '1'`): `LinkFourEditor` in `frontend/src/ui/pages/admin/linkfour/` with React Hook Form + Zod validation
+   - **Cinemoji** (`gameId: '13'`): `CinemojiEditor` in `frontend/src/ui/pages/admin/cinemoji/` with tab-based UI (puzzles/hints)
+   - Both registered in `frontend/src/ui/pages/admin/registerEditors.ts`
+   - Editors must implement `GameEditorProps` interface and follow UX standards (inline errors, save feedback, unsaved warnings)

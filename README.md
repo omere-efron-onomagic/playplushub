@@ -24,10 +24,11 @@ The brand is currently "PlayPlusHub" and may change later.
 
 - Implemented (MVP quality): UI shell, game catalog pages, login/signup, two playable games
   (Link Four with grouped rounds, Cinemoji with 2 modes and staged progression), basic wallet
-  reward endpoint, guest mode state handling, admin panel (games/levels/upload), dynamic game
-  catalog from API, Supabase-backed game content with dual-read fallback, E2E regression tests
-  (Playwright), grouped rounds (5 rounds × 2 levels), no-replay completion gating, round progression,
-  admin upload-first level creation (4 images + answer, auto extra letters)
+  reward endpoint, guest mode state handling, game-scoped admin panel with editor registry,
+  dynamic game catalog from API, Supabase-backed game content with dual-read fallback, E2E
+  regression tests (Playwright), grouped rounds (5 rounds × 2 levels), no-replay completion
+  gating, round progression, admin editors with React Hook Form + Zod validation for Link Four
+  (rounds) and Cinemoji (puzzles/hints)
 - Partial: ad placements in UI (including Cinemoji rewarded hint placeholder), onboarding conversion
   behavior, avatar/shop/favorites/trending logic, mixed backend model. Sign-up prompt cadence
   evaluates after each round completion.
@@ -42,7 +43,7 @@ See `docs/FEATURE_STATUS.md` for the full matrix.
 
 **Staged progression (Cinemoji)**: 40 emoji-based movie puzzles across 2 gameplay modes with hints, lives, and mobile-friendly keyboard/drag input. Content stored in Supabase with file fallback.
 
-**Admin authoring flow**: Create Link Four rounds via the admin panel by uploading 4 images per level (drop, select, or paste) and entering only the answer; extra letters are auto-generated server-side. Cinemoji content is managed via Supabase (puzzles and hints tables) with migration scripts. **Adding a new game type must include admin panel functionality** (content management and uploads for that game)—see `docs/DEVELOPER_ONBOARDING.md`, `docs/ADDING_NEW_GAME.md`, and `.cursor/rules/00-product-scope.mdc`.
+**Admin authoring flow**: Game-scoped content editors using a registry pattern. Navigate to `/admin/games` → select game → "Manage Content" opens game-specific editor at `/admin/games/:gameId/content`. Each editor implements validation with React Hook Form + Zod, inline errors, save feedback, and unsaved-change warnings. Link Four: batch image upload + round creation. Cinemoji: tab-based puzzle and hint management. **Adding a new game type requires a registered editor component**—see `docs/ADDING_NEW_GAME.md`, `.cursor/rules/15-admin-architecture.mdc`, and `.cursor/rules/00-product-scope.mdc`.
 
 ## Docs Index
 

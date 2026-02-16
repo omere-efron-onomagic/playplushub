@@ -49,8 +49,9 @@ Status labels:
 | Guest-to-account migration | Implemented | Idempotent migration via `/auth/guest/migrate`; `account_wins` conflict resolution |
 | Wallet session endpoints | Implemented | start/claim with anti-replay, server-authoritative reward |
 | Backend persistence approach (JSON + Supabase) | Implemented | Auth/wallet: JSON; game catalog and uploads: JSON or Supabase (configurable) |
-| Admin panel | Implemented | Open access (MVP); games list, level management, batch image upload; new game types must include admin functionality |
-| Admin upload-first level creation | Implemented | Upload 4 images + answer only; extra letters auto-generated; batch upload via drop/select/paste 4 images per level |
+| Admin panel | Implemented | Game-scoped content management; registry-based editor architecture; open access (MVP); new game types must include admin editor |
+| Admin game editors | Implemented | Link Four (rounds/levels) and Cinemoji (puzzles/hints) with form validation, inline errors, and save feedback |
+| Admin upload-first workflow | Implemented | Batch image upload integrated into editors; separate asset page for bulk operations |
 | Game catalog (JSON / Supabase) | Implemented | JSON or Supabase Postgres via `CONTENT_STORE_DRIVER`; dual-read fallback; economy reads from catalog |
 | Full Mongo-backed backend | Planned | Target direction after MVP stabilization |
 

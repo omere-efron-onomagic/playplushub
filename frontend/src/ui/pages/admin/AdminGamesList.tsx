@@ -29,14 +29,8 @@ export function AdminGamesList() {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-heading text-xl font-bold text-gv-gold">
-          Games
+          Game Catalog
         </h1>
-        <Link
-          to="/admin/levels"
-          className="rounded-lg border border-gv-gold px-4 py-2 text-sm font-medium text-gv-gold"
-        >
-          Manage Levels
-        </Link>
       </div>
       <div className="space-y-4">
         {games.map((g) => (
@@ -55,12 +49,15 @@ export function AdminGamesList() {
                 ID: {g.gameId} | {g.coinCost} coins | {g.rewardCoins} reward
                 {g.totalLevels != null ? ` | ${g.totalLevels} levels` : ''}
               </p>
+              <p className="mt-1 text-xs text-gv-text-muted">
+                Status: {g.enabled ? 'Enabled' : 'Disabled'}
+              </p>
             </div>
             <Link
-              to="/admin/levels"
-              className="rounded-lg bg-gv-gold/20 px-3 py-1.5 text-sm text-gv-gold"
+              to={`/admin/games/${g.gameId}/content`}
+              className="rounded-lg bg-gv-gold/20 px-3 py-1.5 text-sm text-gv-gold hover:bg-gv-gold/30"
             >
-              Levels
+              Manage Content
             </Link>
           </div>
         ))}

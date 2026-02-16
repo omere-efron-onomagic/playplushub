@@ -450,6 +450,48 @@ Upload a single image. Multipart form field name: `image`. Allowed: JPEG, PNG, W
 
 Response (201): `{ "url": "/uploads/filename.jpg" }`
 
+### Cinemoji Admin Endpoints
+
+**Note:** Cinemoji admin endpoints require Supabase for content persistence.
+
+#### `POST /admin/cinemoji/puzzles`
+
+Upsert (create or update) a single Cinemoji puzzle.
+
+Request body: `{ "index": 1, "category": "Movies", "leftEmoji": "🦁", "rightEmoji": "👑", "title": "The Lion King" }`
+
+Response (200): Returns the upserted puzzle.
+
+#### `POST /admin/cinemoji/puzzles/batch`
+
+Batch upsert multiple Cinemoji puzzles.
+
+Request body: `{ "puzzles": [ { "index": 1, "category": "Movies", "leftEmoji": "🦁", "rightEmoji": "👑", "title": "The Lion King" }, ... ] }`
+
+Response (200): `{ "puzzles": [...] }`
+
+#### `DELETE /admin/cinemoji/puzzles/:index`
+
+Delete a Cinemoji puzzle by index.
+
+Response (204): No content.
+
+#### `POST /admin/cinemoji/hints`
+
+Upsert (create or update) a stage hint.
+
+Request body: `{ "mode": "mode1", "stage": 1, "hintText": "Focus on classic movies from the 90s" }`
+
+Response (200): Returns the upserted hint.
+
+#### `DELETE /admin/cinemoji/hints?mode=:mode&stage=:stage`
+
+Delete a stage hint.
+
+Query params: `mode` (mode1 or mode2), `stage` (integer).
+
+Response (204): No content.
+
 ## Cinemoji
 
 Cinemoji is a second playable game (gameId `13`). Content is served from Supabase or static files. See [CINEMOJI.md](CINEMOJI.md) for full API:

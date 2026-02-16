@@ -1,139 +1,218 @@
-import type { NextFunction, Request, Response } from 'express';
-import { logger, redactSensitive } from '../logger/logger.js';
+import type { Request, Response, NextFunction } from 'express';
 
-function reject(
-  req: Request,
-  res: Response,
-  message: string,
-  extra?: Record<string, unknown>,
-): Response {
-  logger.warn('cinemoji validation failed', {
-    requestId: req.requestId,
-    message,
-    payload: redactSensitive((req.body as Record<string, unknown>) ?? {}),
-    ...extra,
-  });
-  return res.status(400).json({ message });
-}
+// Player-facing validators
 
 export function validateMode1SubmitBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') {
-    return reject(req, res, 'body is required');
+    return res.status(400).json({ message: 'body is required' });
   }
-
-  const { stage, puzzleIndex, guess } = req.body as {
-    stage?: unknown;
-    puzzleIndex?: unknown;
-    guess?: unknown;
-  };
-
-  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > 4) {
-    return reject(req, res, 'stage must be an integer between 1 and 4');
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
   }
-  if (!Number.isInteger(puzzleIndex) || (puzzleIndex as number) < 1 || (puzzleIndex as number) > 10) {
-    return reject(req, res, 'puzzleIndex must be an integer between 1 and 10');
+  
+  if (!Number.isInteger(b.puzzleIndex) || (b.puzzleIndex as number) < 1) {
+    return res.status(400).json({ message: 'puzzleIndex must be a positive integer' });
   }
-  if (typeof guess !== 'string' || !guess.trim()) {
-    return reject(req, res, 'guess is required');
+  
+  if (typeof b.guess !== 'string' || !b.guess.trim()) {
+    return res.status(400).json({ message: 'guess is required' });
   }
-
+  
   return next();
 }
 
 export function validateMode2SubmitBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') {
-    return reject(req, res, 'body is required');
+    return res.status(400).json({ message: 'body is required' });
   }
-
-  const { stage, roundIndex, leftEmoji, rightEmoji } = req.body as {
-    stage?: unknown;
-    roundIndex?: unknown;
-    leftEmoji?: unknown;
-    rightEmoji?: unknown;
-  };
-
-  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > 8) {
-    return reject(req, res, 'stage must be an integer between 1 and 8');
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
   }
-  if (!Number.isInteger(roundIndex) || (roundIndex as number) < 1 || (roundIndex as number) > 5) {
-    return reject(req, res, 'roundIndex must be an integer between 1 and 5');
+  
+  if (!Number.isInteger(b.roundIndex) || (b.roundIndex as number) < 0) {
+    return res.status(400).json({ message: 'roundIndex must be a non-negative integer' });
   }
-  if (typeof leftEmoji !== 'string' || !leftEmoji.trim()) {
-    return reject(req, res, 'leftEmoji is required');
+  
+  if (typeof b.leftEmoji !== 'string' || !b.leftEmoji.trim()) {
+    return res.status(400).json({ message: 'leftEmoji is required' });
   }
-  if (typeof rightEmoji !== 'string' || !rightEmoji.trim()) {
-    return reject(req, res, 'rightEmoji is required');
+  
+  if (typeof b.rightEmoji !== 'string' || !b.rightEmoji.trim()) {
+    return res.status(400).json({ message: 'rightEmoji is required' });
   }
-
+  
   return next();
 }
 
 export function validateHintBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') {
-    return reject(req, res, 'body is required');
+    return res.status(400).json({ message: 'body is required' });
   }
-
-  const { mode, stage, watchRewarded } = req.body as {
-    mode?: unknown;
-    stage?: unknown;
-    watchRewarded?: unknown;
-  };
-
-  if (mode !== 'mode1' && mode !== 'mode2') {
-    return reject(req, res, 'mode must be mode1 or mode2');
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (b.mode !== 'mode1' && b.mode !== 'mode2') {
+    return res.status(400).json({ message: 'mode must be "mode1" or "mode2"' });
   }
-
-  const maxStage = mode === 'mode1' ? 4 : 8;
-  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > maxStage) {
-    return reject(req, res, `stage must be an integer between 1 and ${maxStage}`);
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
   }
-
-  if (typeof watchRewarded !== 'boolean') {
-    return reject(req, res, 'watchRewarded must be boolean');
+  
+  if (typeof b.watchRewarded !== 'boolean') {
+    return res.status(400).json({ message: 'watchRewarded must be a boolean' });
   }
-
+  
+  // puzzleIndex and roundIndex are optional
+  if (b.puzzleIndex !== undefined && (!Number.isInteger(b.puzzleIndex) || (b.puzzleIndex as number) < 1)) {
+    return res.status(400).json({ message: 'puzzleIndex must be a positive integer if provided' });
+  }
+  
+  if (b.roundIndex !== undefined && (!Number.isInteger(b.roundIndex) || (b.roundIndex as number) < 0)) {
+    return res.status(400).json({ message: 'roundIndex must be a non-negative integer if provided' });
+  }
+  
   return next();
 }
 
 export function validateContinueLivesBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') {
-    return reject(req, res, 'body is required');
+    return res.status(400).json({ message: 'body is required' });
   }
-
-  const { mode, stage, roundIndex, watchRewarded } = req.body as {
-    mode?: unknown;
-    stage?: unknown;
-    roundIndex?: unknown;
-    watchRewarded?: unknown;
-  };
-  if (mode !== 'mode2') {
-    return reject(req, res, 'mode must be mode2');
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (b.mode !== 'mode2') {
+    return res.status(400).json({ message: 'mode must be "mode2"' });
   }
-  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > 8) {
-    return reject(req, res, 'stage must be an integer between 1 and 8');
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
   }
-  if (!Number.isInteger(roundIndex) || (roundIndex as number) < 1 || (roundIndex as number) > 5) {
-    return reject(req, res, 'roundIndex must be an integer between 1 and 5');
+  
+  if (!Number.isInteger(b.roundIndex) || (b.roundIndex as number) < 0) {
+    return res.status(400).json({ message: 'roundIndex must be a non-negative integer' });
   }
-  if (typeof watchRewarded !== 'boolean') {
-    return reject(req, res, 'watchRewarded must be boolean');
+  
+  if (typeof b.watchRewarded !== 'boolean') {
+    return res.status(400).json({ message: 'watchRewarded must be a boolean' });
   }
+  
   return next();
 }
 
 export function validateStageCompleteBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') {
-    return reject(req, res, 'body is required');
+    return res.status(400).json({ message: 'body is required' });
   }
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (b.mode !== 'mode1' && b.mode !== 'mode2') {
+    return res.status(400).json({ message: 'mode must be "mode1" or "mode2"' });
+  }
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
+  }
+  
+  return next();
+}
 
-  const { mode, stage } = req.body as { mode?: unknown; stage?: unknown };
-  if (mode !== 'mode1' && mode !== 'mode2') {
-    return reject(req, res, 'mode must be mode1 or mode2');
-  }
-  const maxStage = mode === 'mode1' ? 4 : 8;
-  if (!Number.isInteger(stage) || (stage as number) < 1 || (stage as number) > maxStage) {
-    return reject(req, res, `stage must be an integer between 1 and ${maxStage}`);
-  }
+// Admin validators
 
+export function validateUpsertPuzzleBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return res.status(400).json({ message: 'body is required' });
+  }
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (!Number.isInteger(b.index) || (b.index as number) < 1) {
+    return res.status(400).json({ message: 'index must be a positive integer' });
+  }
+  
+  if (typeof b.category !== 'string' || !b.category.trim()) {
+    return res.status(400).json({ message: 'category is required' });
+  }
+  
+  if (typeof b.leftEmoji !== 'string' || !b.leftEmoji.trim()) {
+    return res.status(400).json({ message: 'leftEmoji is required' });
+  }
+  
+  if (typeof b.rightEmoji !== 'string' || !b.rightEmoji.trim()) {
+    return res.status(400).json({ message: 'rightEmoji is required' });
+  }
+  
+  if (typeof b.title !== 'string' || !b.title.trim()) {
+    return res.status(400).json({ message: 'title is required' });
+  }
+  
+  return next();
+}
+
+export function validateBatchUpsertPuzzlesBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return res.status(400).json({ message: 'body is required' });
+  }
+  
+  const b = req.body as { puzzles?: unknown };
+  
+  if (!Array.isArray(b.puzzles)) {
+    return res.status(400).json({ message: 'puzzles must be an array' });
+  }
+  
+  for (let i = 0; i < b.puzzles.length; i++) {
+    const p = b.puzzles[i] as Record<string, unknown>;
+    
+    if (!Number.isInteger(p.index) || (p.index as number) < 1) {
+      return res.status(400).json({ message: `puzzles[${i}].index must be a positive integer` });
+    }
+    
+    if (typeof p.category !== 'string' || !p.category.trim()) {
+      return res.status(400).json({ message: `puzzles[${i}].category is required` });
+    }
+    
+    if (typeof p.leftEmoji !== 'string' || !p.leftEmoji.trim()) {
+      return res.status(400).json({ message: `puzzles[${i}].leftEmoji is required` });
+    }
+    
+    if (typeof p.rightEmoji !== 'string' || !p.rightEmoji.trim()) {
+      return res.status(400).json({ message: `puzzles[${i}].rightEmoji is required` });
+    }
+    
+    if (typeof p.title !== 'string' || !p.title.trim()) {
+      return res.status(400).json({ message: `puzzles[${i}].title is required` });
+    }
+  }
+  
+  return next();
+}
+
+export function validateUpsertHintBody(req: Request, res: Response, next: NextFunction) {
+  if (!req.body || typeof req.body !== 'object') {
+    return res.status(400).json({ message: 'body is required' });
+  }
+  
+  const b = req.body as Record<string, unknown>;
+  
+  if (b.mode !== 'mode1' && b.mode !== 'mode2') {
+    return res.status(400).json({ message: 'mode must be "mode1" or "mode2"' });
+  }
+  
+  if (!Number.isInteger(b.stage) || (b.stage as number) < 1) {
+    return res.status(400).json({ message: 'stage must be a positive integer' });
+  }
+  
+  if (typeof b.hintText !== 'string' || !b.hintText.trim()) {
+    return res.status(400).json({ message: 'hintText is required' });
+  }
+  
   return next();
 }

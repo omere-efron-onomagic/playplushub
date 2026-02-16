@@ -46,12 +46,24 @@ unification.
 
 ### Admin Panel (Frontend)
 
-- Routes: `/admin`, `/admin/games`, `/admin/levels`, `/admin/upload`
-- **MVP:** Admin panel is open (no secret gate)
-- **AdminLinkFourLevels**: create rounds with batch upload—drop/select/paste 4 images per level; enter answer only; extra letters auto-generated server-side. Individual image slots remain for fine-tuning
-- **AdminGamesList**: view/edit game metadata
-- **AdminImageUpload**: standalone image upload for asset management
-- New game types must include corresponding admin pages and backend endpoints (see product scope rule)
+**Architecture**: Game editor registry pattern. Each game has a dedicated editor component registered by `gameId`. When an admin navigates to `/admin/games/:gameId/content`, the system loads the appropriate editor from the registry.
+
+**Routes**:
+- `/admin` → redirects to `/admin/games`
+- `/admin/games` → game catalog list
+- `/admin/games/:gameId/content` → game-scoped content editor (loaded from registry)
+- `/admin/upload` → asset management utility (secondary)
+- `/admin/levels` → legacy redirect to Link Four editor
+
+**Registry**: `frontend/src/ui/pages/admin/gameEditorRegistry.ts` maps gameId to editor components. Editors are registered in `registerEditors.ts` on app startup.
+
+**Editors**:
+- **LinkFourEditor** (gameId `'1'`): Round/level creation with React Hook Form + Zod validation; batch image upload; inline field errors; save feedback; unsaved-change warnings
+- **CinemojiEditor** (gameId `'13'`): Puzzle and hint management with tab-based UI; emoji input; category selection; mode-based hint editing
+
+**UX Standards**: All editors use React Hook Form + Zod schemas, inline validation errors, success/error toast feedback, non-destructive save (state preserved on failure), and unsaved-change indicators.
+
+**MVP**: Admin panel is open (no secret gate). New game types must include a registered editor component and corresponding backend endpoints.
 
 ## Backend Architecture
 
